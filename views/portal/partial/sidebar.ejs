@@ -1,0 +1,175 @@
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-inner slimscroll">
+        <div id="sidebar-menu" class="sidebar-menu">
+            <ul>
+                <li class="active">
+                    <a href="/portal/dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="list-divider"></li>
+
+                <% if (roleName === 'hotel receptionist' || roleName === 'ceo' || roleName === "hotelmanager") { %>
+                <li class="submenu">
+                    <a href="#">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Bookings</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="submenu_class" style="display: none;">
+                        <li><a href="/portal/all-booking"><i class="fas fa-list"></i> All Bookings</a></li>
+                        <li><a href="/portal/add-booking"><i class="fas fa-plus-circle"></i> Add Booking</a></li>
+                        <li><a href="/portal/check-booking"><i class="fas fa-search"></i> Check Booking</a></li>
+                        <li><a href="/portal/part-payments"><i class="fas fa-money-bill-wave" style="color: #FFA500;"></i> Part Payments</a></li>
+                    </ul>
+                </li>
+                <% } %>
+
+                <% if (roleName === 'hotel receptionist' || roleName === 'ceo' || roleName === "hotelmanager") { %>
+                <li class="submenu">
+                    <a href="#">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendar</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="submenu_class" style="display: none;">
+                        <li><a href="/portal/all-bookings-calendar"><i class="fas fa-calendar-day"></i> Bookings Calendar</a></li>
+                    </ul>
+                </li>
+                <% } %>
+
+                <% if (roleName === 'hotel receptionist' || roleName === 'ceo' || roleName === "hotelmanager") { %>
+                <li class="submenu">
+                    <a href="#">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="submenu_class" style="display: none;">
+                        <li><a href="/portal/all-customer"><i class="fas fa-user-friends"></i> All Customers</a></li>
+                    </ul>
+                </li>
+                <% } %>
+
+                <% if (roleName === 'hotel receptionist' || roleName === 'ceo' || roleName === "hotelmanager") { %>
+                <li class="submenu">
+                    <a href="#">
+                        <i class="fas fa-bed"></i>
+                        <span>Rooms</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="submenu_class" style="display: none;">
+                        <li><a href="/portal/room-category"><i class="fas fa-th-large"></i> Room Categories</a></li>
+                        <li><a href="/portal/all-rooms"><i class="fas fa-door-open"></i> All Rooms</a></li>
+                        <li><a href="/portal/room-transfers"><i class="fas fa-exchange-alt"></i> Room Transfers</a></li>
+                    </ul>
+                </li>
+                <% } %>
+
+                <% if (roleName === 'ceo' || roleName === "hotelmanager") { %>
+                <li class="submenu">
+                    <a href="#">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Staff</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="submenu_class" style="display: none;">
+                        <li><a href="/portal/all-staff"><i class="fas fa-users"></i> All Staff</a></li>
+                        <li><a href="/portal/add-staff"><i class="fas fa-user-plus"></i> Add Staff</a></li>
+                    </ul>
+                </li>
+                <% } %>
+
+                <% if (roleName === 'ceo' || roleName === 'bar manager' || roleName === "hotelmanager") { %>
+                <li class="submenu">
+                    <a href="#">
+                        <i class="fas fa-wine-glass-alt"></i>
+                        <span>Bar</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="submenu_class" style="display: none;">
+						<% if (roleName === 'ceo' || roleName === 'bar manager') { %>
+							<li><a href="/portal/bar"><i class="fas fa-cash-register"></i> Bar POS</a></li>
+						<% } %>
+                        <li><a href="/portal/bar-records"><i class="fas fa-receipt"></i> All Sales</a></li>
+						<% if (roleName === 'ceo' || roleName === 'hotelmanager') { %>
+							<li><a href="/portal/bar-all-drinks"><i class="fas fa-wine-bottle"></i> All Drinks</a></li>
+						<% } %>
+                    </ul>
+                </li>
+                <% } %>
+
+                <li class="list-divider"></li>
+
+                <% if (roleName === 'ceo') { %>
+                <li>
+                    <a href="/portal/info-promotion">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Promotions</span>
+                    </a>
+                </li>
+                <% } %>
+
+                <% if (roleName === 'ceo') { %>
+                <li>
+                    <a href="/portal/payment-mode">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Payment Mode</span>
+                    </a>
+                </li>
+                <% } %>
+
+                <% if (roleName === 'ceo' || roleName === 'hotelmanager') { %>
+                <li>
+                    <a href="/portal/pricing-config">
+                        <i class="fas fa-tags"></i>
+                        <span>Pricing Config</span>
+                    </a>
+                </li>
+                <% } %>
+
+                <% if (roleName === 'ceo' || roleName === 'hotelmanager') { %>
+                <li class="submenu">
+                    <a href="#">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Finance</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="submenu_class" style="display: none;">
+                        <li><a href="/portal/expenses"><i class="fas fa-receipt"></i> Expenses</a></li>
+                        <li><a href="/portal/damages"><i class="fas fa-tools"></i> Damages & Repairs</a></li>
+                    </ul>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const currentUrl = window.location.pathname; // Get current path
+    const menuItems = document.querySelectorAll('#sidebar-menu a'); // Get all menu items (including submenus)
+
+    menuItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if (href === currentUrl) {
+            // Add 'active' class to the <li> that contains the active link
+            const parentLi = item.closest('li');
+            parentLi.classList.add('active');
+
+            // If the active link is within a submenu, expand the parent submenu
+            const submenu = item.closest('.submenu');
+            if (submenu) {
+                submenu.querySelector('ul').style.display = 'block'; // Expand the parent submenu
+            }
+
+            // Ensure no background color or active class is added to submenu items
+            item.classList.remove('active');
+        }
+    });
+});
+
+
+
+</script>

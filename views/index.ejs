@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<title>Vistavilla Apartment - Luxury Accommodation</title>
+<!-- Stylesheets -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/flatpickr.min.css" rel="stylesheet">
+<link href="css/booking-modern.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="css/slick-theme.css">
+<link rel="stylesheet" type="text/css" href="css/slick.css">
+<link href="css/modern-client.css" rel="stylesheet">
+<link href="css/luxury-booking.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+<link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+<!-- Responsive -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
+<!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+  <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+	<style>
+		/* Force luxury design overrides */
+		.banner-section {
+			display: none !important;
+		}
+		.checkout-form-section {
+			display: none !important;
+		}
+		/* Remove any brown/gold colors */
+		* {
+			--theme-color1: #6b6b6b !important;
+			--theme-color2: #f5f5f5 !important;
+			--theme-color3: #9e9e9e !important;
+		}
+		.loader {
+			width: 24px;
+			height: 24px;
+			border: 3px solid #FFF;
+			border-bottom-color: #FF3D00;
+			border-radius: 50%;
+			display: inline-block;
+			box-sizing: border-box;
+			animation: rotation 1s linear infinite;
+		}
+
+		@keyframes rotation {
+			0% {
+				transform: rotate(0deg);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		} 
+    .video-container {
+      position: relative;
+      width: 100%;
+      height: auto;
+      overflow: hidden;
+    }
+
+    /* Set video to cover the container */
+    video {
+      width: 100%;
+      height: auto;
+      transform: scale(1);
+      transition: transform 1s ease-in-out;
+      animation: zoomEffect 10s infinite alternate;
+      box-shadow: 10px 10px 30px rgba(2, 2, 2, 0.5); 
+      filter: brightness(0.7);
+    }
+
+    /* Zoom animation */
+    @keyframes zoomEffect {
+      0% {
+        transform: scale(1);
+      }
+      100% {
+        transform: scale(1.2); /* Zoom to 1.2x */
+      }
+    }
+
+    /* Add media query for mobile devices */
+    @media (max-width: 768px) {
+      .video-container {
+        height: 100%;
+      }
+      .video-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh; /* Full viewport height */
+      overflow: hidden; /* Hide any overflow */
+    }
+
+    /* Ensure the video fills the container and covers the screen */
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Ensures video covers the entire container */
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+      /* video {
+        width: 100vw; 
+        height: auto;
+        transform: scale(1);
+      } */
+
+      @keyframes zoomEffect {
+      0% {
+        transform: scale(1);
+      }
+      100% {
+        transform: scale(1.2); /* Zoom to 1.2x */
+      }
+    }
+      
+
+
+     
+    }
+
+
+
+/* Typewriter Effect */
+.typewriter-text {
+    font-size: 30px;
+    font-family: monospace;
+    border-right: 2px solid #000;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+    animation: typing 3.5s steps(40, end), blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink {
+    from { border-color: transparent; }
+    to { border-color: black; }
+}
+
+/* Hover 3D Pop-Out Effect */
+.popout-text {
+    font-size: 50px;
+    font-weight: bold;
+    color: #333;
+    transition: 0.3s;
+}
+
+.popout-text:hover {
+    transform: translateY(-10px);
+    color: #1da1f2;
+    text-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+
+    </style>
+ 
+	</style>
+
+  <script>
+    
+  </script>
+  
+</head>
+
+<body>
+<div class="page-wrapper">
+  <!-- Luxury Preloader -->
+  <div class="preloader">
+    <div class="luxury-loader-container">
+      <div class="luxury-loader-particle"></div>
+      <div class="luxury-loader-particle"></div>
+      <div class="luxury-loader-particle"></div>
+      <div class="luxury-loader-particle"></div>
+      <div class="luxury-loader-ring"></div>
+      <div class="luxury-loader-ring-2"></div>
+      <div class="luxury-loader-core">
+        <img src="images/logo-2.png" alt="Vistavilla" class="luxury-loader-logo">
+      </div>
+    </div>
+    <div class="luxury-loader-text">VISTAVILLA</div>
+    <div class="luxury-loader-subtitle">Where every view feels like home</div>
+    <div class="luxury-loader-progress">
+      <div class="luxury-loader-progress-bar"></div>
+    </div>
+  </div>
+
+  <style>
+          
+    .landing-page {
+      font-family: 'Poppins', sans-serif;
+text-align: center;
+color: #fff;
+}
+
+h1 {
+font-size: 3.5rem; /* Main heading size */
+text-transform: uppercase;
+font-weight: 600;
+animation: pop-up 1.5s ease-out forwards;
+opacity: 0; /* Initially hidden */
+}
+
+h3 {
+font-size: 1.5rem;
+font-style: italic;
+margin-top: -15px;
+animation: fade-in 2.5s ease-out forwards;
+opacity: 0; /* Initially hidden */
+}
+
+/* Keyframes for the pop-up effect */
+@keyframes pop-up {
+0% {
+transform: translateY(50px);
+opacity: 0;
+}
+100% {
+transform: translateY(0);
+opacity: 1;
+}
+}
+
+/* Keyframes for fade-in */
+@keyframes fade-in {
+0% {
+opacity: 0;
+transform: translateY(20px);
+}
+100% {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+/* Optional subtle shadow for text */
+h1, h3 {
+text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Styling for room block */
+.room-block {
+border: 3px solid #9e9e9e;
+padding: 30px; /* Adds more space inside the card */
+margin-top: 30px; /* Adds spacing at the top */
+margin-bottom: 30px; /* Adds spacing at the bottom */
+/* background: linear-gradient(45deg, #f8f9fa, #fefefd); Smooth gradient from light beige to tan */
+border-radius: 10px;
+box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+/* Subtle shadow for a lifted effect */
+}
+
+
+/* Image styling */
+.image-box img {
+border-radius: 8px;
+transition: transform 0.3s ease;
+}
+
+.room-block:hover .image-box img {
+transform: scale(1.05); /* Slight zoom on hover */
+}
+
+/* Content styling */
+.content-box {
+padding-top: 15px;
+padding-bottom: 15px;
+}
+
+.content-box .title a {
+font-size: 1.5rem;
+font-weight: bold;
+/* color: #333; */
+text-decoration: none;
+transition: color 0.3s ease;
+}
+
+.content-box .title a:hover {
+color: #000;
+}
+
+.price {
+display: block;
+margin-top: 10px;
+font-size: 2.1rem;
+/* color: #333; */
+font-weight: bold;
+}
+
+/* Caption Box and Button Styling */
+.box-caption {
+margin-top: 20px;
+}
+
+.book-btn {
+background-color: #000;
+color: white;
+padding: 10px 20px;
+border-radius: 5px;
+text-decoration: none;
+font-weight: bold;
+transition: background-color 0.3s ease;
+}
+
+.book-btn:hover {
+background-color: #000;
+}
+
+/* Icon links */
+.bx-links {
+list-style: none;
+padding: 0;
+display: flex;
+gap: 15px;
+}
+
+.bx-links li a {
+color: #333;
+font-size: 1.2rem;
+transition: color 0.3s ease;
+}
+
+.bx-links li a:hover {
+color: #333;
+}
+
+@media (max-width: 576px) {
+.row{
+padding-left: 20px;
+}
+.sec-title h2{
+line-height: 1;
+}
+
+
+
+}
+
+  </style>
+
+  <!-- Main Header-->
+
+  <%- include('partials/header', { title: 'Vistavilla Apartment',activeMarquees:activeMarquees }) %>
+	<!--End Main Header -->
+
+  <!-- Modern Hero Carousel Section -->
+  <section class="modern-hero-carousel">
+    <!-- Carousel Slides -->
+    <div class="hero-carousel-slides">
+      <% if (pkgs && pkgs.length > 0) { %>
+        <% pkgs.slice(0, 5).forEach((category, index) => { %>
+          <% if (category.picture && category.picture.length > 0) { %>
+            <div class="hero-slide <%= index === 0 ? 'active' : '' %>" style="background-image: url('<%= category.picture[0] %>');">
+              <div class="hero-slide-overlay"></div>
+            </div>
+          <% } %>
+        <% }); %>
+      <% } %>
+    </div>
+
+    <!-- Hero Content (Centered) -->
+    <div class="hero-carousel-content">
+      <div class="hero-logo-wrapper">
+        <img src="images/logo-2.png" alt="Vistavilla Apartment" class="hero-logo">
+      </div>
+      <div class="hero-text-content">
+        <div class="hero-badge">
+          <i class="fas fa-star"></i>
+          <span>Rated #1 Apartment in Lagos</span>
+        </div>
+        <h1 class="hero-main-title">
+          <span class="hero-title-line">Experience Luxury Living</span>
+          <span class="hero-title-line">in the Heart of Lagos</span>
+        </h1>
+        <p class="hero-tagline">Where every view feels like home</p>
+      </div>
+    </div>
+
+    <!-- Carousel Navigation -->
+    <button class="hero-carousel-btn hero-carousel-prev" id="heroPrev">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="hero-carousel-btn hero-carousel-next" id="heroNext">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Carousel Indicators -->
+    <div class="hero-carousel-indicators" id="heroIndicators">
+      <% if (pkgs && pkgs.length > 0) { %>
+        <% pkgs.slice(0, 5).forEach((category, index) => { %>
+          <% if (category.picture && category.picture.length > 0) { %>
+            <button class="hero-indicator <%= index === 0 ? 'active' : '' %>" data-slide="<%= index %>"></button>
+          <% } %>
+        <% }); %>
+      <% } %>
+    </div>
+  </section>
+
+  <!-- Modern Search Section (Booking.com Style) -->
+  <section class="modern-search-section">
+    <div class="modern-search-container">
+      <div class="modern-search-card">
+        <h2 class="modern-search-card-title">Search for available rooms</h2>
+        <form id="bookingForm" class="modern-search-form">
+          <div class="modern-form-group">
+            <label class="modern-form-label">
+              <i class="fas fa-calendar-alt"></i>
+              Check-in
+            </label>
+            <input required class="modern-form-input date-pick checkininput" type="text" placeholder="Add date" />
+          </div>
+
+          <div class="modern-form-group">
+            <label class="modern-form-label">
+              <i class="fas fa-calendar-alt"></i>
+              Check-out
+            </label>
+            <input required class="modern-form-input date-pick checkoutinput" type="text" placeholder="Add date" />
+          </div>
+
+          <div class="modern-form-group">
+            <label class="modern-form-label">
+              <i class="fas fa-bed"></i>
+              Room Type
+            </label>
+            <select required class="modern-form-select checkout-form2">
+              <option value="">Select room type</option>
+              <% pkgs.forEach(pkg => { %>
+                <% if (pkg && pkg._id && pkg.category_name) { %>
+                  <option value="<%= pkg._id %>"><%= pkg.category_name %></option>
+                <% } %>
+              <% }); %>
+            </select>
+          </div>
+
+          <button type="submit" class="modern-search-btn" id="checkAvailability">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modern Features Section -->
+  <section class="modern-features-section">
+    <div class="modern-features-container">
+      <div class="modern-features-header">
+        <h2 class="modern-features-title">Why choose Vistavilla Apartment?</h2>
+        <p class="modern-features-subtitle">Experience the best of Lagos hospitality</p>
+      </div>
+
+      <div class="modern-features-grid">
+        <div class="modern-feature-card">
+          <div class="modern-feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 class="modern-feature-card-title">Safe & Secure</h3>
+          <p class="modern-feature-card-text">24/7 security with CCTV surveillance and secure access control for your peace of mind.</p>
+        </div>
+
+        <div class="modern-feature-card">
+          <div class="modern-feature-icon">
+            <i class="fas fa-wifi"></i>
+          </div>
+          <h3 class="modern-feature-card-title">Free High-Speed WiFi</h3>
+          <p class="modern-feature-card-text">Stay connected with complimentary high-speed internet throughout your stay.</p>
+        </div>
+
+        <div class="modern-feature-card">
+          <div class="modern-feature-icon">
+            <i class="fas fa-concierge-bell"></i>
+          </div>
+          <h3 class="modern-feature-card-title">24/7 Room Service</h3>
+          <p class="modern-feature-card-text">Round-the-clock service to ensure your comfort at any time of day or night.</p>
+        </div>
+
+        <div class="modern-feature-card">
+          <div class="modern-feature-icon">
+            <i class="fas fa-credit-card"></i>
+          </div>
+          <h3 class="modern-feature-card-title">Secure Payment</h3>
+          <p class="modern-feature-card-text">Safe and encrypted online payment system for hassle-free bookings.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modern About Section (Luxury Design) -->
+  <section class="modern-about-section">
+    <div class="modern-about-container">
+      <div class="modern-about-content">
+        <span class="section-badge">About Vistavilla Apartment</span>
+        <div class="luxury-divider luxury-divider-left"></div>
+        <h2 class="text-shadow-luxury">Most Safe & Rated <span class="luxury-gradient-text">Luxury Apartment</span> in Lagos</h2>
+        <p class="luxury-text">Discover the top-rated and safest apartment in Lagos, where comfort meets security. Experience exceptional hospitality, world-class amenities, and a commitment to guest safety that sets us apart.</p>
+        <p class="luxury-text">Enjoy peace of mind during your stay, knowing you're in an apartment with a reputation for excellence and the highest standards of service in Lagos. Every detail is crafted to ensure your comfort and satisfaction.</p>
+
+        <div class="modern-about-stats">
+          <div class="modern-stat-item">
+            <span class="modern-stat-number" data-suffix="+">500</span>
+            <span class="modern-stat-label">Happy Guests</span>
+          </div>
+          <div class="modern-stat-item">
+            <span class="modern-stat-number">4.9</span>
+            <span class="modern-stat-label">Average Rating</span>
+          </div>
+          <div class="modern-stat-item">
+            <span class="modern-stat-number" data-suffix="+">15</span>
+            <span class="modern-stat-label">Luxury Rooms</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modern-about-images">
+        <div class="modern-about-image hover-lift">
+          <img src="https://res.cloudinary.com/bada/image/upload/v1732986602/wishmewell/IMG_5260_Large_nvybtq.png" alt="Vistavilla Apartment">
+        </div>
+        <div class="modern-about-image hover-lift">
+          <img src="https://res.cloudinary.com/bada/image/upload/v1732986711/wishmewell/IMG_5437_Large_h7ibuq.png" alt="Vistavilla Apartment Room">
+        </div>
+        <div class="modern-about-image hover-lift">
+          <img src="https://res.cloudinary.com/bada/image/upload/v1732987151/wishmewell/IMG_5735_Large_hlnzyr.png" alt="Vistavilla Apartment Interior">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Room Categories Section (NEW) -->
+  <section class="luxury-categories-section">
+    <div class="luxury-categories-container">
+      <div class="modern-section-header">
+        <span class="section-badge">Our Room Collection</span>
+        <div class="luxury-divider"></div>
+        <h2 class="modern-section-title">Explore Our <span class="luxury-gradient-text">Luxury Suites</span></h2>
+        <p class="modern-section-subtitle">Discover the perfect accommodation for your stay in Lagos</p>
+      </div>
+
+      <div class="luxury-categories-grid">
+        <% if (pkgs && pkgs.length > 0) { %>
+          <% pkgs.slice(0, 6).forEach((category, index) => { %>
+            <div class="luxury-category-card" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
+              <div class="luxury-category-image">
+                <% if (category.picture && category.picture.length > 0) { %>
+                  <img src="<%= category.picture[0] %>" alt="<%= category.category_name %>">
+                <% } else { %>
+                  <img src="https://res.cloudinary.com/bada/image/upload/v1732986602/wishmewell/IMG_5260_Large_nvybtq.png" alt="<%= category.category_name %>">
+                <% } %>
+                <div class="luxury-category-overlay">
+                  <a href="/rooms#room-<%= category._id %>" class="luxury-view-details">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>View Details</span>
+                  </a>
+                </div>
+              </div>
+              <div class="luxury-category-content">
+                <div class="luxury-category-header">
+                  <h3 class="luxury-category-title"><%= category.category_name %></h3>
+                  <div class="luxury-category-type"><%= category.room_type %></div>
+                </div>
+                <div class="luxury-category-features">
+                  <div class="luxury-feature-item">
+                    <i class="fas fa-users"></i>
+                    <span><%= category.number_of_guests %> Guests</span>
+                  </div>
+                  <div class="luxury-feature-item">
+                    <i class="fas fa-bed"></i>
+                    <span><%= category.num_beds %> Bed<%= category.num_beds > 1 ? 's' : '' %></span>
+                  </div>
+                  <% if (category.has_wifi) { %>
+                    <div class="luxury-feature-item">
+                      <i class="fas fa-wifi"></i>
+                      <span>Free WiFi</span>
+                    </div>
+                  <% } %>
+                  <% if (category.has_ac) { %>
+                    <div class="luxury-feature-item">
+                      <i class="fas fa-snowflake"></i>
+                      <span>AC</span>
+                    </div>
+                  <% } %>
+                </div>
+                <div class="luxury-category-footer">
+                  <div class="luxury-category-price">
+                    <span class="luxury-price-label">From</span>
+                    <span class="luxury-price-amount">₦<%= Number(category.price).toLocaleString() %></span>
+                    <span class="luxury-price-period">/night</span>
+                  </div>
+                  <a href="/rooms#room-<%= category._id %>" class="luxury-book-btn">
+                    <span>Book Now</span>
+                    <i class="fas fa-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="no-rooms-message">
+            <i class="fas fa-bed"></i>
+            <p>No rooms available at the moment. Please check back later.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <% if (pkgs && pkgs.length > 6) { %>
+        <div class="luxury-view-all">
+          <a href="/rooms" class="luxury-view-all-btn">
+            <span>View All Rooms</span>
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <!-- Amenities Section (NEW) -->
+  <section class="luxury-amenities-section">
+    <div class="luxury-amenities-container">
+      <div class="modern-section-header">
+        <span class="section-badge">Premium Amenities</span>
+        <div class="luxury-divider"></div>
+        <h2 class="modern-section-title">World-Class <span class="luxury-gradient-text">Facilities</span></h2>
+        <p class="modern-section-subtitle">Everything you need for a comfortable and memorable stay</p>
+      </div>
+
+      <div class="luxury-amenities-grid">
+        <div class="luxury-amenity-card">
+          <div class="luxury-amenity-icon">
+            <i class="fas fa-wifi"></i>
+          </div>
+          <h4 class="luxury-amenity-title">High-Speed WiFi</h4>
+          <p class="luxury-amenity-text">Stay connected with complimentary high-speed internet throughout the property</p>
+        </div>
+
+        <div class="luxury-amenity-card">
+          <div class="luxury-amenity-icon">
+            <i class="fas fa-car"></i>
+          </div>
+          <h4 class="luxury-amenity-title">Free Parking</h4>
+          <p class="luxury-amenity-text">Secure parking space available for all guests at no additional cost</p>
+        </div>
+
+        <div class="luxury-amenity-card">
+          <div class="luxury-amenity-icon">
+            <i class="fas fa-concierge-bell"></i>
+          </div>
+          <h4 class="luxury-amenity-title">24/7 Concierge</h4>
+          <p class="luxury-amenity-text">Round-the-clock service to assist with all your needs and requests</p>
+        </div>
+
+        <div class="luxury-amenity-card">
+          <div class="luxury-amenity-icon">
+            <i class="fas fa-utensils"></i>
+          </div>
+          <h4 class="luxury-amenity-title">Room Service</h4>
+          <p class="luxury-amenity-text">Delicious meals delivered to your room at your convenience</p>
+        </div>
+
+        <div class="luxury-amenity-card">
+          <div class="luxury-amenity-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h4 class="luxury-amenity-title">24/7 Security</h4>
+          <p class="luxury-amenity-text">Professional security personnel ensuring your safety at all times</p>
+        </div>
+
+        <div class="luxury-amenity-card">
+          <div class="luxury-amenity-icon">
+            <i class="fas fa-broom"></i>
+          </div>
+          <h4 class="luxury-amenity-title">Housekeeping</h4>
+          <p class="luxury-amenity-text">Daily housekeeping service to keep your room pristine</p>
+        </div>
+
+        <div class="luxury-amenity-card">
+          <div class="luxury-amenity-icon">
+            <i class="fas fa-dumbbell"></i>
+          </div>
+          <h4 class="luxury-amenity-title">Fitness Center</h4>
+          <p class="luxury-amenity-text">State-of-the-art gym with modern equipment for your workout needs</p>
+        </div>
+
+        <div class="luxury-amenity-card">
+          <div class="luxury-amenity-icon">
+            <i class="fas fa-swimming-pool"></i>
+          </div>
+          <h4 class="luxury-amenity-title">Swimming Pool</h4>
+          <p class="luxury-amenity-text">Refreshing pool area perfect for relaxation and leisure</p>
+        </div>
+
+        <div class="luxury-amenity-card">
+          <div class="luxury-amenity-icon">
+            <i class="fas fa-billiard-ball"></i>
+          </div>
+          <h4 class="luxury-amenity-title">Snooker Lounge</h4>
+          <p class="luxury-amenity-text">Dedicated snooker room for entertainment and friendly competition</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section (Hidden - Using Modern Version Above) -->
+  <section class="about-section" style="display: none !important;">
+    <div class="auto-container">
+      <div class="row">
+        <!-- Content Column -->
+        <div class="content-column col-xl-6 col-lg-6 order-lg-2 wow fadeInRight" data-wow-delay="600ms">
+          <div class="inner-column">
+            <div class="sec-title">
+              <span class="sub-title">Vistavilla Apartment</span>
+              <h2>Most Safe & Rated <br>Apartment in Lagos.</h2>
+              <div class="text">Discover the top-rated and safest apartment in Lagos, where comfort meets security. Experience exceptional hospitality, world-class amenities, and a commitment to guest safety. Enjoy peace of mind during your stay, knowing you're in a apartment with a reputation for excellence and the highest standards of service in Lagos.<br></div>
+            </div>
+            <div class="outer-box">
+              <div class="info-block">
+                <div class="inner">
+                  <div class="icon-box"><i class="flaticon-light"></i></div>
+                  <h4 class="title">The Best Lighting</h4>
+                </div>
+              </div>
+              <div class="info-block">
+                <div class="inner">
+                  <div class="icon-box"><i style="font-size: 40px" class="fal fa-user-group"></i></div>
+                  <h4 class="title">Simple User Experience </h4>
+                </div>
+              </div>
+            </div>
+            <div class="btn-box">
+              <a href="/page-contact" class="theme-btn btn-style-one"><span class="btn-title">Discover More</span></a>
+              <div class="contact-info">
+                <div class="icon-box"><i class="flaticon-customer-service"></i></div>
+                <span>Booking Now</span>
+                <h4 class="title">+2348085021450</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Column -->
+        <div class="image-column col-xl-6 col-lg-6">
+          <div class="inner-column wow fadeInLeft" data-wow-delay="400ms">
+            <figure class="image-1 overlay-anim wow fadeInUp"><img style="" src="https://res.cloudinary.com/bada/image/upload/v1732986602/wishmewell/IMG_5260_Large_nvybtq.png" alt=""></figure>
+            <figure class="image-2 overlay-anim wow fadeInLeft"><img src="https://res.cloudinary.com/bada/image/upload/v1732986711/wishmewell/IMG_5437_Large_h7ibuq.png" alt=""></figure>
+            <!-- <div class="btn-box">
+              <a href="https://www.youtube.com/watch?v=Fvae8nxzVz4" class="play-now-two" data-fancybox="gallery" data-caption="">
+                <i class="icon fa fa-play" aria-hidden="true"></i>
+                <span class="ripple"></span>
+              </a>
+            </div> -->
+            <!-- <div class="exp-box bounce-y"> -->
+              <!-- <figure class=" overlay-anim wow fadeInLeft"><img height="10px" width="50px" src="images/logo-2.png" alt=""></figure> -->
+              <!-- <h4 class="title">Luxury Room</h4> -->
+              <!-- <div class="text">Wish me well, and I'll wish you the same—a little positivity goes a long way!</div> -->
+            <!-- </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--Emd About Section -->
+
+  <!-- Luxury Rooms Section (Hidden - Using Modern Version Below) -->
+  <section class="rooms-section pb-100" style="display: none !important;">
+    <div class="auto-container">
+      <div class="sec-title text-center wow fadeInUp" style="margin-bottom: 3rem;">
+        <span class="sub-title" style="color: #6b6b6b; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">Vistavilla Apartment Rooms</span>
+        <h2 style="font-size: 2.5rem; font-weight: 600; color: #2c2c2c; margin-top: 1rem; letter-spacing: 1px;">Luxury Rooms & Suites</h2>
+      </div>
+    
+        <!-- room-block -->
+        <div class="row" style="display: flex;flex-wrap: wrap;justify-content: center;">
+          <style>
+      /* Ensure the row uses flex and centers its content */
+
+/* Ensure each room-block column is centered */
+
+
+/* Optional: Add styles to images for better visual alignment */
+.image-2 img {
+  width: 100%;
+  height: 500px;
+  object-fit: cover; /* Ensures the image covers the area without distortion */
+}
+
+/* Make sure images are responsive on small screens */
+@media (max-width: 576px) {
+  .image-2 img {
+    margin-inline: 10px;
+  }
+}
+
+          </style>
+
+
+
+
+          
+  <!-- Modern Rooms Section (Booking.com Style) -->
+  <section class="modern-rooms-section">
+    <div class="modern-section-header">
+      <h2 class="modern-section-title">Homes guests love</h2>
+      <p class="modern-section-subtitle">Explore our most popular accommodations</p>
+    </div>
+
+    <div class="modern-rooms-grid">
+      <% pkgs.forEach((pkg, index) => { %>
+        <% if (pkg && pkg.category_name && pkg._id) { %>
+        <!-- Modern Room Card -->
+        <div class="modern-room-card">
+          <!-- Image Section -->
+          <div class="modern-room-image-wrapper">
+            <% if (pkg.picture && pkg.picture.length > 0) { %>
+              <img class="modern-room-image" src="<%= pkg.picture[0] %>" alt="<%= pkg.category_name || 'Room' %>">
+            <% } else { %>
+              <img class="modern-room-image" src="images/default-room.jpg" alt="<%= pkg.category_name || 'Room' %>">
+            <% } %>
+
+            <% if (pkg.hasSpecialPrice) { %>
+              <div class="modern-room-badge">
+                <i class="fas fa-star"></i> Special Deal
+              </div>
+            <% } %>
+          </div>
+
+          <!-- Content Section -->
+          <div class="modern-room-content">
+            <h3 class="modern-room-title"><%= pkg.category_name || 'Room' %></h3>
+
+            <!-- Features -->
+            <div class="modern-room-features">
+              <div class="modern-feature-item">
+                <i class="fas fa-wifi"></i>
+                <span>Free WiFi</span>
+              </div>
+              <div class="modern-feature-item">
+                <i class="fas fa-bed"></i>
+                <span>Comfortable Bed</span>
+              </div>
+              <div class="modern-feature-item">
+                <i class="fas fa-bath"></i>
+                <span>Private Bath</span>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <p class="modern-room-description">
+              Experience comfort and luxury in our <%= pkg.category_name || 'room' %>. Perfect for your stay in Lagos.
+            </p>
+
+            <!-- Footer with Price and Button -->
+            <div class="modern-room-footer">
+              <div class="modern-room-price">
+                <% if (pkg.hasSpecialPrice) { %>
+                  <div style="display: flex; flex-direction: column;">
+                    <span style="text-decoration: line-through; color: #9e9e9e; font-size: 14px;">
+                      ₦<%= (pkg.originalPrice || 0).toLocaleString() %>
+                    </span>
+                    <div>
+                      <span class="modern-price-amount">₦<%= (pkg.price || 0).toLocaleString() %></span>
+                      <span class="modern-price-period">/night</span>
+                    </div>
+                  </div>
+                <% } else { %>
+                  <div>
+                    <span class="modern-price-label">Starting from</span>
+                    <div>
+                      <span class="modern-price-amount">₦<%= (pkg.price || 0).toLocaleString() %></span>
+                      <span class="modern-price-period">/night</span>
+                    </div>
+                  </div>
+                <% } %>
+              </div>
+
+              <a href="/rooms?id=<%= pkg._id %>" class="modern-view-btn">
+                See availability
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      <% }); %>
+    </div>
+  </section>
+
+          
+        </div>
+        
+        
+        
+      </div>
+    </div>
+  </section>
+  <!-- End rooms-section -->
+
+  <!-- Testimonials Section (NEW) -->
+  <section class="luxury-testimonials-section">
+    <div class="luxury-testimonials-container">
+      <div class="modern-section-header">
+        <span class="section-badge">Guest Reviews</span>
+        <div class="luxury-divider"></div>
+        <h2 class="modern-section-title">What Our <span class="luxury-gradient-text">Guests Say</span></h2>
+        <p class="modern-section-subtitle">Real experiences from our valued guests</p>
+      </div>
+
+      <div class="luxury-testimonials-grid">
+        <div class="luxury-testimonial-card">
+          <div class="luxury-testimonial-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p class="luxury-testimonial-text">"Absolutely stunning! The room was immaculate, the staff were incredibly friendly, and the location was perfect. Vistavilla exceeded all my expectations. I'll definitely be returning on my next visit to Lagos."</p>
+          <div class="luxury-testimonial-author">
+            <div class="luxury-author-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="luxury-author-info">
+              <h5 class="luxury-author-name">Adebayo Johnson</h5>
+              <span class="luxury-author-location">Lagos, Nigeria</span>
+            </div>
+          </div>
+          <div class="luxury-testimonial-quote">
+            <i class="fas fa-quote-right"></i>
+          </div>
+        </div>
+
+        <div class="luxury-testimonial-card">
+          <div class="luxury-testimonial-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p class="luxury-testimonial-text">"The perfect blend of luxury and comfort. From the moment I checked in, I felt like royalty. The amenities are top-notch and the attention to detail is remarkable. Highly recommended!"</p>
+          <div class="luxury-testimonial-author">
+            <div class="luxury-author-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="luxury-author-info">
+              <h5 class="luxury-author-name">Sarah Williams</h5>
+              <span class="luxury-author-location">London, UK</span>
+            </div>
+          </div>
+          <div class="luxury-testimonial-quote">
+            <i class="fas fa-quote-right"></i>
+          </div>
+        </div>
+
+        <div class="luxury-testimonial-card">
+          <div class="luxury-testimonial-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p class="luxury-testimonial-text">"Best apartment in Lagos! The security is excellent, rooms are spacious and modern, and the customer service is outstanding. I stayed for a week and felt completely at home. Worth every naira!"</p>
+          <div class="luxury-testimonial-author">
+            <div class="luxury-author-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="luxury-author-info">
+              <h5 class="luxury-author-name">Chioma Okafor</h5>
+              <span class="luxury-author-location">Abuja, Nigeria</span>
+            </div>
+          </div>
+          <div class="luxury-testimonial-quote">
+            <i class="fas fa-quote-right"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Section (NEW) -->
+  <section class="luxury-gallery-section" id="gallery">
+    <div class="luxury-gallery-container">
+      <div class="modern-section-header">
+        <span class="section-badge">Our Gallery</span>
+        <div class="luxury-divider"></div>
+        <h2 class="modern-section-title">Explore Our <span class="luxury-gradient-text">Stunning Spaces</span></h2>
+        <p class="modern-section-subtitle">Take a visual tour of our luxurious rooms and facilities</p>
+      </div>
+
+      <div class="luxury-gallery-grid-clean">
+        <% if (pkgs && pkgs.length > 0) { %>
+          <%
+            // Collect exactly 12 images from different categories
+            let galleryImages = [];
+            let categoryImageMap = new Map();
+
+            // First, collect images grouped by category
+            pkgs.forEach(pkg => {
+              if (pkg.picture && pkg.picture.length > 0) {
+                if (!categoryImageMap.has(pkg.category_name)) {
+                  categoryImageMap.set(pkg.category_name, []);
+                }
+                pkg.picture.forEach(img => {
+                  if (img) {
+                    categoryImageMap.get(pkg.category_name).push({
+                      url: img,
+                      title: pkg.category_name,
+                      type: pkg.room_type
+                    });
+                  }
+                });
+              }
+            });
+
+            // Now distribute 12 images across categories
+            let categories = Array.from(categoryImageMap.keys());
+            let currentCategoryIndex = 0;
+            let imageIndexPerCategory = new Map();
+            categories.forEach(cat => imageIndexPerCategory.set(cat, 0));
+
+            while (galleryImages.length < 12 && categories.length > 0) {
+              let category = categories[currentCategoryIndex % categories.length];
+              let images = categoryImageMap.get(category);
+              let imageIndex = imageIndexPerCategory.get(category);
+
+              if (imageIndex < images.length) {
+                galleryImages.push(images[imageIndex]);
+                imageIndexPerCategory.set(category, imageIndex + 1);
+              }
+
+              currentCategoryIndex++;
+
+              // Remove category if all images used
+              if (imageIndexPerCategory.get(category) >= images.length) {
+                categories = categories.filter(c => c !== category);
+              }
+            }
+          %>
+
+          <% galleryImages.forEach((img, index) => { %>
+            <div class="luxury-gallery-item-clean" data-index="<%= index %>">
+              <div class="luxury-gallery-card-clean">
+                <div class="gallery-image-wrapper">
+                  <img src="<%= img.url %>" alt="<%= img.title %>" class="gallery-clean-image">
+                </div>
+                <div class="luxury-gallery-overlay-clean">
+                  <div class="luxury-gallery-content-clean">
+                    <h4 class="luxury-gallery-title-clean"><%= img.title %></h4>
+                    <p class="luxury-gallery-type-clean"><%= img.type %></p>
+                    <a href="/gallery" class="luxury-gallery-view-btn-clean">
+                      <i class="fas fa-images"></i>
+                      <span>View Gallery</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        <% } %>
+      </div>
+
+      <div class="luxury-gallery-cta">
+        <a href="/gallery" class="luxury-gallery-btn">
+          <span>View Full Gallery</span>
+          <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us Section (NEW) -->
+  <section class="luxury-why-choose-section">
+    <div class="luxury-why-choose-container">
+      <div class="modern-section-header">
+        <span class="section-badge">Why Choose Us</span>
+        <div class="luxury-divider"></div>
+        <h2 class="modern-section-title">Why Vistavilla is <span class="luxury-gradient-text">Your Best Choice</span></h2>
+        <p class="modern-section-subtitle">Discover what makes us the premier apartment in Lagos</p>
+      </div>
+
+      <div class="luxury-why-choose-grid">
+        <div class="luxury-why-choose-card">
+          <div class="luxury-why-choose-icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <h4 class="luxury-why-choose-title">Prime Location</h4>
+          <p class="luxury-why-choose-text">Located in the heart of Lagos Island, close to business districts, shopping centers, and entertainment venues.</p>
+        </div>
+
+        <div class="luxury-why-choose-card">
+          <div class="luxury-why-choose-icon">
+            <i class="fas fa-gem"></i>
+          </div>
+          <h4 class="luxury-why-choose-title">Luxury Interiors</h4>
+          <p class="luxury-why-choose-text">Elegantly designed rooms with premium furnishings, modern amenities, and attention to every detail.</p>
+        </div>
+
+        <div class="luxury-why-choose-card">
+          <div class="luxury-why-choose-icon">
+            <i class="fas fa-headset"></i>
+          </div>
+          <h4 class="luxury-why-choose-title">24/7 Support</h4>
+          <p class="luxury-why-choose-text">Round-the-clock customer service and concierge to ensure your comfort and satisfaction at all times.</p>
+        </div>
+
+        <div class="luxury-why-choose-card">
+          <div class="luxury-why-choose-icon">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <h4 class="luxury-why-choose-title">Best Value</h4>
+          <p class="luxury-why-choose-text">Competitive pricing with no hidden fees. Get the best luxury experience at the most reasonable rates.</p>
+        </div>
+
+        <div class="luxury-why-choose-card">
+          <div class="luxury-why-choose-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h4 class="luxury-why-choose-title">Safe & Secure</h4>
+          <p class="luxury-why-choose-text">Advanced security systems, professional guards, and secure access control for your peace of mind.</p>
+        </div>
+
+        <div class="luxury-why-choose-card">
+          <div class="luxury-why-choose-icon">
+            <i class="fas fa-utensils"></i>
+          </div>
+          <h4 class="luxury-why-choose-title">Dining Options</h4>
+          <p class="luxury-why-choose-text">In-room dining service with a variety of local and international cuisine options available.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action Section (NEW) - Marble Boxes Design -->
+  <section class="luxury-cta-section">
+    <div class="luxury-cta-overlay"></div>
+    <div class="luxury-cta-container">
+
+      <!-- Main Content Box - White Marble -->
+      <div class="marble-box marble-box-white">
+        <div class="marble-box-content">
+          <span class="luxury-cta-badge">
+            <i class="fas fa-crown"></i>
+            <span>Limited Time Offer</span>
+          </span>
+          <h2 class="luxury-cta-title">Ready to Experience <span class="luxury-gradient-text-dark">Luxury Living?</span></h2>
+          <p class="luxury-cta-subtitle-dark">Book your stay today and enjoy exclusive benefits including complimentary breakfast, free WiFi, and 24/7 concierge service</p>
+          <div class="luxury-cta-buttons">
+            <a href="/rooms" class="luxury-cta-btn primary">
+              <span>Book Your Stay</span>
+              <i class="fas fa-arrow-right"></i>
+            </a>
+            <a href="/page-contact" class="luxury-cta-btn secondary">
+              <i class="fas fa-phone"></i>
+              <span>Contact Us</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Boxes Grid - Black & White Marble -->
+      <div class="marble-boxes-grid">
+        <div class="marble-box marble-box-black">
+          <div class="marble-box-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <h3 class="marble-box-title">Best Price Guarantee</h3>
+          <p class="marble-box-text">We guarantee the lowest prices for your luxury stay</p>
+        </div>
+
+        <div class="marble-box marble-box-white">
+          <div class="marble-box-icon marble-icon-dark">
+            <i class="fas fa-times-circle"></i>
+          </div>
+          <h3 class="marble-box-title marble-title-dark">Free Cancellation</h3>
+          <p class="marble-box-text marble-text-dark">Cancel anytime up to 24 hours before check-in</p>
+        </div>
+
+        <div class="marble-box marble-box-black">
+          <div class="marble-box-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h3 class="marble-box-title">Instant Confirmation</h3>
+          <p class="marble-box-text">Get immediate booking confirmation via email</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Gallery Modal -->
+  <div class="luxury-gallery-modal" id="galleryModal">
+    <div class="luxury-gallery-modal-content">
+      <button class="luxury-gallery-modal-close" onclick="closeGalleryModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      <img src="" alt="" id="galleryModalImage">
+      <div class="luxury-gallery-modal-title" id="galleryModalTitle"></div>
+    </div>
+  </div>
+
+  <script>
+    function openGalleryModal(imageUrl, title) {
+      const modal = document.getElementById('galleryModal');
+      const modalImage = document.getElementById('galleryModalImage');
+      const modalTitle = document.getElementById('galleryModalTitle');
+
+      modalImage.src = imageUrl;
+      modalTitle.textContent = title;
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeGalleryModal() {
+      const modal = document.getElementById('galleryModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal on backdrop click
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('galleryModal');
+      if (modal) {
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal) {
+            closeGalleryModal();
+          }
+        });
+      }
+    });
+  </script>
+
+  <!-- service-section (Hidden - Using Modern Features Above) -->
+  <section class="service-section" style="display: none !important;">
+    <div class="auto-container">
+      <div class="sec-title text-center wow slideInUp">
+        <span class="sub-title">Vistavilla Apartment SERVICES</span>
+        <h2>Apartment Facilities</h2>
+      </div>
+      <div class="row">
+        <!-- service-block -->
+        <div class="service-block col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box wow fadeIn" data-wow-delay="100ms">
+            <div class="icon-box wow fadeInUp"><i class="flaticon-bed-2"></i></div>
+            <div class="content-box">
+              <h4 class="title"><a >Room Service</a></h4>
+              <div class="text">we provide 24/7 room service to ensure your stay is as comfortable and enjoyable as possible. Whether you’re craving a delicious meal, a refreshing drink, or anything else you need, our team is here to assist.</div>
+            </div>
+          </div>
+        </div>
+        <!-- service-block -->
+        <div class="service-block col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box wow fadeIn" data-wow-delay="200ms">
+            <div class="icon-box wow fadeInUp"><i class="fa fa-credit-card"></i> </div>
+            <div class="content-box">
+              <h4 class="title"><a >Secure Online Payment</a></h4>
+              <div class="text">Book your stay with confidence! Our secure online payment system ensures that your transaction is protected, encrypted, and processed smoothly. Whether you're securing our apartment for a weekend getaway or an extended stay, rest assured that your payment details are safe with us.</div>
+            </div>
+          </div>
+        </div>
+        <!-- service-block -->
+        <div class="service-block col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box wow fadeIn" data-wow-delay="300ms">
+            <div class="icon-box wow fadeInUp"><i class="flaticon-wifi"></i></div>
+            <div class="content-box">
+              <h4 class="title"><a >Fibre Internet</a></h4>
+              <div class="text">Stay connected with our high-speed fibre internet, available throughout the apartment. Whether you’re working remotely, streaming your favorite shows, or staying in touch with loved ones, our reliable internet ensures you’re always connected.</div>
+            </div>
+          </div>
+        </div>
+        <!-- service-block -->
+        <!-- <div class="service-block col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box wow fadeIn" data-wow-delay="400ms">
+            <div class="icon-box wow fadeInUp"><i class="flaticon-breakfast"></i></div>
+            <div class="content-box">
+              <h4 class="title"><a >Breakfast</a></h4>
+              <div class="text">Orci varius natoque penatibus magnis ders disney parturient ridiculus</div>
+            </div>
+          </div>
+        </div> -->
+        <!-- service-block -->
+        <!-- <div class="service-block col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box wow fadeIn" data-wow-delay="500ms">
+            <div class="icon-box wow fadeInUp">
+              <img src="./images/resource/snooker.png" alt="" srcset="">
+            </div>
+            <div class="content-box">
+              <h4 class="title"><a >Snooker</a></h4>
+              <div class="text">
+                Relax and enjoy a game of snooker in our dedicated snooker lounge. Whether you're a seasoned player or just looking for a fun way to unwind, our snooker facilities provide the perfect setting for friendly competition.
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <!-- service-block -->
+        <!-- <div class="service-block col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box wow fadeIn" data-wow-delay="600ms">
+            <div class="icon-box wow fadeInUp"><i class="flaticon-car"></i></div>
+            <div class="content-box">
+              <h4 class="title"><a >Parking Space</a></h4>
+              <div class="text">we provide safe and convenient parking options for all our guests. Whether you're traveling by car, SUV, or motorbike, our secure parking facilities ensure peace of mind throughout your stay.</div>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </section>
+  <!-- End service-section -->
+
+  <!-- video-section (Hidden) -->
+  <section class="video-section" style="display: none !important;">
+    <div class="bg bg-image" style="background-image: url(images/background/1.jpg);"></div>
+    <div class="auto-container">
+      <div class="row">
+        <div class="content-column col-lg-9 col-md-12 col-sm-12">
+          <div class="inner-column">
+            <div class="sec-title-two light wow slideInUp">
+              <span class="sub-title">Promotional Video</span>
+              <h2> Get To know us better</h2>
+              <div class="text">Watch our promotional video to know more about our services and facilities.</div>
+            </div>
+          </div>
+        </div>
+        <div class="btn-column col-lg-3 col-md-12 col-sm-12">
+          <div class="inner-column">
+            <a href="https://www.youtube.com/watch?v=Fvae8nxzVz4" class="play-now-two" data-fancybox="gallery" data-caption="">
+              <!-- <img src="images/icons/play.png" alt="" /> -->
+                <i class="fa fa-play"></i>
+              </a>
+              <span class="ripple"></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End video section -->
+
+  <!-- feature-section -->
+  <!-- <section class="feature-section">
+    <div class="auto-container">
+      <div class="row feature-row g-0 wow slideInUp" data-wow-delay="100ms">
+        <div class="image-column col-lg-4">
+          <div class="inner-column">
+            <div class="image-box">
+              <figure class="image overlay-anim"><img src="images/resource/feature-1.png" alt=""></figure>
+            </div>
+          </div>
+        </div>
+        <div class="content-column col-lg-8" >
+          <div class="inner-column">
+            <div class="content-box">
+              <div class="sec-title">
+                <span class="sub-title">MODERN</span>
+                <h2>Fitness Center</h2>
+                <div class="text">Restaurant inilla duiman at elit finibus viverra nec a  lacus themo the <br>nesudea seneoice misuscipit non sagie the fermen ziverra tristiue duru <br>the ivite dianne onen nivami acsestion augue artine.</div>
+              </div>
+              <a  class="theme-btn btn-style-one read-more">Discover More</a>
+              <figure class="image-2"><img src="images/resource/icon.png" alt=""></figure>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row feature-row g-0 wow slideInUp" data-wow-delay="200ms">
+        <div class="content-column col-lg-8">
+          <div class="inner-column">
+            <div class="content-box">
+              <div class="sec-title">
+                <span class="sub-title">DISCOVER</span>
+                <h2>The Restaurant</h2>
+                <div class="text">Restaurant inilla duiman at elit finibus viverra nec a 
+                lacus themo the <br>nesudea seneoice misuscipit non sagie the fermen
+                ziverra tristiue duru <br>the ivite dianne onen nivami acsestion augue artine.</div>
+              </div>
+              <a  class="theme-btn btn-style-one read-more">Discover More</a>
+              <figure class="image-2"><img src="images/resource/icon-2.png" alt=""></figure>
+            </div>
+          </div>
+        </div>
+        <div class="image-column col-lg-4">
+          <div class="inner-column">
+            <div class="image-box">
+              <figure class="image overlay-anim"><img src="images/resource/feature-2.png" alt=""></figure>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row feature-row g-0 wow slideInUp" data-wow-delay="300ms">
+       <div class="image-column col-lg-4">
+          <div class="inner-column">
+            <div class="image-box">
+              <figure class="image overlay-anim"><img src="images/resource/feature-3.jpg" alt=""></figure>
+            </div>
+          </div>
+        </div>
+        <div class="content-column col-lg-8">
+          <div class="inner-column">
+            <div class="content-box">
+              <div class="sec-title">
+                <span class="sub-title">EXPERIENCES</span>
+                <h2>Spa Center</h2>
+                <div class="text">Restaurant inilla duiman at elit finibus viverra nec a 
+                lacus themo the <br>nesudea seneoice misuscipit non sagie the fermen
+                ziverra tristiue duru <br>the ivite dianne onen nivami acsestion augue artine.</div>
+              </div>
+              <a  class="theme-btn btn-style-one read-more">Discover More</a>
+              <figure class="image-2"><img src="images/resource/icon-3.png" alt=""></figure>
+            </div> 
+          </div>
+        </div> 
+      </div>
+    </div>
+  </section>  -->
+  <!-- End feature section -->
+
+  <!-- testimonial-section -->
+  <!-- <section class="testimonial-section">
+    <div class="bg bg-image" style="background-image: url(images/background/testi-bg.jpg);"></div>
+    <div class="auto-container">
+      <div class="row">
+        <div class="col-lg-4 hide-on-tablet"></div>
+        <div class="testimonial-column col-lg-8 col-md-12">
+          <div class="inner-column">
+            <div class="sec-title light wow fadeInUp">
+              <span class="sub-title">What says for customer</span>
+              <h2> What Client's Say?</h2>
+            </div>
+            <div class="testimonial-slider wow fadeInUp">
+              <div class="testimonial-slide">
+                <div class="content-box">
+                  <div class="image-box" data-animation-in="fadeInLeft" data-delay-in="0.1">
+                    <figure class="thumb"><img src="images/resource/testi-1.jpg" alt=""></figure>
+                  </div>
+                  <div class="info-box">
+                    <ul class="rating-list" data-animation-in="fadeInUp" data-delay-in="0.2">
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                    </ul>
+                    <div class="text" data-animation-in="fadeInUp" data-delay-in="0.3">The utanislen quam nestibulum ac quame odion elementum sceisue
+                    the aucan. <br>Orci varius natoque penatibus
+                    et magnis disney parturient monte nascete ridiculus<br>
+                    mus nellen etesque habitant morbine.</div>
+                    <div class="auther-info" data-animation-in="fadeInUp" data-delay-in="0.4">
+                      <h4 class="title">Jackson Smith</h4>
+                      <span class="designation">Guest Review</span>
+                    </div>
+                    <div class="icon-box" data-animation-in="fadeInUp" data-delay-in="0.5"><figure class="image"><img src="images/resource/comas.png" alt=""></figure></div>
+                  </div>
+                </div>
+              </div>
+              <div class="testimonial-slide">
+                <div class="content-box">
+                  <div class="image-box" data-animation-in="fadeInLeft" data-delay-in="0.1">
+                    <figure class="thumb"><img src="images/resource/testi-1.jpg" alt=""></figure>
+                  </div>
+                  <div class="info-box">
+                    <ul class="rating-list" data-animation-in="fadeInUp" data-delay-in="0.2">
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                    </ul>
+                    <div class="text" data-animation-in="fadeInUp" data-delay-in="0.3">The utanislen quam nestibulum ac quame odion elementum sceisue
+                    the aucan. <br>Orci varius natoque penatibus
+                    et magnis disney parturient monte nascete ridiculus<br>
+                    mus nellen etesque habitant morbine.</div>
+                    <div class="auther-info" data-animation-in="fadeInUp" data-delay-in="0.4">
+                      <h4 class="title">Jackson Smith</h4>
+                      <span class="designation">Guest Review</span>
+                    </div>
+                    <div class="icon-box" data-animation-in="fadeInUp" data-delay-in="0.5"><figure class="image"><img src="images/resource/comas.png" alt=""></figure></div>
+                  </div>
+                </div>
+              </div>
+              <div class="testimonial-slide">
+                <div class="content-box">
+                  <div class="image-box" data-animation-in="fadeInLeft" data-delay-in="0.1">
+                    <figure class="thumb"><img src="images/resource/testi-1.jpg" alt=""></figure>
+                  </div>
+                  <div class="info-box">
+                    <ul class="rating-list" data-animation-in="fadeInUp" data-delay-in="0.2">
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                      <li><i class="fa-solid fa-star"></i></li>
+                    </ul>
+                    <div class="text" data-animation-in="fadeInUp" data-delay-in="0.3">The utanislen quam nestibulum ac quame odion elementum sceisue
+                    the aucan. <br>Orci varius natoque penatibus
+                    et magnis disney parturient monte nascete ridiculus<br>
+                    mus nellen etesque habitant morbine.</div>
+                    <div class="auther-info" data-animation-in="fadeInUp" data-delay-in="0.4">
+                      <h4 class="title">Jackson Smith</h4>
+                      <span class="designation">Guest Review</span>
+                    </div>
+                    <div class="icon-box" data-animation-in="fadeInUp" data-delay-in="0.5"><figure class="image"><img src="images/resource/comas.png" alt=""></figure></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> -->
+  <!-- End testimonial section -->
+
+  <!-- pricing-section-two -->
+ 
+  <!-- End pricing-section-two -->
+
+  <!-- Team Section -->
+  <!-- <section class="team-section">
+    <div class="auto-container">
+      <div class="sec-title text-center wow fadeInUp">
+        <span class="sub-title">Vistavilla Apartment team</span>
+        <h2>Expert Team Persons</h2>
+      </div>
+      <div class="row">
+        <div class="team-block col-lg-3 col-sm-6">
+          <div class="inner-box wow fadeInLeft">
+            <div class="image-box">
+              <figure class="image overlay-anim"><a href="page-team-details.html"><img src="images/resource/team-1.jpg" alt=""></a></figure>
+              <div class="info-box">
+                <span class="designation">Event Platnner</span>
+                <h4 class="name"><a href="page-team-details.html">Michael Dean</a></h4>
+                <div class="social-links">
+                  <a ><i class="fab fa-facebook"></i></a>
+                  <a ><i class="fab fa-twitter"></i></a>
+                  <a ><i class="fab fa-linkedin"></i></a>
+                  <a ><i class="fab fa-youtube"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="team-block col-lg-3 col-sm-6">
+          <div class="inner-box wow fadeInLeft" data-wow-delay="200ms">
+            <div class="image-box">
+              <figure class="image overlay-anim"><a href="page-team-details.html"><img src="images/resource/team-2.jpg" alt=""></a></figure>
+              <div class="info-box">
+                <span class="designation">Kitchen Manager</span>
+                <h4 class="name"><a href="page-team-details.html">Frank Burton</a></h4>
+                <div class="social-links">
+                  <a ><i class="fab fa-facebook"></i></a>
+                  <a ><i class="fab fa-twitter"></i></a>
+                  <a ><i class="fab fa-linkedin"></i></a>
+                  <a ><i class="fab fa-youtube"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="team-block col-lg-3 col-sm-6">
+          <div class="inner-box wow fadeInLeft" data-wow-delay="300ms">
+            <div class="image-box">
+              <figure class="image overlay-anim"><a href="page-team-details.html"><img src="images/resource/team-3.jpg" alt=""></a></figure>
+              <div class="info-box">
+                <span class="designation">Apartment Manager</span>
+                <h4 class="name"><a href="page-team-details.html">Mya Mullins</a></h4>
+                <div class="social-links">
+                  <a ><i class="fab fa-facebook"></i></a>
+                  <a ><i class="fab fa-twitter"></i></a>
+                  <a ><i class="fab fa-linkedin"></i></a>
+                  <a ><i class="fab fa-youtube"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="team-block col-lg-3 col-sm-6">
+          <div class="inner-box wow fadeInLeft" data-wow-delay="400ms">
+            <div class="image-box">
+              <figure class="image overlay-anim"><a href="page-team-details.html"><img src="images/resource/team-4.jpg" alt=""></a></figure>
+              <div class="info-box">
+                <span class="designation">Room Service</span>
+                <h4 class="name"><a href="page-team-details.html">Ralph Nguyen</a></h4>
+                <div class="social-links">
+                  <a ><i class="fab fa-facebook"></i></a>
+                  <a ><i class="fab fa-twitter"></i></a>
+                  <a ><i class="fab fa-linkedin"></i></a>
+                  <a ><i class="fab fa-youtube"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> -->
+
+  <!-- BOOKING SECTION (Hidden - Using Modern Search Above) -->
+  <section class="booking-section" style="display: none !important;">
+    <div class="auto-container">
+      <div class="row">
+        <div class="col-lg-6 booking-form-column wow fadeInUp">
+          <div class="inner-column">
+            <div class="sec-title">
+              <span class="sub-title">ROOMS & SUITES</span>
+              <h2>Apartment Booking </h2>
+            </div>
+            <form class="bk-form checkout-form2" id="checkAvailability">
+              <div class="frm-field">
+                <input type="text" name="start" class="date-pick checkininput" placeholder="Check in" />
+                <img src="images/icons/mail.png" alt="" />
+              </div>
+              <div class="frm-field">
+                <input type="text" name="end" class="date-pick checkoutinput" placeholder="Check out" />
+                <img src="images/icons/mail.png" alt="" />
+              </div>
+              
+              <div class="frm-field">
+                <select name="" id="">
+                  <% pkgs.forEach(pkg => {    %>
+                    <% if (pkg && pkg._id && pkg.category_name) { %>
+                    <option value=<%=pkg._id %>>
+                        <%=pkg.category_name %>
+                    </option>
+                    <% } %>
+                    <% }); %>
+                </select>
+                <i class="fa fa-angle-down"></i>
+              </div>
+              <div class="form-submit">
+                <button id="checkAvailability" type="submit">Check Availability</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-lg-6 booking-content-column wow fadeInRight" data-wow-delay="200ms">
+          <div class="inner-column">
+            <div class="sec-title white">
+              <span class="sub-title">Vistavilla Apartment</span>
+              <h2>Check Availability </h2>
+            </div>
+            <p>Each of our guest rooms feature a private bath, wi-fi, cable/Smart television .</p>
+            <!-- <p>Mea nibh meis philosophia eu. Duis legimus efficiantur ea sea. Id placerat tacimates definitionem sea, prima quidam vim no. Duo nobis persecuti cu.</p> -->
+            <div class="contact-info">
+              <div class="icon-box"><i class="flaticon-customer-service"></i></div>
+              <span>Booking Now</span>
+              <h4 class="title">+2348085021450</h4>
+              <!-- <h4 class="title">+2347070230039</h4> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- BOOKING SECTION END -->
+
+  <!-- news-section -->
+  <!-- <section class="news-section">
+    <div class="auto-container">
+      <div class="sec-title text-center wow fadeInUp">
+        <span class="sub-title">Vistavilla Apartment News</span>
+        <h2>Latest News Update</h2>
+      </div>
+      <div class="row">
+        <div class="news-block col-lg-4 col-md-6 wow fadeInUp">
+          <div class="inner-box wow fadeInLeft">
+            <div class="image-box">
+              <figure class="image overlay-anim"><a href="news-details.html"><img src="images/resource/news-1.jpg" alt=""></a></figure>
+              <span class="date">DEC<br><small>20</small></span>
+            </div>
+            <div class="content-box">
+              <ul class="post-info">
+                <li><i class="fa fa-user"></i>Admin</li>
+                <li><i class="fa fa-comments"></i>October 19, 2022</li>
+              </ul>
+              <h4 class="title"><a href="news-details.html">Retore Lighting Design <br>in The Apartment</a></h4>
+              <a href="news-details.html" class="read-more">Read More<i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="news-block col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="300ms">
+          <div class="inner-box wow fadeInLeft" data-wow-delay="200ms">
+            <div class="image-box">
+              <figure class="image overlay-anim"><a href="news-details.html"><img src="images/resource/news-2.jpg" alt=""></a></figure>
+              <span class="date">DEC<br><small>20</small></span>
+            </div>
+            <div class="content-box">
+              <ul class="post-info">
+                <li><i class="fa-solid fa-user"></i>Admin</li>
+                <li><i class="fa-solid fa-comments"></i>0 comments</li>
+              </ul>
+              <h4 class="title"><a href="news-details.html">Swiming Benefits is <br>Good For Your Health</a></h4>
+              <a href="news-details.html" class="read-more">Read More<i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="news-block col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="600ms">
+          <div class="inner-box wow fadeInLeft" data-wow-delay="300ms">
+            <div class="image-box">
+              <figure class="image overlay-anim"><a href="news-details.html"><img src="images/resource/news-3.jpg" alt=""></a></figure>
+              <span class="date">DEC<br><small>20</small></span>
+            </div>
+            <div class="content-box">
+              <ul class="post-info">
+                <li><i class="fa-solid fa-user"></i>Category</li>
+                <li><i class="fa-solid fa-comments"></i>October 19, 2022</li>
+              </ul>
+              <h4 class="title"><a href="news-details.html">Avalible Now Health <br>Club For Your Fitness </a></h4>
+              <a href="news-details.html" class="read-more">Read More<i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> -->
+  <!-- End news section -->
+  <!-- Main Footer -->
+  <%- include('partials/footer') %>
+  <!--End Main Footer -->
+
+</div><!-- End Page Wrapper -->
+
+<!-- Search Results Modal -->
+<div class="search-results-modal" id="searchResultsModal">
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <button class="search-modal-close" onclick="closeSearchModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="search-modal-icon" id="modalIcon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="search-modal-title" id="modalTitle">Rooms Available!</h2>
+      <p class="search-modal-subtitle" id="modalSubtitle">We found available rooms for your dates</p>
+    </div>
+    <div class="search-modal-body" id="modalBody">
+      <!-- Content will be dynamically inserted here -->
+    </div>
+    <div class="search-modal-footer" id="modalFooter">
+      <div class="search-modal-actions">
+        <button class="search-modal-btn search-modal-btn-secondary" onclick="closeSearchModal()">
+          <i class="fas fa-times"></i>
+          <span>Cancel</span>
+        </button>
+        <button class="search-modal-btn search-modal-btn-primary" id="viewRoomsBtn">
+          <span>View Available Rooms</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/jquery.js"></script> 
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/slick.min.js"></script>
+<script src="js/slick-animation.min.js"></script>
+<script src="js/jquery.fancybox.js"></script>
+<script src="js/wow.js"></script>
+<script src="js/appear.js"></script>
+<script src="js/flatpickr.js"></script>
+<script src="js/script.js"></script>
+<script defer src="js/booking.js"></script>
+<script>
+// Modal Functions
+function openSearchModal() {
+  document.getElementById('searchResultsModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSearchModal() {
+  document.getElementById('searchResultsModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function showSuccessModal(data, formData) {
+  const modal = document.getElementById('searchResultsModal');
+  const modalIcon = document.getElementById('modalIcon');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalSubtitle = document.getElementById('modalSubtitle');
+  const modalBody = document.getElementById('modalBody');
+  const viewRoomsBtn = document.getElementById('viewRoomsBtn');
+
+  // Set success state
+  modalIcon.className = 'search-modal-icon success';
+  modalIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+  modalTitle.textContent = 'Rooms Available!';
+  modalSubtitle.textContent = `We found ${data.data.availableRoomDetails.length} available room(s) for your dates`;
+
+  // Build room list
+  const roomsList = data.data.availableRoomDetails.map(room => `
+    <div class="search-result-item">
+      <div class="search-result-icon">
+        <i class="fas fa-door-open"></i>
+      </div>
+      <div class="search-result-info">
+        <p class="search-result-label">Room Number</p>
+        <p class="search-result-value">${room.room_number}</p>
+      </div>
+    </div>
+  `).join('');
+
+  modalBody.innerHTML = `
+    <div class="search-results-list">
+      ${roomsList}
+    </div>
+  `;
+
+  // Set up view rooms button
+  const roomNumbers = data.data.availableRoomDetails.map(room => room.room_number);
+  viewRoomsBtn.onclick = function() {
+    window.location.href = `/available-rooms?id=${data.data.category_id}&data=${roomNumbers.toString()}&start=${formData.start}&end=${formData.end}`;
+  };
+
+  openSearchModal();
+}
+
+function showErrorModal(message) {
+  const modal = document.getElementById('searchResultsModal');
+  const modalIcon = document.getElementById('modalIcon');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalSubtitle = document.getElementById('modalSubtitle');
+  const modalBody = document.getElementById('modalBody');
+  const modalFooter = document.getElementById('modalFooter');
+
+  // Set error state
+  modalIcon.className = 'search-modal-icon error';
+  modalIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+  modalTitle.textContent = 'No Rooms Available';
+  modalSubtitle.textContent = 'Sorry, we couldn\'t find any available rooms';
+
+  modalBody.innerHTML = `
+    <div class="search-error-message">
+      <p>${message}</p>
+    </div>
+  `;
+
+  // Hide footer for error state
+  modalFooter.innerHTML = `
+    <div class="search-modal-actions">
+      <button class="search-modal-btn search-modal-btn-primary" onclick="closeSearchModal()" style="width: 100%;">
+        <span>Try Different Dates</span>
+        <i class="fas fa-calendar-alt"></i>
+      </button>
+    </div>
+  `;
+
+  openSearchModal();
+}
+
+// Form submission handler for main search form
+document.querySelector('#bookingForm').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  const checkInDate = event.target.querySelector('.checkininput').value;
+  const checkOutDate = event.target.querySelector('.checkoutinput').value;
+  const roomCategory = event.target.querySelector('.checkout-form2').value;
+
+  if (!checkInDate || !checkOutDate || !roomCategory) {
+    alert("Please input all fields");
+    return;
+  }
+
+  const loginBtn = document.getElementById('checkAvailability');
+  const originalHTML = loginBtn.innerHTML;
+
+  // Show loader
+  loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Searching...</span>';
+  loginBtn.disabled = true;
+
+  const formData = {
+    start: checkInDate,
+    end: checkOutDate,
+    category_id: roomCategory
+  };
+
+  try {
+    const response = await fetch(`/check-availability/?end=${formData.end}&start=${formData.start}&category_id=${formData.category_id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      loginBtn.innerHTML = originalHTML;
+      loginBtn.disabled = false;
+
+      if (data?.data.availableRoomDetails.length > 0) {
+        showSuccessModal(data, formData);
+      } else {
+        showErrorModal(data.message || 'No rooms available for the selected dates');
+      }
+    } else {
+      loginBtn.innerHTML = originalHTML;
+      loginBtn.disabled = false;
+      showErrorModal(response.statusText || 'An error occurred while searching');
+    }
+  } catch (error) {
+    loginBtn.innerHTML = originalHTML;
+    loginBtn.disabled = false;
+    showErrorModal(error.message || 'An error occurred while searching');
+    console.error('Error:', error);
+  }
+});
+// Second form handler (for hidden booking section)
+document.querySelector('.checkout-form').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  const checkInDate = document.querySelector('.checkininput').value;
+  const checkOutDate = document.querySelector('.checkoutinput').value;
+  const roomCategory = document.querySelector('.checkout-form2').value || document.querySelector('.checkout-form select').value;
+
+  if (!checkInDate || !checkOutDate || !roomCategory) {
+    alert("Please input all fields");
+    return;
+  }
+
+  const loginBtn = document.getElementById('checkAvailability');
+  const originalHTML = loginBtn.innerHTML;
+
+  // Show loader
+  loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Searching...</span>';
+  loginBtn.disabled = true;
+
+  const formData = {
+    start: checkInDate,
+    end: checkOutDate,
+    category_id: roomCategory
+  };
+
+  try {
+    const response = await fetch(`/check-availability/?end=${formData.end}&start=${formData.start}&category_id=${formData.category_id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      loginBtn.innerHTML = originalHTML;
+      loginBtn.disabled = false;
+
+      if (data?.data.availableRoomDetails.length > 0) {
+        showSuccessModal(data, formData);
+      } else {
+        showErrorModal(data.message || 'No rooms available for the selected dates');
+      }
+    } else {
+      loginBtn.innerHTML = originalHTML;
+      loginBtn.disabled = false;
+      showErrorModal(response.statusText || 'An error occurred while searching');
+    }
+  } catch (error) {
+    loginBtn.innerHTML = originalHTML;
+    loginBtn.disabled = false;
+    showErrorModal(error.message || 'An error occurred while searching');
+    console.error('Error:', error);
+  }
+});
+
+// Promotion Modal Popup
+<% if (activeMarquees) { %>
+  // Check if user has seen the promotion modal in this session
+  if (!sessionStorage.getItem('promotionModalShown')) {
+    // Show modal after 2 seconds
+    setTimeout(function() {
+      $('#promotionModal').modal('show');
+      sessionStorage.setItem('promotionModalShown', 'true');
+    }, 2000);
+  }
+
+  // Ensure modal close buttons work properly
+  $(document).ready(function() {
+    // Handle close button clicks
+    $('[data-dismiss="modal"]').on('click', function() {
+      $('#promotionModal').modal('hide');
+    });
+
+    // Handle backdrop click
+    $('#promotionModal').on('click', function(e) {
+      if ($(e.target).is('.modal')) {
+        $('#promotionModal').modal('hide');
+      }
+    });
+  });
+<% } %>
+
+</script>
+
+<!-- Promotion Modal -->
+<% if (activeMarquees) { %>
+<div class="modal fade" id="promotionModal" tabindex="-1" role="dialog" aria-labelledby="promotionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: none;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #6b6b6b 0%, #4a4a4a 100%); color: white; border: none; padding: 25px;">
+        <h4 class="modal-title" id="promotionModalLabel" style="margin: 0; font-weight: 600;">
+          <i class="fa fa-bullhorn"></i> Special Promotion!
+        </h4>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 1; font-size: 2rem;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="padding: 40px; text-align: center;">
+        <div style="font-size: 1.3rem; color: #333; line-height: 1.8; margin-bottom: 20px;">
+          <%= activeMarquees.text %>
+        </div>
+        <div style="font-size: 0.9rem; color: #666; margin-top: 20px;">
+          <i class="fa fa-clock"></i> Valid from
+          <%= new Date(activeMarquees.startTime).toLocaleDateString('en-GB') %>
+          to
+          <%= new Date(activeMarquees.endTime).toLocaleDateString('en-GB') %>
+        </div>
+      </div>
+      <div class="modal-footer" style="border: none; padding: 20px 40px; justify-content: center;">
+        <a href="#rooms" class="btn btn-lg" style="background: linear-gradient(135deg, #6b6b6b 0%, #4a4a4a 100%); color: white; border: none; padding: 12px 40px; border-radius: 8px; font-weight: 600;" data-dismiss="modal">
+          <i class="fa fa-bed"></i> View Rooms
+        </a>
+        <button type="button" class="btn btn-lg btn-secondary" data-dismiss="modal" style="padding: 12px 40px; border-radius: 8px;">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<!-- Luxury Scroll Effects & Animations -->
+<script>
+  // Header scroll effect
+  window.addEventListener('scroll', function() {
+    const header = document.querySelector('.main-header');
+    if (window.scrollY > 50) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  });
+
+  // Smooth scroll for navigation links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Intersection Observer for fade-in animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, observerOptions);
+
+  // Observe all animated elements
+  document.querySelectorAll('.modern-feature-card, .modern-room-card, .modern-about-image').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Hero Carousel Functionality
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.hero-slide');
+  const indicators = document.querySelectorAll('.hero-indicator');
+  const totalSlides = slides.length;
+
+  function showSlide(index) {
+    // Remove active class from all slides and indicators
+    slides.forEach(slide => slide.classList.remove('active'));
+    indicators.forEach(indicator => indicator.classList.remove('active'));
+
+    // Add active class to current slide and indicator
+    if (slides[index]) {
+      slides[index].classList.add('active');
+    }
+    if (indicators[index]) {
+      indicators[index].classList.add('active');
+    }
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    showSlide(currentSlide);
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    showSlide(currentSlide);
+  }
+
+  // Navigation buttons
+  const prevBtn = document.getElementById('heroPrev');
+  const nextBtn = document.getElementById('heroNext');
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', prevSlide);
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', nextSlide);
+  }
+
+  // Indicator buttons
+  indicators.forEach((indicator, index) => {
+    indicator.addEventListener('click', () => {
+      currentSlide = index;
+      showSlide(currentSlide);
+    });
+  });
+
+  // Auto-play carousel every 5 seconds
+  setInterval(nextSlide, 5000);
+
+  // Gallery Image Rotation
+  const galleryItems = document.querySelectorAll('.luxury-gallery-item-clean');
+
+  if (galleryItems.length > 0) {
+    // Store all images for each gallery item
+    const galleryImageData = [];
+
+    <% if (pkgs && pkgs.length > 0) { %>
+      <%
+        let allCategoryImages = [];
+        pkgs.forEach(pkg => {
+          if (pkg.picture && pkg.picture.length > 0) {
+            pkg.picture.forEach(img => {
+              if (img) {
+                allCategoryImages.push({
+                  url: img,
+                  title: pkg.category_name,
+                  type: pkg.room_type
+                });
+              }
+            });
+          }
+        });
+      %>
+
+      const allImages = <%= JSON.stringify(allCategoryImages) %>;
+
+      // Initialize each gallery item with its image rotation
+      galleryItems.forEach((item, index) => {
+        const imageElement = item.querySelector('.gallery-clean-image');
+        const titleElement = item.querySelector('.luxury-gallery-title-clean');
+        const typeElement = item.querySelector('.luxury-gallery-type-clean');
+
+        if (imageElement && allImages.length > 0) {
+          let currentImageIndex = index % allImages.length;
+
+          // Rotate images every 4 seconds with different offsets for each card
+          setInterval(() => {
+            // Fade out
+            imageElement.style.opacity = '0';
+
+            setTimeout(() => {
+              // Change image
+              currentImageIndex = (currentImageIndex + 1) % allImages.length;
+              const newImage = allImages[currentImageIndex];
+
+              imageElement.src = newImage.url;
+              if (titleElement) titleElement.textContent = newImage.title;
+              if (typeElement) typeElement.textContent = newImage.type;
+
+              // Fade in
+              imageElement.style.opacity = '1';
+            }, 300);
+          }, 4000 + (index * 500)); // Stagger the rotation timing
+        }
+      });
+    <% } %>
+  }
+
+  // Animate numbers in stats
+  function animateValue(element, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const value = Math.floor(progress * (end - start) + start);
+      element.textContent = value + (element.dataset.suffix || '');
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+    window.requestAnimationFrame(step);
+  }
+
+  // Trigger stat animations when visible
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+        entry.target.classList.add('animated');
+        const finalValue = parseInt(entry.target.textContent);
+        animateValue(entry.target, 0, finalValue, 2000);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.modern-stat-number').forEach(stat => {
+    statObserver.observe(stat);
+  });
+</script>
+
+</body>
+
+</html>
+
+

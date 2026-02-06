@@ -1,0 +1,273 @@
+﻿<%- include('partial/header', { title: 'Wishmewell Apartment',email:email,roleName:roleName }) %>
+<%- include('partial/sidebar', { name: name}) %>
+		<div class="page-wrapper">
+			<div class="content container-fluid">
+				<div class="page-header">
+					<div class="row align-items-center">
+						<div class="col">
+							<div class="mt-5">
+								<h4 class="card-title float-left mt-2">Appointments</h4>
+                                <a href="/portal/add-booking" class="btn btn-primary float-right veiwbutton ">Add Booking</a>
+                            </div>
+						</div>
+					</div>
+				
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="card card-table">
+							<div class="card-body booking_card">
+								<div class="table-responsive">
+									<form method="get" action="/portal/all-booking">
+										<div class="row">
+										  <div class="col-md-4">
+											<label for="start">Start Date:</label>
+											<input type="date" id="start" name="start" class="form-control" required>
+										  </div>
+										  <div class="col-md-4">
+											<label for="end">End Date:</label>
+											<input type="date" id="end" name="end" class="form-control" required>
+										  </div>
+										  <div class="col-md-4">
+											<label>&nbsp;</label>
+											<button type="submit" class="btn btn-primary btn-block">Filter</button>
+											<button id="download-csv" class="btn btn-success btn-block">Download CSV</button>
+											<a style="color: #6b6b6b;float: right;" href="/portal/all-booking">See All</a>
+										  </div>
+										</div>
+									  </form>
+									  
+									  <center>
+										<div class="" >
+											<p id="total-amount-dates">Total Amount for <span id="start-date"><%= start %></span> - <span id="end-date"><%= end %></span></p>
+											<h2 id="total-amoun" style="background: #6b6b6b;border-radius: 5px; width: 50%; color: #fff;">
+												<%= (totalAmount / 100 || 0).toLocaleString('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0, maximumFractionDigits: 0 }) %>
+											</h2>
+										
+										</div>
+									  </center>
+									  <script>
+										// Function to format the date to a readable format
+										function formatDate(dateString) {
+											const date = new Date(dateString);
+											return date.toLocaleDateString('en-GB', {
+												year: 'numeric',
+												month: 'long',
+												day: 'numeric'
+											});
+										}
+									
+										// Get the start and end date elements
+										const startDateElement = document.getElementById('start-date');
+										const endDateElement = document.getElementById('end-date');
+									
+										// Format and update the dates in the DOM
+										startDateElement.textContent = formatDate(startDateElement.textContent);
+										endDateElement.textContent = formatDate(endDateElement.textContent);
+									</script>
+									<table class="datatable table table-stripped table table-hover table-center mb-0">
+										
+										<div class="top-nav-search">
+
+											<form method="get" action="/portal/all-booking">
+											
+												<div class="input-group">
+												  <input type="text" class="form-control" name="room_number" placeholder="Search by room" required>
+												  <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+												  <br/>
+												</div>
+												<!-- <a id="goBackButton" style="display: none;float: right; color: #6b6b6b;" onclick="window.location.href='/portal/all-booking';">Go Back to all bookings</a> -->
+												<div class="flex" style="display: flex; gap: 30px; cursor: pointer;">
+													<a id="goBackButton" style=" color: #6b6b6b;" onclick="window.location.href='/portal/all-booking?type=web-online'">Online Bookings</a>
+													<a id="goBackButton" style=" color: #6b6b6b;" onclick="window.location.href='/portal/all-booking?type=reception';">Reception Bookings</a>
+													<% if (hasQueryParams) { %>
+														<a id="goBackButton" style="color: #6b6b6b;" href="/portal/all-booking">See All Bookings</a>
+													  <% } %>
+
+												</div>
+
+											  </form>
+
+										</div>
+										<thead>
+											<tr>
+												<th>S/N</th>
+												<th>Booking ID</th>
+												<th>Name</th>
+												<th>Amount</th>
+												<th>Room Type</th>
+												<th>Room Name</th>
+												<th>Room Number</th>
+												<th>Booked From</th>
+												<!-- <th>Date</th>
+												<th>Time</th> -->
+												<th>Arrival Date</th>
+												<th>Depature Date</th>
+												<th>Email ID</th>
+												<th>Ph.Number</th>
+												<th>Status</th>
+												<th>Booking Time</th>
+												<th>Checked</th>
+												<th>Checked By</th>
+												<!-- <th class="text-right">Actions</th> -->
+											</tr>
+										</thead>
+										<tbody>
+											<% bookings.map((element,i) => { %>
+												<tr>
+													<td><%= i + 1 %></td>
+													<td>
+														<a href="/portal/check-in?key=<%= element.reference_id %>">
+
+															<%= element.reference_id %>
+														</a>
+													</td>
+													<td>
+														<h2 class="table-avatar">
+														<a href="/portal/check-in?key=<%= element.reference_id %>" class="avatar avatar-sm mr-2">
+															<!-- <img class="avatar-img rounded-circle" src="assets/img/profiles/avatar-03.jpg" alt="User Image"> -->
+														</a>
+														<a href="/portal/check-in?key=<%= element.reference_id %>"><%= element.guest_name %> <span></span></a>
+														</h2>
+													</td>
+													<td><%= (element.amount / 100 || 0).toLocaleString('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0, maximumFractionDigits: 0 }) %></td>
+
+
+												
+													<td><%= element.category_name%></td>
+													<td><%= element.room_name%></td>
+													<td><%= element.room_number%></td>
+													<td><%= element.booked_from%></td>
+													<!-- <td>21-03-2020</td>
+													<td>11.00 AM</td> -->
+													<td><%= new Date(element.start).toLocaleString()%></td>
+													<td><%= new Date(element.end).toLocaleString()	%></td>
+													<td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2652494b4b5f44435448474a66435e474b564a430845494b">
+														<%= element.guest_email %>
+													</a></td>
+													<td>
+														<%= element.guest_phone	%>
+													</td>
+													<% if (element.status === 'success') { %>
+														<td>
+															<div class="actions"> <a href="#" class="btn btn-sm bg-success-light mr-2"><%= element.status %></a> </div>
+														</td>
+													<% } %>
+													<% if (element.status === 'pending') { %>
+														<td>
+															<div class="actions"> <a href="#" class="btn btn-sm bg-warning-light mr-2"><%= element.status %></a> </div>
+														</td>
+													<% } %>
+													<% if (element.status === 'failed') { %>
+														<td>
+															<div class="actions"> <a href="#" class="btn btn-sm bg-danger-light mr-2"><%= element.status %></a> </div>
+														</td>
+													<% } %>
+													<% if (element.status === 'initiated') { %>
+														<td>
+															<div class="actions"> <a href="#" class="btn btn-sm bg-warning mr-2"><%= element.status %></a> </div>
+														</td>
+													<% } %>
+													<% if (element.status === 'part-payment') { %>
+														<td>
+															<div class="actions"> <a href="#" class="btn btn-sm mr-2" style="background-color: #8B4513; color: white;"><%= element.status %></a> </div>
+														</td>
+													<% } %>
+
+													<td><%= new Date(element.createdAt).toLocaleString()	%></td>
+													<td><%= element.checked_in	%></td>
+													<td><%= element.checked_in_by	%></td>
+													<!-- <td>
+														<div class="actions"> <a href="#" class="btn btn-sm bg-success-light mr-2">Active</a> </div>
+													</td> -->
+													<!-- <td class="text-right">
+														<div class="dropdown dropdown-action"> <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v ellipse_color"></i></a>
+															<div class="dropdown-menu dropdown-menu-right"> <a class="dropdown-item" href="edit-booking.html"><i class="fas fa-pencil-alt m-r-5"></i> Edit</a> <a class="dropdown-item" href="#" data-toggle="modal" data-target="#delete_asset"><i class="fas fa-trash-alt m-r-5"></i> Delete</a> </div>
+														</div>
+													</td> -->
+										
+												</tr>
+
+											 
+											<% }) %>
+									
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="delete_asset" class="modal fade delete-modal" role="dialog">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-body text-center"> <img src="assets/img/sent.png" alt="" width="50" height="46">
+							<h3 class="delete_class">Are you sure want to delete this Asset?</h3>
+							<div class="m-t-20"> <a href="#" class="btn btn-white" data-dismiss="modal">Close</a>
+								<button type="submit" class="btn btn-danger">Delete</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script data-cfasync="false" src="../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+	<script src="assets/js/jquery-3.5.1.min.js"></script>
+	<script src="assets/js/popper.min.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script src="assets/plugins/datatables/jquery.dataTables.min.js"></script>
+	<script src="assets/plugins/datatables/datatables.min.js"></script>
+	<script src="assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script src="assets/plugins/raphael/raphael.min.js"></script>
+	<script src="assets/js/script.js"></script>
+	<script>
+
+		// Check if the query parameter "room_number" exists in the URL
+		const params = new URLSearchParams(window.location.search);
+		if (params.has('room_number')) {
+		  // Show the "Go Back" button if a search was performed
+		  document.getElementById('goBackButton').style.display = 'block';
+		}
+
+		const urlParams = new URLSearchParams(window.location.search);
+		const start = urlParams.get('start');
+		console.log("🚀 ~ start:", start)
+		const end = urlParams.get('end');
+		console.log("🚀 ~ end:", end)
+		if (start === null || end === null) {
+		
+			document.getElementById('download-csv').style.display = 'none';
+
+		}
+		
+		document.getElementById('download-csv').addEventListener('click', () => {
+			
+			if (!start || !end) {
+				alert('Please select a date range.');
+				return;
+			}
+
+    // Build the request URL
+    let requestUrl = '/portal/bookings-csv';
+    if (start && end) {
+        requestUrl += `?start=${start}&end=${end}`;
+    }
+
+    // Create an anchor element to open in a new tab
+    const link = document.createElement('a');
+    link.href = requestUrl;
+    // link.target = '_blank'; // Open in a new tab or window
+    link.click(); // Trigger the click programmatically
+
+});
+
+		
+	  </script>
+
+	  
+</body>
+
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="0">
+	<title><%= title %></title>
+	<link rel="shortcut icon" type="image/x-icon" href="assets/img/hotel_logo.png">
+	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="assets/plugins/fontawesome/css/fontawesome.min.css">
+	<link rel="stylesheet" href="assets/plugins/fontawesome/css/all.min.css">
+	<link rel="stylesheet" href="assets/css/feathericon.min.css">
+	<link rel="stylehseet" href="https://cdn.oesmith.co.uk/morris-0.5.1.css">
+	<link rel="stylesheet" href="assets/plugins/morris/morris.css">
+	<link rel="stylesheet" href="assets/css/style.css">
+	<link rel="stylesheet" href="assets/css/custom-colors.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+
+	 <style>
+    /* Loader CSS */
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 4px solid #3498db;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Animation for the loader */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Optional: Center the text and loader inside the button */
+    #submitBtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Modern UI Enhancements */
+    .header {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .sidebar {
+      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar .sidebar-menu ul li a {
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      margin: 4px 10px;
+    }
+
+    .sidebar .sidebar-menu ul li a:hover {
+      background: rgba(107, 107, 107, 0.1);
+      transform: translateX(5px);
+    }
+
+    .sidebar .sidebar-menu ul li.active a {
+      background: linear-gradient(135deg, #6b6b6b 0%, #9e9e9e 100%);
+      box-shadow: 0 4px 12px rgba(107, 107, 107, 0.3);
+    }
+
+    .page-wrapper {
+      background: #f5f7fa;
+    }
+
+    .card {
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary, .veiwbutton {
+      background: linear-gradient(135deg, #6b6b6b 0%, #9e9e9e 100%) !important;
+      border: none !important;
+      border-radius: 8px !important;
+      padding: 10px 20px !important;
+      font-weight: 500 !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .btn-primary:hover, .veiwbutton:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(107, 107, 107, 0.4) !important;
+    }
+
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table thead th {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      color: #495057;
+      font-weight: 600;
+      border: none;
+      padding: 15px;
+    }
+
+    .table tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f8f9fa;
+      transform: scale(1.01);
+    }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .modal-content {
+      border-radius: 12px;
+      border: none;
+    }
+
+    .modal-header {
+      border-radius: 12px 12px 0 0;
+      border-bottom: none;
+    }
+
+    /* Smooth scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #6b6b6b;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9e9e9e;
+    }
+
+    /* Page title styling */
+    .card-title {
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    /* Input focus */
+    .form-control:focus {
+      border-color: #6b6b6b;
+      box-shadow: 0 0 0 0.2rem rgba(193, 155, 118, 0.25);
+    }
+
+    /* Dropdown menu */
+    .dropdown-menu {
+      border-radius: 8px;
+      border: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-item {
+      transition: all 0.2s ease;
+      border-radius: 6px;
+      margin: 2px 5px;
+    }
+
+    .dropdown-item:hover {
+      background-color: rgba(193, 155, 118, 0.1);
+      color: #6b6b6b;
+    }
+  </style>
+</head>
+<body>
+	<div class="main-wrapper">
+<div class="header">
+	<div class="header-left">
+		<a href="/portal/dashboard" class="logo"> <img src="assets/img/hotel_logo.png" width="50" height="70" alt="logo"> <span class="logoclass"><%= title %></span> </a>
+		<a href="/portal/dashboard" class="logo logo-small"> <img src="assets/img/hotel_logo.png" alt="Logo" width="30" height="30"> </a>
+	</div>
+	<a href="javascript:void(0);" id="toggle_btn"> <i class="fe fe-text-align-left"></i> </a>
+	<a class="mobile_btn" id="mobile_btn"> <i class="fas fa-bars"></i> </a>
+	<ul class="nav user-menu">
+		<li class="nav-item dropdown noti-dropdown">
+			<!-- <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown"> <i class="fe fe-bell"></i> <span class="badge badge-pill">3</span> </a>
+			<div class="dropdown-menu notifications">
+				<div class="topnav-dropdown-header"> <span class="notification-title">Notifications</span> <a href="javascript:void(0)" class="clear-noti"> Clear All </a> </div>
+				<div class="noti-content">
+					<ul class="notification-list">
+						<li class="notification-message">
+							<a href="#">
+								<div class="media"> <span class="avatar avatar-sm">
+									<img class="avatar-img rounded-circle" alt="User Image" src="assets/img/profiles/avatar-02.jpg">
+									</span>
+									<div class="media-body">
+										<p class="noti-details"><span class="noti-title">Carlson Tech</span> has approved <span class="noti-title">your estimate</span></p>
+										<p class="noti-time"><span class="notification-time">4 mins ago</span> </p>
+									</div>
+								</div>
+							</a>
+						</li>
+						<li class="notification-message">
+							<a href="#">
+								<div class="media"> <span class="avatar avatar-sm">
+									<img class="avatar-img rounded-circle" alt="User Image" src="assets/img/profiles/avatar-11.jpg">
+									</span>
+									<div class="media-body">
+										<p class="noti-details"><span class="noti-title">International Software
+											Inc</span> has sent you a invoice in the amount of <span class="noti-title">$218</span></p>
+										<p class="noti-time"><span class="notification-time">6 mins ago</span> </p>
+									</div>
+								</div>
+							</a>
+						</li>
+						<li class="notification-message">
+							<a href="#">
+								<div class="media"> <span class="avatar avatar-sm">
+									<img class="avatar-img rounded-circle" alt="User Image" src="assets/img/profiles/avatar-17.jpg">
+									</span>
+									<div class="media-body">
+										<p class="noti-details"><span class="noti-title"><%=name %></span> sent a cancellation request <span class="noti-title">Apple iPhone
+											XR</span></p>
+										<p class="noti-time"><span class="notification-time">8 mins ago</span> </p>
+									</div>
+								</div>
+							</a>
+						</li>
+						<li class="notification-message">
+							<a href="#">
+								<div class="media"> <span class="avatar avatar-sm">
+									<img class="avatar-img rounded-circle" alt="User Image" src="assets/img/profiles/avatar-13.jpg">
+									</span>
+									<div class="media-body">
+										<p class="noti-details"><span class="noti-title">Mercury Software
+										Inc</span> added a new product <span class="noti-title">Apple
+										MacBook Pro</span></p>
+										<p class="noti-time"><span class="notification-time">12 mins ago</span> </p>
+									</div>
+								</div>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="topnav-dropdown-footer"> <a href="#">View all Notifications</a> </div>
+			</div> -->
+		</li>
+		<li class="nav-item dropdown has-arrow">
+			<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown"> <span class="user-img"><img class="rounded-circle" src="assets/img/hotel_logo.png" width="31" alt="Soeng Souy"></span> </a>
+			<div class="dropdown-menu">
+				<div class="user-header">
+					<div class="avatar avatar-sm"> <img src="assets/img/hotel_logo.png" alt="User Image" class="avatar-img rounded-circle"> </div>
+					<div class="user-text">
+						<h6><%= name %></h6>
+						<h6><%= email %></h6>
+						<p class="text-muted mb-0"><%= roleName %></p>
+					</div>
+				</div> 
+				<a class="dropdown-item" href="/portal/profile">My Profile</a>
+				 <!-- <a class="dropdown-item" href="settings.html">Account Settings</a>  -->
+				  <a class="dropdown-item" href="/portal">Logout</a> </div>
+		</li>
+	</ul>
+	<!-- <div class="top-nav-search">
+		<form>
+			<input type="text" class="form-control" placeholder="Search here">
+			<button class="btn" type="submit"><i class="fas fa-search"></i></button>
+		</form>
+	</div> -->
+</div>

@@ -1,0 +1,391 @@
+<%- include('partial/header', { title: 'Complete Payment - Wishmewell Apartment',email:email,roleName:roleName }) %>
+<%- include('partial/sidebar', { name: name}) %>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <div class="mt-5">
+                        <h4 class="card-title float-left mt-2">
+                            <i class="fas fa-money-check-alt" style="color: #6b6b6b;"></i> Complete Payment
+                        </h4>
+                        <a href="/portal/part-payments" class="btn btn-secondary float-right veiwbutton">
+                            <i class="fas fa-arrow-left"></i> Back to Part Payments
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <!-- Guest Information Card -->
+                <div class="card mb-4" style="border-left: 4px solid #6b6b6b;">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-user-circle" style="color: #6b6b6b;"></i> Guest Information
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="text-muted small">Reference ID</label>
+                                    <p class="font-weight-bold">
+                                        <span class="badge badge-info" style="font-size: 13px;">
+                                            <%= partPayment.reference_id %>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted small">Guest Name</label>
+                                    <p class="font-weight-bold"><i class="fas fa-user"></i> <%= partPayment.guest_name %></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted small">Email</label>
+                                    <p><i class="fas fa-envelope"></i> <%= partPayment.guest_email %></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted small">Phone</label>
+                                    <p><i class="fas fa-phone"></i> <%= partPayment.guest_phone %></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="text-muted small">Room</label>
+                                    <p class="font-weight-bold">
+                                        <i class="fas fa-bed" style="color: #6b6b6b;"></i> <%= partPayment.room_name %>
+                                        <span class="badge badge-secondary ml-2"><%= partPayment.room_number %></span>
+                                    </p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted small">Category</label>
+                                    <p><%= partPayment.category_name %></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted small">Check In</label>
+                                    <p><i class="fas fa-calendar-check" style="color: #28a745;"></i> <%= new Date(partPayment.start_date).toLocaleDateString('en-GB') %></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted small">Check Out</label>
+                                    <p><i class="fas fa-calendar-times" style="color: #dc3545;"></i> <%= new Date(partPayment.end_date).toLocaleDateString('en-GB') %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Summary Card -->
+                <div class="card mb-4" style="border-left: 4px solid #FFA500;">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-file-invoice-dollar" style="color: #FFA500;"></i> Payment Summary
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-borderless">
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td class="py-3"><strong>Total Amount:</strong></td>
+                                    <td class="text-right py-3">
+                                        <h5 class="mb-0">₦<%= (partPayment.total_amount / 100).toLocaleString() %></h5>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td class="py-3">
+                                        <strong>Amount Paid:</strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            <%= Math.round((partPayment.amount_paid / partPayment.total_amount) * 100) %>% of total
+                                        </small>
+                                    </td>
+                                    <td class="text-right py-3">
+                                        <h5 class="mb-0" style="color: #28a745;">
+                                            ₦<%= (partPayment.amount_paid / 100).toLocaleString() %>
+                                        </h5>
+                                    </td>
+                                </tr>
+                                <tr style="background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);">
+                                    <td class="py-4">
+                                        <strong style="font-size: 16px;">Balance Due:</strong>
+                                    </td>
+                                    <td class="text-right py-4">
+                                        <h3 class="mb-0" style="color: #dc3545; font-weight: bold;">
+                                            ₦<%= (partPayment.balance / 100).toLocaleString() %>
+                                        </h3>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment History Card -->
+                <div class="card mb-4" style="border-left: 4px solid #6c757d;">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-history" style="color: #6c757d;"></i> Payment History
+                        </h5>
+                        <div id="paymentHistoryContainer">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <p class="text-muted mt-2">Loading payment history...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Form Card -->
+                <div class="card" style="border-left: 4px solid #28a745;">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-credit-card" style="color: #28a745;"></i> Make Payment
+                        </h5>
+                        <form id="completePaymentForm">
+                            <div class="form-group">
+                                <label for="remaining_amount" class="font-weight-bold">
+                                    Enter Payment Amount <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" style="background-color: #6b6b6b; color: white;">
+                                            <i class="fas fa-naira-sign"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text"
+                                           class="form-control form-control-lg"
+                                           id="remaining_amount"
+                                           name="remaining_amount"
+                                           placeholder="0.00"
+                                           required
+                                           style="font-size: 20px; font-weight: bold;">
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i> Maximum amount: ₦<%= (partPayment.balance / 100).toLocaleString() %>
+                                    <br>
+                                    <i class="fas fa-lightbulb"></i> You can pay any amount up to the balance due
+                                </small>
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <button type="submit" class="btn btn-lg btn-block" id="submitBtn"
+                                        style="background-color: #6b6b6b; border-color: #6b6b6b; color: white; font-weight: bold;">
+                                    <i class="fas fa-check-circle"></i> Submit Payment
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/jquery-3.5.1.min.js"></script>
+<script src="assets/js/popper.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/script.js"></script>
+
+<script>
+    // Format currency input as user types
+    function formatCurrencyAsType(e) {
+        const input = e.target;
+        let cursorPosition = input.selectionStart;
+        let value = input.value;
+
+        const commasBeforeCursor = (value.substring(0, cursorPosition).match(/,/g) || []).length;
+        const numericValue = value.replace(/[^0-9]/g, '');
+
+        if (numericValue === '') {
+            input.value = '';
+            return;
+        }
+
+        const formattedValue = parseInt(numericValue, 10).toLocaleString('en-NG');
+        input.value = formattedValue;
+
+        const commasAfterCursor = (formattedValue.substring(0, cursorPosition).match(/,/g) || []).length;
+        const commasDiff = commasAfterCursor - commasBeforeCursor;
+        const newCursorPosition = cursorPosition + commasDiff;
+
+        input.setSelectionRange(newCursorPosition, newCursorPosition);
+    }
+
+    // Add currency formatting to payment amount input
+    const amountInput = document.getElementById('remaining_amount');
+    amountInput.addEventListener('input', formatCurrencyAsType);
+
+    // Get numeric value from formatted string
+    function getNumericValue(formattedValue) {
+        return parseFloat(formattedValue.replace(/,/g, '')) || 0;
+    }
+
+    // Load payment history
+    async function loadPaymentHistory() {
+        try {
+            const response = await fetch('/portal/api/payment-history/<%= partPayment._id %>');
+            const data = await response.json();
+
+            const container = document.getElementById('paymentHistoryContainer');
+
+            if (data.status && data.data.paymentHistory && data.data.paymentHistory.length > 0) {
+                const history = data.data.paymentHistory;
+                let html = '<div class="timeline">';
+
+                history.forEach((payment, index) => {
+                    const paymentAmount = (payment.payment_amount / 100).toLocaleString('en-NG', {minimumFractionDigits: 2});
+                    const balanceAfter = (payment.balance_after / 100).toLocaleString('en-NG', {minimumFractionDigits: 2});
+                    const paymentDate = new Date(payment.payment_date).toLocaleString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    const isInitial = payment.payment_type === 'initial';
+                    const isFinal = payment.payment_type === 'final';
+                    const iconColor = isInitial ? '#6b6b6b' : (isFinal ? '#28a745' : '#FFA500');
+                    const icon = isInitial ? 'fa-play-circle' : (isFinal ? 'fa-check-circle' : 'fa-coins');
+
+                    html += `
+                        <div class="timeline-item" style="display: flex; margin-bottom: 20px; position: relative;">
+                            <div style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: ${iconColor}; display: flex; align-items: center; justify-content: center; color: white; margin-right: 15px;">
+                                <i class="fas ${icon}"></i>
+                            </div>
+                            <div style="flex: 1; background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 3px solid ${iconColor};">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                                    <div>
+                                        <strong style="color: ${iconColor}; text-transform: capitalize;">${payment.payment_type} Payment</strong>
+                                        <br>
+                                        <small class="text-muted"><i class="fas fa-clock"></i> ${paymentDate}</small>
+                                    </div>
+                                    <div class="text-right">
+                                        <h5 style="color: #28a745; margin: 0;">₦${paymentAmount}</h5>
+                                        <small class="text-muted">Balance: ₦${balanceAfter}</small>
+                                    </div>
+                                </div>
+                                ${payment.recorded_by ? `<small class="text-muted"><i class="fas fa-user"></i> Recorded by: ${payment.recorded_by}</small>` : ''}
+                                ${payment.notes ? `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #dee2e6;"><small>${payment.notes}</small></div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `
+                    <div class="text-center py-3">
+                        <i class="fas fa-info-circle fa-2x text-muted mb-2"></i>
+                        <p class="text-muted">No payment history available yet</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading payment history:', error);
+            document.getElementById('paymentHistoryContainer').innerHTML = `
+                <div class="text-center py-3">
+                    <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                    <p class="text-muted">Failed to load payment history</p>
+                </div>
+            `;
+        }
+    }
+
+    // Load payment history on page load
+    loadPaymentHistory();
+
+    document.getElementById('completePaymentForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const submitBtn = document.getElementById('submitBtn');
+        const remainingAmountFormatted = document.getElementById('remaining_amount').value;
+        const remainingAmount = getNumericValue(remainingAmountFormatted);
+        const maxAmount = <%= partPayment.balance / 100 %>;
+
+        if (!remainingAmount || remainingAmount <= 0) {
+            Toastify({
+                text: "Please enter a valid amount",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: { background: "red" }
+            }).showToast();
+            return;
+        }
+
+        if (remainingAmount > maxAmount) {
+            Toastify({
+                text: `Amount cannot exceed balance due (₦${maxAmount.toLocaleString('en-NG', {minimumFractionDigits: 2})})`,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: { background: "red" }
+            }).showToast();
+            return;
+        }
+
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/portal/complete-payment/<%= partPayment._id %>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    remaining_amount: remainingAmount
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.message) {
+                Toastify({
+                    text: data.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    style: { background: response.ok ? "green" : "red" }
+                }).showToast();
+
+                if (response.ok) {
+                    // Reload payment history
+                    await loadPaymentHistory();
+
+                    // Clear the input
+                    document.getElementById('remaining_amount').value = '';
+
+                    // If payment is completed, redirect after delay
+                    if (data.data && data.data.paymentCompleted) {
+                        setTimeout(() => {
+                            window.location.href = '/portal/part-payments';
+                        }, 2000);
+                    } else {
+                        // Reload page to update balance
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }
+                }
+            }
+        } catch (error) {
+            Toastify({
+                text: "An error occurred. Please try again.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: { background: "red" }
+            }).showToast();
+        } finally {
+            submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Submit Payment';
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
+

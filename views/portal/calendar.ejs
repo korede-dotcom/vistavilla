@@ -1,0 +1,950 @@
+<%- include('partial/header', { title: 'Bookings Calendar - Wishmewell Apartment',email:email,roleName:roleName }) %>
+<%- include('partial/sidebar', { name: name}) %>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<style>
+  /* Modern Calendar Styling */
+  .calendar-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    padding: 25px;
+    margin-top: 20px;
+  }
+
+  #calendar {
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+  }
+
+  /* FullCalendar Customization */
+  .fc {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .fc-toolbar-title {
+    color: #2c3e50 !important;
+    font-size: 1.75rem !important;
+    font-weight: 600 !important;
+  }
+
+  .fc-button {
+    background-color: #c19b76 !important;
+    border-color: #c19b76 !important;
+    color: white !important;
+    text-transform: capitalize !important;
+    font-weight: 500 !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .fc-button:hover {
+    background-color: #a67c52 !important;
+    border-color: #a67c52 !important;
+    transform: translateY(-1px);
+  }
+
+  .fc-button:disabled {
+    opacity: 0.5 !important;
+  }
+
+  .fc-col-header-cell {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #495057 !important;
+    font-weight: 600 !important;
+    padding: 12px 0 !important;
+    border: none !important;
+  }
+
+  .fc-daygrid-day-number {
+    color: #2c3e50 !important;
+    font-weight: 500 !important;
+    padding: 8px !important;
+  }
+
+  .fc-daygrid-day.fc-day-today {
+    background-color: #fff9e6 !important;
+  }
+
+  .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+    background-color: #c19b76;
+    color: white !important;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fc-event {
+    border-radius: 4px !important;
+    padding: 2px 4px !important;
+    font-size: 0.85rem !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .fc-event:hover {
+    opacity: 0.9 !important;
+    transform: scale(1.02);
+  }
+
+  /* Legend Styling */
+  .calendar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    border-left: 4px solid #c19b76;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .legend-label {
+    font-size: 0.9rem;
+    color: #495057;
+    font-weight: 500;
+  }
+
+  /* Stats Cards */
+  .calendar-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-card.confirmed {
+    border-left-color: #6b6b6b;
+  }
+
+  .stat-card.partial {
+    border-left-color: #9e9e9e;
+  }
+
+  .stat-card.retained {
+    border-left-color: #7a7a7a;
+  }
+
+  .stat-card.total {
+    border-left-color: #5a5a5a;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Modal Enhancements */
+  .modal-header {
+    background: linear-gradient(135deg, #c19b76 0%, #a67c52 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .modal-content {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .booking-detail-row {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .booking-detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .booking-detail-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 4px;
+  }
+
+  .booking-detail-value {
+    color: #6c757d;
+  }
+</style>
+
+		<div class="page-wrapper">
+			<div class="content container-fluid">
+				<div class="page-header">
+					<div class="row align-items-center">
+						<div class="col">
+							<div class="mt-5">
+								<h4 class="card-title float-left mt-2">
+									<i class="fas fa-calendar-alt" style="color: #c19b76;"></i> Bookings Calendar
+								</h4>
+                                <a href="/portal/add-booking" class="btn btn-primary float-right veiwbutton">
+									<i class="fas fa-plus"></i> Add Booking
+								</a>
+                            </div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Stats Cards -->
+				<div class="calendar-stats">
+					<div class="stat-card confirmed">
+						<div class="stat-value" style="color: #c19b76;" id="confirmedCount">0</div>
+						<div class="stat-label">Confirmed Bookings</div>
+					</div>
+					<div class="stat-card partial">
+						<div class="stat-value" style="color: #FFA500;" id="partialCount">0</div>
+						<div class="stat-label">Part Payments</div>
+					</div>
+					<div class="stat-card retained">
+						<div class="stat-value" style="color: #808080;" id="retainedCount">0</div>
+						<div class="stat-label">Retained Rooms</div>
+					</div>
+					<div class="stat-card total">
+						<div class="stat-value" style="color: #28a745;" id="totalCount">0</div>
+						<div class="stat-label">Total Events</div>
+					</div>
+				</div>
+
+				<!-- Legend -->
+				<div class="calendar-legend">
+					<div class="legend-item">
+						<div class="legend-color" style="background-color: #c19b76;"></div>
+						<span class="legend-label">Confirmed Booking</span>
+					</div>
+					<div class="legend-item">
+						<div class="legend-color" style="background-color: #FFA500;"></div>
+						<span class="legend-label">Part Payment</span>
+					</div>
+					<div class="legend-item">
+						<div class="legend-color" style="background-color: #808080;"></div>
+						<span class="legend-label">Retained Room</span>
+					</div>
+					<div class="legend-item">
+						<div class="legend-color" style="background-color: #fff9e6; border: 2px solid #c19b76;"></div>
+						<span class="legend-label">Today</span>
+					</div>
+				</div>
+
+				<!-- Calendar Container -->
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="calendar-container">
+                        	<div id="calendar"></div>
+						</div>
+					</div>
+				</div>
+        <!-- Booking Details Modal -->
+        <div id="detailsModal" class="modal fade" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">
+					<i class="fas fa-info-circle"></i> <span id="modalTitle">Booking Details</span>
+				</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="eventDetails">
+                <!-- Event details will be dynamically populated here -->
+              </div>
+              <div class="modal-footer">
+                <button type="button" id="transferRoomBtnCalendar" class="btn btn-warning" style="display: none;">
+					<i class="fas fa-exchange-alt"></i> Transfer Room
+				</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+					<i class="fas fa-times"></i> Close
+				</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transfer Room Modal -->
+        <div id="transferRoomModalCalendar" class="modal fade" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">
+					<i class="fas fa-exchange-alt"></i> Transfer Room
+				</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle"></i>
+                  <strong>Current Room:</strong> <span id="currentRoomInfo"></span>
+                </div>
+
+                <form id="transferRoomFormCalendar">
+                  <div class="form-group">
+                    <label for="newRoomCategoryCalendar">
+                      <i class="fas fa-th-large"></i> Select New Room Category
+                    </label>
+                    <select class="form-control" id="newRoomCategoryCalendar" required>
+                      <option value="">-- Select Category --</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group" id="newRoomNumberGroupCalendar" style="display: none;">
+                    <label for="newRoomNumberCalendar">
+                      <i class="fas fa-door-open"></i> Select Available Room
+                    </label>
+                    <select class="form-control" id="newRoomNumberCalendar" required>
+                      <option value="">-- Select Room --</option>
+                    </select>
+                  </div>
+
+                  <div class="alert alert-warning" id="transferWarningCalendar" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Warning:</strong> This will move the guest to the selected room. The current room will be freed up.
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+					<i class="fas fa-times"></i> Cancel
+				</button>
+                <button type="button" id="confirmTransferBtnCalendar" class="btn btn-success" disabled>
+					<i class="fas fa-check"></i> Confirm Transfer
+				</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+			</div>
+			<div id="delete_asset" class="modal fade delete-modal" role="dialog">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-body text-center"> <img src="assets/img/sent.png" alt="" width="50" height="46">
+							<h3 class="delete_class">Are you sure want to delete this Asset?</h3>
+							<div class="m-t-20"> <a href="#" class="btn btn-white" data-dismiss="modal">Close</a>
+								<button type="submit" class="btn btn-danger">Delete</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script data-cfasync="false" src="../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+	<script src="assets/js/jquery-3.5.1.min.js"></script>
+	<script src="assets/js/popper.min.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script src="assets/plugins/datatables/jquery.dataTables.min.js"></script>
+	<script src="assets/plugins/datatables/datatables.min.js"></script>
+	<script src="assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script src="assets/plugins/raphael/raphael.min.js"></script>
+	<script src="assets/js/script.js"></script>
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+
+  // Bookings data (passed from server-side)
+  var bookings = JSON.parse('<%- bookings %>');
+  console.log("🚀 ~ document.addEventListener ~ bookings:", bookings);
+
+  // Format bookings for FullCalendar events
+  var events = bookings.map(booking => ({
+    title: booking.guest_name + ' - ' + booking.room_name + ' - ' + booking.night + ' - ' + booking.checked_in_by,
+    start: booking.start,
+    end: booking.end,
+    backgroundColor: '#c19b76', // Background color for events
+    borderColor: '#c19b76',     // Border color for events
+    textColor: '#fff',          // Optional: Text color for readability
+    description: `
+      Room: ${booking.room_name} (${booking.room_number})<br>
+      Guest: ${booking.guest_name}<br>
+      Amount: $${(booking.amount / 100).toFixed(2)}<br>
+      Nights: ${booking.night}
+    `
+  }));
+
+  // Initialize FullCalendar
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    events: events,
+    eventDidMount: function(info) {
+      var tooltip = document.createElement('div');
+      tooltip.innerHTML = info.event.extendedProps.description;
+      tooltip.style.position = 'absolute';
+      tooltip.style.padding = '5px';
+      tooltip.style.background = '#fff';
+      tooltip.style.border = '1px solid #ddd';
+      tooltip.style.borderRadius = '5px';
+      tooltip.style.display = 'none';
+      tooltip.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)';
+      tooltip.className = 'tooltip';
+      document.body.appendChild(tooltip);
+
+      info.el.addEventListener('mouseenter', function() {
+        tooltip.style.display = 'block';
+        tooltip.style.left = (info.el.getBoundingClientRect().left + window.scrollX + 20) + 'px';
+        tooltip.style.top = (info.el.getBoundingClientRect().top + window.scrollY + 20) + 'px';
+      });
+
+      info.el.addEventListener('mouseleave', function() {
+        tooltip.style.display = 'none';
+      });
+    }
+  });
+
+  calendar.render();
+});
+
+      </script> -->
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+  var calendarEl = document.getElementById('calendar');
+
+  // Bookings data (passed from server-side)
+  var bookings = JSON.parse('<%- bookings %>');
+  var retainedRooms = JSON.parse('<%- retainedRooms %>');
+  console.log("🚀 ~ document.addEventListener ~ bookings:", bookings);
+  console.log("🚀 ~ document.addEventListener ~ retainedRooms:", retainedRooms);
+
+  // Calculate stats
+  var confirmedCount = bookings.filter(b => !b.is_part_payment && b.status === 'success').length;
+  var partialCount = bookings.filter(b => b.is_part_payment || b.status === 'part-payment').length;
+  var retainedCount = retainedRooms.length;
+  var totalCount = bookings.length + retainedRooms.length;
+
+  // Update stats display
+  document.getElementById('confirmedCount').textContent = confirmedCount;
+  document.getElementById('partialCount').textContent = partialCount;
+  document.getElementById('retainedCount').textContent = retainedCount;
+  document.getElementById('totalCount').textContent = totalCount;
+
+  // Format bookings for FullCalendar events
+  var events = bookings.map(booking => {
+    // Determine color based on booking status
+    let backgroundColor = '#c19b76'; // Default color
+    let borderColor = '#c19b76';
+
+    if (booking.status === 'part-payment' || booking.is_part_payment) {
+      backgroundColor = '#FFA500'; // Orange for part payment
+      borderColor = '#FFA500';
+    } else if (booking.status === 'success') {
+      backgroundColor = '#c19b76'; // Gold for confirmed
+      borderColor = '#c19b76';
+    }
+
+    return {
+      title: booking.guest_name + ' - ' + booking.room_name + ' - ' + booking.night + ' - ' + booking.checked_in_by,
+      start: booking.start,
+      end: booking.end,
+      backgroundColor: backgroundColor,
+      borderColor: borderColor,
+      textColor: '#fff',
+      extendedProps: {
+        type: 'booking',
+        referenceId: booking.reference_id,
+        roomId: booking.room_id,
+        roomName: booking.room_name,
+        roomNumber: booking.room_number,
+        categoryId: booking.category_id,
+        categoryName: booking.category_name,
+        guestName: booking.guest_name,
+        amount: (booking.amount / 100).toFixed(2),
+        amountPaid: booking.amount_paid ? (booking.amount_paid / 100).toFixed(2) : (booking.amount / 100).toFixed(2),
+        balance: booking.balance ? (booking.balance / 100).toFixed(2) : '0.00',
+        isPartPayment: booking.is_part_payment || false,
+        nights: booking.night,
+        checkedInBy: booking.checked_in_by,
+        status: booking.status,
+        start: booking.start,
+        end:booking.end
+      }
+    };
+  });
+
+  // Add retained rooms to events
+  var retainedEvents = retainedRooms.map(room => {
+    return {
+      title: 'RETAINED - ' + room.room_number + (room.retention_reason ? ' (' + room.retention_reason + ')' : ''),
+      start: room.retained_from,
+      end: room.retained_to,
+      backgroundColor: '#808080', // Grey for retained
+      borderColor: '#808080',
+      textColor: '#fff',
+      extendedProps: {
+        type: 'retention',
+        roomNumber: room.room_number,
+        retainedBy: room.retained_by,
+        retentionReason: room.retention_reason,
+        start: room.retained_from,
+        end: room.retained_to
+      }
+    };
+  });
+
+  // Combine all events
+  events = events.concat(retainedEvents);
+
+  // Initialize FullCalendar
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    events: events,
+    eventClick: function (info) {
+      // Populate modal with event details
+      var modalContent = '';
+      var modalTitle = '';
+
+      if (info.event.extendedProps.type === 'retention') {
+        // Show retention details
+        modalTitle = 'Room Retention Details';
+        modalContent = `
+          <div class="row">
+            <div class="col-md-12">
+              <div class="alert alert-secondary" style="border-left: 4px solid #808080;">
+                <h5 style="color: #808080;">
+                  <i class="fas fa-lock"></i> ${info.event.title}
+                </h5>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-door-open"></i> Room Number</div>
+                <div class="booking-detail-value">${info.event.extendedProps.roomNumber}</div>
+              </div>
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-user"></i> Retained By</div>
+                <div class="booking-detail-value">${info.event.extendedProps.retainedBy}</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-calendar-check"></i> From</div>
+                <div class="booking-detail-value">${new Date(info.event.extendedProps.start).toLocaleDateString('en-GB')}</div>
+              </div>
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-calendar-times"></i> To</div>
+                <div class="booking-detail-value">${new Date(info.event.extendedProps.end).toLocaleDateString('en-GB')}</div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-comment"></i> Reason</div>
+                <div class="booking-detail-value">${info.event.extendedProps.retentionReason || 'N/A'}</div>
+              </div>
+            </div>
+          </div>
+          <div class="alert alert-info mt-3">
+            <i class="fas fa-info-circle"></i> This room is reserved and not available for online booking
+          </div>
+        `;
+      } else {
+        // Show booking details
+        modalTitle = 'Booking Details';
+        var partPaymentBadge = info.event.extendedProps.isPartPayment
+          ? '<span class="badge badge-warning" style="background-color: #FFA500; font-size: 14px; padding: 6px 12px;">PART PAYMENT</span>'
+          : '<span class="badge badge-success" style="font-size: 14px; padding: 6px 12px;">CONFIRMED</span>';
+
+        var paymentDetails = '';
+        if (info.event.extendedProps.isPartPayment) {
+          var percentPaid = ((Number(info.event.extendedProps.amountPaid) / Number(info.event.extendedProps.amount)) * 100).toFixed(0);
+          paymentDetails = `
+            <div class="col-md-12">
+              <div class="alert alert-warning" style="border-left: 4px solid #FFA500;">
+                <h6><i class="fas fa-exclamation-triangle"></i> Payment Status</h6>
+                <div class="progress mb-2" style="height: 25px;">
+                  <div class="progress-bar" role="progressbar" style="width: ${percentPaid}%; background-color: #FFA500;"
+                       aria-valuenow="${percentPaid}" aria-valuemin="0" aria-valuemax="100">
+                    ${percentPaid}% Paid
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-money-bill-wave"></i> Total Amount</div>
+                <div class="booking-detail-value"><h5>₦${Number(info.event.extendedProps.amount).toLocaleString()}</h5></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-check-circle" style="color: #28a745;"></i> Amount Paid</div>
+                <div class="booking-detail-value"><h5 style="color: #28a745;">₦${Number(info.event.extendedProps.amountPaid).toLocaleString()}</h5></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-exclamation-circle" style="color: #dc3545;"></i> Balance Due</div>
+                <div class="booking-detail-value"><h5 style="color: #dc3545;">₦${Number(info.event.extendedProps.balance).toLocaleString()}</h5></div>
+              </div>
+            </div>
+          `;
+        } else {
+          paymentDetails = `
+            <div class="col-md-12">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-money-bill-wave"></i> Total Amount</div>
+                <div class="booking-detail-value"><h4 style="color: #28a745;">₦${Number(info.event.extendedProps.amount).toLocaleString()}</h4></div>
+              </div>
+            </div>
+          `;
+        }
+
+        modalContent = `
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h5 style="color: #c19b76; margin: 0;">
+                  <i class="fas fa-user-circle"></i> ${info.event.extendedProps.guestName}
+                </h5>
+                ${partPaymentBadge}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-bed"></i> Room</div>
+                <div class="booking-detail-value">${info.event.extendedProps.roomName} (${info.event.extendedProps.roomNumber})</div>
+              </div>
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-moon"></i> Nights</div>
+                <div class="booking-detail-value">${info.event.extendedProps.nights} night(s)</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-calendar-check" style="color: #28a745;"></i> Check In</div>
+                <div class="booking-detail-value">${new Date(info.event.extendedProps.start).toLocaleDateString('en-GB')}</div>
+              </div>
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-calendar-times" style="color: #dc3545;"></i> Check Out</div>
+                <div class="booking-detail-value">${new Date(info.event.extendedProps.end).toLocaleDateString('en-GB')}</div>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            ${paymentDetails}
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-user-tie"></i> Checked In By</div>
+                <div class="booking-detail-value">${info.event.extendedProps.checkedInBy}</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="booking-detail-row">
+                <div class="booking-detail-label"><i class="fas fa-info-circle"></i> Status</div>
+                <div class="booking-detail-value">
+                  <span class="badge badge-${info.event.extendedProps.status === 'success' ? 'success' : 'warning'}">
+                    ${info.event.extendedProps.status.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById('modalTitle').textContent = modalTitle;
+      document.getElementById('eventDetails').innerHTML = modalContent;
+
+      // Show/hide transfer button based on event type
+      const transferBtn = document.getElementById('transferRoomBtnCalendar');
+      if (info.event.extendedProps.type === 'retention') {
+        transferBtn.style.display = 'none';
+      } else {
+        transferBtn.style.display = 'inline-block';
+        // Store booking data for transfer
+        transferBtn.dataset.referenceId = info.event.extendedProps.referenceId;
+        transferBtn.dataset.roomId = info.event.extendedProps.roomId;
+        transferBtn.dataset.roomNumber = info.event.extendedProps.roomNumber;
+        transferBtn.dataset.roomName = info.event.extendedProps.roomName;
+        transferBtn.dataset.categoryId = info.event.extendedProps.categoryId;
+        transferBtn.dataset.categoryName = info.event.extendedProps.categoryName;
+      }
+
+      $('#detailsModal').modal('show'); // Show the modal using Bootstrap
+    }
+  });
+
+  calendar.render();
+});
+
+// Room Transfer functionality for Calendar
+let availableRoomsCalendar = [];
+let currentBookingCalendar = {};
+
+// Open transfer modal when transfer button is clicked
+document.getElementById('transferRoomBtnCalendar').addEventListener('click', function() {
+  const btn = this;
+  currentBookingCalendar = {
+    reference_id: btn.dataset.referenceId,
+    room_id: btn.dataset.roomId,
+    room_number: btn.dataset.roomNumber,
+    room_name: btn.dataset.roomName,
+    category_id: btn.dataset.categoryId,
+    category_name: btn.dataset.categoryName
+  };
+
+  // Update current room info
+  document.getElementById('currentRoomInfo').textContent =
+    `${currentBookingCalendar.room_number} - ${currentBookingCalendar.room_name} (${currentBookingCalendar.category_name})`;
+
+  // Hide details modal and show transfer modal
+  $('#detailsModal').modal('hide');
+  $('#transferRoomModalCalendar').modal('show');
+});
+
+// Load categories when transfer modal opens
+$('#transferRoomModalCalendar').on('show.bs.modal', async function () {
+  try {
+    console.log('🔄 Loading categories from: /portal/api/hotel/categories');
+    const response = await fetch('/portal/api/hotel/categories', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Categories loaded:', data);
+
+    const categorySelect = document.getElementById('newRoomCategoryCalendar');
+    categorySelect.innerHTML = '<option value="">-- Select Category --</option>';
+
+    if (data.status && data.data && data.data.categories) {
+      data.data.categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category._id;
+        const price = parseFloat(category.price); // Price is already in naira
+        option.textContent = `${category.category_name} - ₦${price.toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        option.dataset.categoryName = category.category_name;
+        categorySelect.appendChild(option);
+      });
+      console.log(`✅ Loaded ${data.data.categories.length} categories`);
+    } else {
+      console.warn('⚠️ No categories found in response');
+    }
+  } catch (error) {
+    console.error('❌ Error loading categories:', error);
+    showToast('Failed to load room categories: ' + error.message, 'error');
+  }
+});
+
+// Load available rooms when category is selected
+document.getElementById('newRoomCategoryCalendar').addEventListener('change', async function() {
+  const categoryId = this.value;
+  const categoryName = this.options[this.selectedIndex].dataset.categoryName;
+
+  if (!categoryId) {
+    document.getElementById('newRoomNumberGroupCalendar').style.display = 'none';
+    document.getElementById('confirmTransferBtnCalendar').disabled = true;
+    return;
+  }
+
+  try {
+    console.log(`🔄 Loading rooms for category ${categoryId} from: /portal/api/hotel/rooms/category/${categoryId}`);
+    const response = await fetch(`/portal/api/hotel/rooms/category/${categoryId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Rooms loaded:', data);
+
+    const roomSelect = document.getElementById('newRoomNumberCalendar');
+    roomSelect.innerHTML = '<option value="">-- Select Room --</option>';
+
+    // Filter out the current room and booked rooms
+    availableRoomsCalendar = data.data.rooms.filter(room =>
+      !room.status && room.room_number !== currentBookingCalendar.room_number
+    );
+
+    console.log(`✅ Found ${availableRoomsCalendar.length} available rooms`);
+
+    if (availableRoomsCalendar.length === 0) {
+      roomSelect.innerHTML = '<option value="">No available rooms in this category</option>';
+      document.getElementById('newRoomNumberGroupCalendar').style.display = 'block';
+      document.getElementById('confirmTransferBtnCalendar').disabled = true;
+      console.warn('⚠️ No available rooms in this category');
+      return;
+    }
+
+    availableRoomsCalendar.forEach(room => {
+      const option = document.createElement('option');
+      option.value = room._id;
+      option.textContent = `Room ${room.room_number} - ${room.room_name}`;
+      option.dataset.roomNumber = room.room_number;
+      option.dataset.roomName = room.room_name;
+      roomSelect.appendChild(option);
+    });
+
+    document.getElementById('newRoomNumberGroupCalendar').style.display = 'block';
+    document.getElementById('transferWarningCalendar').style.display = 'block';
+  } catch (error) {
+    console.error('❌ Error loading rooms:', error);
+    showToast('Failed to load available rooms: ' + error.message, 'error');
+  }
+});
+
+// Enable confirm button when room is selected
+document.getElementById('newRoomNumberCalendar').addEventListener('change', function() {
+  document.getElementById('confirmTransferBtnCalendar').disabled = !this.value;
+});
+
+// Handle transfer confirmation
+document.getElementById('confirmTransferBtnCalendar').addEventListener('click', async function() {
+  const newRoomId = document.getElementById('newRoomNumberCalendar').value;
+  const newRoomSelect = document.getElementById('newRoomNumberCalendar');
+  const selectedOption = newRoomSelect.options[newRoomSelect.selectedIndex];
+  const newRoomNumber = selectedOption.dataset.roomNumber;
+  const newRoomName = selectedOption.dataset.roomName;
+
+  const newCategoryId = document.getElementById('newRoomCategoryCalendar').value;
+  const newCategorySelect = document.getElementById('newRoomCategoryCalendar');
+  const selectedCategoryOption = newCategorySelect.options[newCategorySelect.selectedIndex];
+  const newCategoryName = selectedCategoryOption.dataset.categoryName;
+
+  if (!newRoomId) {
+    showToast('Please select a room', 'error');
+    return;
+  }
+
+  // Disable button and show loading
+  this.disabled = true;
+  this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transferring...';
+
+  try {
+    const response = await fetch('/portal/transfer-room', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        reference_id: currentBookingCalendar.reference_id,
+        old_room_id: currentBookingCalendar.room_id,
+        old_room_number: currentBookingCalendar.room_number,
+        new_room_id: newRoomId,
+        new_room_number: newRoomNumber,
+        new_room_name: newRoomName,
+        new_category_id: newCategoryId,
+        new_category_name: newCategoryName
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.status) {
+      showToast(data.message, 'success');
+      $('#transferRoomModalCalendar').modal('hide');
+      // Reload the page to refresh calendar
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } else {
+      showToast(data.message || 'Failed to transfer room', 'error');
+      this.disabled = false;
+      this.innerHTML = '<i class="fas fa-check"></i> Confirm Transfer';
+    }
+  } catch (error) {
+    console.error('Error transferring room:', error);
+    showToast('Failed to transfer room: ' + error.message, 'error');
+    this.disabled = false;
+    this.innerHTML = '<i class="fas fa-check"></i> Confirm Transfer';
+  }
+});
+
+// Reset form when modal is closed
+$('#transferRoomModalCalendar').on('hidden.bs.modal', function () {
+  document.getElementById('newRoomCategoryCalendar').value = '';
+  document.getElementById('newRoomNumberCalendar').value = '';
+  document.getElementById('newRoomNumberGroupCalendar').style.display = 'none';
+  document.getElementById('transferWarningCalendar').style.display = 'none';
+  document.getElementById('confirmTransferBtnCalendar').disabled = true;
+  document.getElementById('confirmTransferBtnCalendar').innerHTML = '<i class="fas fa-check"></i> Confirm Transfer';
+});
+
+function showToast(message, type) {
+  const backgroundColor = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#ffc107';
+  Toastify({
+    text: message,
+    duration: 3000,
+    gravity: "top",
+    position: "center",
+    style: { background: backgroundColor },
+  }).showToast();
+}
+
+      </script>
+
+</body>
+
+</html>

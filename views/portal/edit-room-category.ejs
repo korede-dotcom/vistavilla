@@ -1,0 +1,843 @@
+<%- include('partial/header', { title: 'Edit Room Category - Wishmewell Apartment', email: email, roleName: roleName }) %>
+<%- include('partial/sidebar', { name: name }) %>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<style>
+    .modern-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+        padding: 25px;
+        margin-bottom: 20px;
+    }
+
+    .card-header-custom {
+        border-bottom: 3px solid #6b6b6b;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
+
+    .card-header-custom h5 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+
+    .form-control, .form-control:focus {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #6b6b6b;
+        box-shadow: 0 0 0 0.2rem rgba(193, 155, 118, 0.25);
+    }
+
+    /* Image Gallery Styles */
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .image-item {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        aspect-ratio: 1;
+    }
+
+    .image-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .image-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .image-item:hover .image-overlay {
+        opacity: 1;
+    }
+
+    .image-overlay button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view {
+        background: #6b6b6b;
+        color: white;
+    }
+
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background: #9e9e9e;
+    }
+
+    .btn-delete:hover {
+        background: #c82333;
+    }
+
+    .upload-area {
+        border: 3px dashed #6b6b6b;
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .upload-area:hover {
+        background: #e9ecef;
+        border-color: #9e9e9e;
+    }
+
+    .upload-area.dragover {
+        background: #fff9e6;
+        border-color: #9e9e9e;
+    }
+
+    .upload-icon {
+        font-size: 48px;
+        color: #6b6b6b;
+        margin-bottom: 15px;
+    }
+
+    .preview-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .preview-item {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        aspect-ratio: 1;
+    }
+
+    .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .preview-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .upload-progress {
+        margin-top: 15px;
+        display: none;
+    }
+
+    .progress {
+        height: 25px;
+        border-radius: 8px;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #6b6b6b 0%, #9e9e9e 100%);
+        border: none;
+        color: white;
+        padding: 12px 40px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(193, 155, 118, 0.4);
+    }
+
+    .section-divider {
+        border-top: 2px solid #e9ecef;
+        margin: 30px 0;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <div class="mt-5">
+                        <h4 class="card-title float-left mt-2">
+                            <i class="fas fa-edit" style="color: #6b6b6b;"></i> Edit Room Category
+                        </h4>
+                        <a href="/portal/room-category" class="btn btn-secondary float-right">
+                            <i class="fas fa-arrow-left"></i> Back to Categories
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Image Gallery Section -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="modern-card">
+                    <div class="card-header-custom">
+                        <h5><i class="fas fa-images"></i> Room Images</h5>
+                    </div>
+
+                    <!-- Current Images -->
+                    <div class="image-gallery" id="currentImages">
+                        <% if (categories.dataValues.picture && categories.dataValues.picture.length > 0) { %>
+                            <% categories.dataValues.picture.forEach((img, index) => { %>
+                                <div class="image-item" data-image-url="<%= img %>">
+                                    <img src="<%= img %>" alt="Room Image <%= index + 1 %>">
+                                    <div class="image-overlay">
+                                        <button type="button" class="btn-view" onclick="viewImage('<%= img %>')">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        <button type="button" class="btn-delete" onclick="deleteImage('<%= img %>', this)">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="col-12 text-center text-muted">
+                                <i class="fas fa-image fa-3x mb-3"></i>
+                                <p>No images uploaded yet</p>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Upload New Images -->
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h5>Drag & Drop Images Here</h5>
+                        <p class="text-muted">or click to browse</p>
+                        <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
+                        <button type="button" class="btn btn-primary mt-3" onclick="document.getElementById('imageInput').click()">
+                            <i class="fas fa-plus"></i> Select Images
+                        </button>
+                    </div>
+
+                    <!-- Upload Progress -->
+                    <div class="upload-progress" id="uploadProgress">
+                        <p class="mb-2"><strong>Uploading images...</strong></p>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                 role="progressbar"
+                                 style="width: 0%; background-color: #6b6b6b;"
+                                 id="progressBar">0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Preview New Images -->
+                    <div class="preview-container" id="previewContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Details Form -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="modern-card">
+                    <div class="card-header-custom">
+                        <h5><i class="fas fa-info-circle"></i> Category Details</h5>
+                    </div>
+
+                <form id="roomCategoryForm">
+                    <div class="row">
+                        <!-- Category Name -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Category Name</label>
+                                <input name="category_name" type="text" class="form-control" id="category_name" value="<%= categories.dataValues.category_name %>">
+                            </div>
+                        </div>
+                        <!-- Room Type -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Room Type</label>
+                                <select name="room_type" class="form-control" id="room_type">
+                                    <option value="">Select</option>
+                                    <option value="Single" <%= categories.dataValues.room_type === 'Single' ? 'selected' : '' %>>Single</option>
+                                    <option value="Double" <%= categories.dataValues.room_type === 'Double' ? 'selected' : '' %>>Double</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- AC -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>AC</label>
+                                <select name="has_ac" class="form-control" id="has_ac">
+                                    <option value="">Select</option>
+                                    <option value="YES" <%= categories.dataValues.has_ac === 'YES' ? 'selected' : '' %>>YES</option>
+                                    <option value="NO" <%= categories.dataValues.has_ac === 'NO' ? 'selected' : '' %>>NO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- WIFI -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>WIFI</label>
+                                <select name="has_wifi" class="form-control" id="has_wifi">
+                                    <option value="">Select</option>
+                                    <option value="YES" <%= categories.dataValues.has_wifi === 'YES' ? 'selected' : '' %>>YES</option>
+                                    <option value="NO" <%= categories.dataValues.has_wifi === 'NO' ? 'selected' : '' %>>NO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Food -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Food</label>
+                                <select name="food" class="form-control" id="food">
+                                    <option value="">Select</option>
+                                    <option value="Free Breakfast" <%= categories.dataValues.food === 'Free Breakfast' ? 'selected' : '' %>>Free Breakfast</option>
+                                    <option value="Free Lunch" <%= categories.dataValues.food === 'Free Lunch' ? 'selected' : '' %>>Free Lunch</option>
+                                    <option value="Free Dinner" <%= categories.dataValues.food === 'Free Dinner' ? 'selected' : '' %>>Free Dinner</option>
+                                    <option value="Free Breakfast & Dinner" <%= categories.dataValues.food === 'Free Breakfast & Dinner' ? 'selected' : '' %>>Free Breakfast & Dinner</option>
+                                    <option value="No Free Food" <%= categories.dataValues.food === 'No Free Food' ? 'selected' : '' %>>No Free Food</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Bed Count -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Bed Count</label>
+                                <select name="num_beds" class="form-control" id="num_beds">
+                                    <option value="">Select</option>
+                                    <option value="1" <%= categories.dataValues.num_beds === '1' ? 'selected' : '' %>>1</option>
+                                    <option value="2" <%= categories.dataValues.num_beds === '2' ? 'selected' : '' %>>2</option>
+                                    <option value="3" <%= categories.dataValues.num_beds === '3' ? 'selected' : '' %>>3</option>
+                                    <option value="4" <%= categories.dataValues.num_beds === '4' ? 'selected' : '' %>>4</option>
+                                    <option value="5" <%= categories.dataValues.num_beds === '5' ? 'selected' : '' %>>5</option>
+                                    <option value="6" <%= categories.dataValues.num_beds === '6' ? 'selected' : '' %>>6</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Number of Guests -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Number of Guests</label>
+                                <select name="number_of_guests" class="form-control" id="number_of_guests">
+                                    <option value="">Select</option>
+                                    <option value="1" <%= categories.dataValues.number_of_guests === '1' ? 'selected' : '' %>>1</option>
+                                    <option value="2" <%= categories.dataValues.number_of_guests === '2' ? 'selected' : '' %>>2</option>
+                                    <option value="3" <%= categories.dataValues.number_of_guests === '3' ? 'selected' : '' %>>3</option>
+                                    <option value="4" <%= categories.dataValues.number_of_guests === '4' ? 'selected' : '' %>>4</option>
+                                    <option value="5" <%= categories.dataValues.number_of_guests === '5' ? 'selected' : '' %>>5</option>
+                                    <option value="6" <%= categories.dataValues.number_of_guests === '6' ? 'selected' : '' %>>6</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Charges For Cancellation -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Charges For Cancellation</label>
+                                <select name="cancellations_fee" class="form-control" id="cancellations_fee">
+                                    <option value="">Select</option>
+                                    <option value="Free" <%= categories.dataValues.cancellations_fee === 'Free' ? 'selected' : '' %>>Free</option>
+                                    <option value="5% Before 24Hours" <%= categories.dataValues.cancellations_fee === '5% Before 24Hours' ? 'selected' : '' %>>5% Before 24Hours</option>
+                                    <option value="No Cancellation Allow" <%= categories.dataValues.cancellations_fee === 'No Cancellation Allow' ? 'selected' : '' %>>No Cancellation Allow</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Price -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Price</label>
+                                <input name="price" type="text" class="form-control" id="price" value="<%= categories.dataValues.price %>">
+                            </div>
+                        </div>
+                        <!-- File Upload -->
+                        <!-- <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Image Upload</label>
+                                <div class="custom-file mb-3">
+                                    <input name="pictures[]" type="file" class="custom-file-input" id="picture" accept="image/*" multiple>
+                                    <label class="custom-file-label" for="picture">Choose images</label>
+                                </div>
+                            </div>
+
+                        
+                            <div id="imagePreview" class="mt-3"></div>
+                        </div> -->
+
+                        <!-- Message -->
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label><i class="fas fa-comment-alt"></i> Description</label>
+                                <textarea name="description" class="form-control" rows="5" id="text" placeholder="Enter room category description"><%= categories.dataValues.description %></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-right mt-4">
+                        <a href="/portal/room-category" class="btn btn-secondary mr-2">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-save" id="saveBtn">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image View Modal -->
+<div class="modal fade" id="imageViewModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #6b6b6b 0%, #9e9e9e 100%); color: white;">
+                <h5 class="modal-title"><i class="fas fa-image"></i> Image Preview</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" style="max-width: 100%; border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/jquery-3.5.1.min.js"></script>
+<script src="assets/js/popper.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/moment.min.js"></script>
+<script src="assets/js/select2.min.js"></script>
+<script src="assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="assets/plugins/raphael/raphael.min.js"></script>
+<script src="assets/js/bootstrap-datetimepicker.min.js"></script>
+<script src="assets/js/script.js"></script>
+
+<script>
+// Global variables
+let newImagesToUpload = [];
+let deletedImages = [];
+const categoryId = new URLSearchParams(window.location.search).get('id');
+
+// Image compression function
+async function compressImage(file, maxWidth = 1920, maxHeight = 1080, quality = 0.85) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                // Calculate new dimensions
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob((blob) => {
+                    resolve(new File([blob], file.name, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    }));
+                }, 'image/jpeg', quality);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// View image in modal
+function viewImage(url) {
+    document.getElementById('modalImage').src = url;
+    $('#imageViewModal').modal('show');
+}
+
+// Delete image
+async function deleteImage(url, button) {
+    if (confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
+        try {
+            // Show loading state
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+
+            // Delete from Cloudinary via backend
+            const response = await fetch('/images/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url }),
+                credentials: 'include' // Include cookies for authentication
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.status) {
+                // Mark for deletion from room category database
+                deletedImages.push(url);
+
+                // Remove from UI
+                button.closest('.image-item').remove();
+
+                // Update the category immediately to remove from database
+                await updateCategoryImages();
+
+                Toastify({
+                    text: "Image deleted successfully!",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    style: { background: "#28a745" }
+                }).showToast();
+            } else {
+                throw new Error(result.message || 'Failed to delete image');
+            }
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-trash"></i> Delete';
+
+            Toastify({
+                text: error.message || "Failed to delete image",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: { background: "#dc3545" }
+            }).showToast();
+        }
+    }
+}
+
+// Helper function to update category images in database
+async function updateCategoryImages() {
+    try {
+        const response = await fetch(`/portal/edit-room-category?id=${categoryId}`, {
+            method: 'POST',
+            body: JSON.stringify({ deletedImages: deletedImages }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include' // Include cookies for authentication
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.status) {
+            // Clear deleted images array after successful update
+            deletedImages = [];
+            console.log('✅ Category images updated in database');
+        }
+    } catch (error) {
+        console.error('Error updating category images:', error);
+    }
+}
+
+// Handle file selection
+document.getElementById('imageInput').addEventListener('change', async function(e) {
+    const files = Array.from(e.target.files);
+    const previewContainer = document.getElementById('previewContainer');
+
+    for (const file of files) {
+        // Compress image
+        const compressedFile = await compressImage(file);
+        newImagesToUpload.push(compressedFile);
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+            previewItem.innerHTML = `
+                <img src="${e.target.result}" alt="Preview">
+                <button type="button" class="preview-remove" onclick="removePreview(this, ${newImagesToUpload.length - 1})">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            previewContainer.appendChild(previewItem);
+        };
+        reader.readAsDataURL(compressedFile);
+    }
+
+    Toastify({
+        text: `${files.length} image(s) ready to upload`,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        style: { background: "#28a745" }
+    }).showToast();
+});
+
+// Remove preview
+function removePreview(button, index) {
+    newImagesToUpload.splice(index, 1);
+    button.closest('.preview-item').remove();
+}
+
+// Drag and drop
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    const input = document.getElementById('imageInput');
+    const dt = new DataTransfer();
+    files.forEach(f => dt.items.add(f));
+    input.files = dt.files;
+    input.dispatchEvent(new Event('change'));
+});
+
+uploadArea.addEventListener('click', (e) => {
+    if (e.target === uploadArea || e.target.closest('.upload-icon, h5, p')) {
+        document.getElementById('imageInput').click();
+    }
+});
+
+// Form submission
+document.getElementById('roomCategoryForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+    saveBtn.disabled = true;
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    // Track modified fields
+    const modifiedFields = {};
+    const originalValues = {
+        category_name: '<%= categories.dataValues.category_name %>',
+        room_type: '<%= categories.dataValues.room_type %>',
+        has_ac: '<%= categories.dataValues.has_ac %>',
+        has_wifi: '<%= categories.dataValues.has_wifi %>',
+        food: '<%= categories.dataValues.food %>',
+        num_beds: '<%= categories.dataValues.num_beds %>',
+        number_of_guests: '<%= categories.dataValues.number_of_guests %>',
+        cancellations_fee: '<%= categories.dataValues.cancellations_fee %>',
+        price: parseFloat('<%= categories.dataValues.price %>'),
+        description: '<%= categories.dataValues.description %>'
+    };
+
+    // Check for modified fields
+    formData.forEach((value, key) => {
+        if (key === "price") {
+            value = parseFloat(value);
+        }
+        if (value !== originalValues[key] && value !== "" && value !== null) {
+            modifiedFields[key] = value;
+        }
+    });
+
+    try {
+        // Upload new images via backend
+        if (newImagesToUpload.length > 0) {
+            console.log(`🔄 Uploading ${newImagesToUpload.length} images via backend...`);
+            const progressBar = document.getElementById('progressBar');
+            const uploadProgress = document.getElementById('uploadProgress');
+            uploadProgress.style.display = 'block';
+
+            const uploadedUrls = [];
+
+            // Upload images one by one
+            for (let i = 0; i < newImagesToUpload.length; i++) {
+                const file = newImagesToUpload[i];
+                const imageFormData = new FormData();
+                imageFormData.append('image', file);
+
+                console.log(`📤 Uploading image ${i + 1}/${newImagesToUpload.length}...`);
+
+                try {
+                    const uploadResponse = await fetch('/images/upload?for=hotelroom', {
+                        method: 'POST',
+                        body: imageFormData,
+                        credentials: 'include'
+                    });
+
+                    if (!uploadResponse.ok) {
+                        throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+                    }
+
+                    const uploadData = await uploadResponse.json();
+
+                    if (uploadData.status && uploadData.data.createdImages && uploadData.data.createdImages.length > 0) {
+                        const imageUrl = uploadData.data.createdImages[0].url;
+                        uploadedUrls.push(imageUrl);
+                        console.log(`✅ Image ${i + 1} uploaded`);
+                    } else {
+                        throw new Error('Upload failed');
+                    }
+                } catch (uploadError) {
+                    console.error(`❌ Error uploading image ${i + 1}:`, uploadError);
+                    throw uploadError;
+                }
+
+                const progress = ((i + 1) / newImagesToUpload.length) * 100;
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = Math.round(progress) + '%';
+            }
+
+            modifiedFields.newImages = uploadedUrls;
+            uploadProgress.style.display = 'none';
+            console.log(`✅ All images uploaded`);
+        }
+
+        // Add deleted images
+        if (deletedImages.length > 0) {
+            modifiedFields.deletedImages = deletedImages;
+            console.log(`🗑️ Marking ${deletedImages.length} images for deletion`);
+        }
+
+        // Send update request
+        if (Object.keys(modifiedFields).length > 0) {
+            console.log('💾 Sending update to server:', {
+                ...modifiedFields,
+                newImages: modifiedFields.newImages ? `${modifiedFields.newImages.length} images` : 'none',
+                deletedImages: modifiedFields.deletedImages ? `${modifiedFields.deletedImages.length} images` : 'none'
+            });
+
+            const response = await fetch(`/portal/edit-room-category?id=${categoryId}`, {
+                method: 'POST',
+                body: JSON.stringify(modifiedFields),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include' // Include cookies for authentication
+            });
+
+            const result = await response.json();
+            console.log('📥 Server response:', result);
+
+            if (response.ok && result.status) {
+                Toastify({
+                    text: `Category updated successfully! ${result.pictureCount || 0} images saved.`,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    style: { background: "#28a745" }
+                }).showToast();
+
+                console.log('✅ Update successful, reloading page in 2 seconds...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                throw new Error(result.message || 'Update failed');
+            }
+        } else {
+            Toastify({
+                text: "No changes detected",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: { background: "#FFA500" }
+                }).showToast();
+        }
+    } catch (error) {
+        console.error('❌ Error:', error);
+        console.error('Error stack:', error.stack);
+
+        // Hide upload progress if visible
+        document.getElementById('uploadProgress').style.display = 'none';
+
+        let errorMessage = "An error occurred";
+        if (error.message) {
+            errorMessage = error.message;
+        } else if (error.toString().includes('NetworkError') || error.toString().includes('NS_ERROR')) {
+            errorMessage = "Network error. Please check your internet connection and try again.";
+        }
+
+        Toastify({
+            text: "Error: " + errorMessage,
+            duration: 5000,
+            gravity: "top",
+            position: "right",
+            style: { background: "#dc3545" }
+        }).showToast();
+    } finally {
+        saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+        saveBtn.disabled = false;
+    }
+});
+</script>
+
+</body>
+
+</html>

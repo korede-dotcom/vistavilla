@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Vistavilla Apartment - <%= category.category_name %></title>
+	<!-- Stylesheets -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/booking-modern.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<link href="css/modern-client.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="images/favicon.png" type="image/x-icon">
+	<!-- Responsive -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+
+<body>
+<div class="page-wrapper">
+	<!-- Luxury Preloader -->
+	<div class="luxury-preloader">
+		<div class="luxury-loader">
+			<div class="luxury-loader-ring luxury-loader-ring-1"></div>
+			<div class="luxury-loader-ring luxury-loader-ring-2"></div>
+			<div class="luxury-loader-ring luxury-loader-ring-3"></div>
+		</div>
+	</div>
+
+  <!-- Main Header-->
+  <%- include('partials/header', { title: 'Vistavilla Apartment',activeMarquees:activeMarquees }) %>
+
+	<!--End Main Header -->
+
+	<!-- Minimal Luxury Hero Section -->
+	<section class="minimal-luxury-hero">
+		<div class="minimal-hero-bg" style="background-image: url('<%= category.picture[0] %>');"></div>
+		<div class="minimal-hero-overlay"></div>
+		<div class="minimal-hero-content">
+			<div class="minimal-breadcrumb">
+				<a href="/">Home</a>
+				<span class="minimal-separator">/</span>
+				<a href="/rooms">Rooms</a>
+				<span class="minimal-separator">/</span>
+				<span><%= category.category_name %></span>
+			</div>
+			<h1 class="minimal-hero-title"><%= category.category_name %></h1>
+			<div class="minimal-hero-features">
+				<span class="minimal-feature"><i class="fas fa-bed"></i><%= category.num_beds %> Bed<%= category.num_beds > 1 ? 's' : '' %></span>
+				<span class="minimal-divider">•</span>
+				<span class="minimal-feature"><i class="fas fa-users"></i><%= category.number_of_guests %> Guests</span>
+				<span class="minimal-divider">•</span>
+				<span class="minimal-feature"><i class="fas fa-expand-arrows-alt"></i><%= category.room_type %></span>
+			</div>
+		</div>
+		<div class="minimal-scroll-indicator">
+			<span>Scroll to explore</span>
+			<i class="fas fa-chevron-down"></i>
+		</div>
+	</section>
+
+	<!-- Minimal Luxury Details Section -->
+	<section class="minimal-luxury-details">
+		<div class="minimal-container">
+			<div class="minimal-details-layout">
+				<!-- Left Column: Gallery & Details -->
+				<div class="minimal-content-column">
+					<!-- Minimal Image Gallery -->
+					<div class="minimal-gallery">
+						<div class="minimal-main-image-wrapper">
+							<img id="mainImage" src="<%= category.picture[0] %>" alt="<%= category.category_name %>" class="minimal-main-image">
+							<button class="minimal-fullscreen-btn" onclick="openImageModal(0)">
+								<i class="fas fa-expand"></i>
+							</button>
+							<div class="minimal-image-counter">
+								<span id="currentImageIndex">1</span> / <%= category.picture.length %>
+							</div>
+						</div>
+						<div class="minimal-thumbnail-slider">
+							<% category.picture.forEach((pkg, index) => { %>
+								<div class="minimal-thumbnail <%= index === 0 ? 'active' : '' %>" onclick="changeMainImage('<%= pkg %>', <%= index %>)">
+									<img src="<%= pkg %>" alt="View <%= index + 1 %>">
+								</div>
+							<% }); %>
+						</div>
+					</div>
+
+				<!-- Right Column: Booking Sidebar -->
+				<div class="minimal-booking-sidebar">
+					<!-- Minimal Luxury Price Card -->
+					<div class="minimal-price-card">
+						<% if (category.hasSpecialPrice) { %>
+							<div class="minimal-special-tag">
+								<i class="fas fa-tag"></i>
+								<span>Special Offer</span>
+							</div>
+						<% } %>
+
+						<div class="minimal-price-display">
+							<% if (category.hasSpecialPrice) { %>
+								<div class="minimal-price-comparison">
+									<span class="minimal-price-was">₦<%= (category.originalPrice || 0).toLocaleString() %></span>
+									<span class="minimal-price-now">₦<%= (category.price || 0).toLocaleString() %></span>
+								</div>
+							<% } else { %>
+								<span class="minimal-price-amount">₦<%= (category.price || 0).toLocaleString() %></span>
+							<% } %>
+							<span class="minimal-price-period">per night</span>
+						</div>
+
+						<!-- Minimal Booking Form -->
+						<form id="payment_form" class="payment_form minimal-booking-form">
+							<div class="minimal-form-section">
+								<label class="minimal-form-label">Your Stay</label>
+								<div class="minimal-date-inputs">
+									<div class="minimal-date-field">
+										<i class="fas fa-calendar-alt"></i>
+										<div class="minimal-date-content">
+											<span class="minimal-date-label">Check-in</span>
+											<input
+												id="checkin-date"
+												name="start"
+												required
+												class="minimal-date-input checkininputs"
+												type="date"
+											/>
+										</div>
+									</div>
+									<div class="minimal-date-divider">
+										<i class="fas fa-arrow-right"></i>
+									</div>
+									<div class="minimal-date-field">
+										<i class="fas fa-calendar-alt"></i>
+										<div class="minimal-date-content">
+											<span class="minimal-date-label">Check-out</span>
+											<input
+												id="checkout-date"
+												required
+												class="minimal-date-input checkoutinput"
+												type="date"
+											/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<button id="checkAvailability" type="submit" class="minimal-book-btn">
+								<span class="minimal-btn-text">Check Availability</span>
+								<span class="minimal-btn-icon">
+									<i class="fas fa-arrow-right"></i>
+								</span>
+							</button>
+
+							<div class="minimal-booking-note">
+								<i class="fas fa-shield-alt"></i>
+								<span>Free cancellation within 24 hours</span>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- Minimal Description Section -->
+			<div class="minimal-description-wrapper">
+				<h2 class="minimal-section-title">About This Room</h2>
+				<p class="minimal-description-text"><%= category.description %></p>
+
+				<!-- Minimal Amenities Grid -->
+				<div class="minimal-amenities-section">
+					<h3 class="minimal-amenities-title">What This Place Offers</h3>
+					<div class="minimal-amenities-grid">
+						<div class="minimal-amenity-item">
+							<i class="fas fa-bed"></i>
+							<span><%= category.num_beds %> <%= category.num_beds > 1 ? 'Beds' : 'Bed' %></span>
+						</div>
+						<div class="minimal-amenity-item">
+							<i class="fas fa-users"></i>
+							<span><%= category.number_of_guests %> Guests</span>
+						</div>
+						<div class="minimal-amenity-item">
+							<i class="fas fa-door-open"></i>
+							<span><%= category.room_type %> Room</span>
+						</div>
+						<% if (category.has_ac) { %>
+						<div class="minimal-amenity-item">
+							<i class="fas fa-snowflake"></i>
+							<span>Air Conditioning</span>
+						</div>
+						<% } %>
+						<% if (category.has_wifi) { %>
+						<div class="minimal-amenity-item">
+							<i class="fas fa-wifi"></i>
+							<span>High-Speed WiFi</span>
+						</div>
+						<% } %>
+						<% if (category.has_tv) { %>
+						<div class="minimal-amenity-item">
+							<i class="fas fa-tv"></i>
+							<span>Smart TV</span>
+						</div>
+						<% } %>
+						<% if (category.has_bathroom) { %>
+						<div class="minimal-amenity-item">
+							<i class="fas fa-bath"></i>
+							<span>Private Bathroom</span>
+						</div>
+						<% } %>
+						<div class="minimal-amenity-item">
+							<i class="fas fa-utensils"></i>
+							<span><%= category.food %></span>
+						</div>
+						<div class="minimal-amenity-item">
+							<i class="fas fa-concierge-bell"></i>
+							<span>24/7 Service</span>
+						</div>
+						<div class="minimal-amenity-item">
+							<i class="fas fa-shield-alt"></i>
+							<span>Secure Access</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+  <!-- Main Footer -->
+  <%- include('partials/footer') %>
+  <!--End Main Footer -->
+
+</div><!-- End Page Wrapper -->
+
+<!-- Scroll To Top -->
+<div class="scroll-to-top scroll-to-target" data-target="html">
+	<span class="fa fa-angle-up"></span>
+</div>
+
+<!-- Scripts -->
+<script src="js/jquery.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/wow.js"></script>
+<script src="js/appear.js"></script>
+<script src="js/owl.js"></script>
+<script src="js/script.js"></script>
+
+<script>
+// Image Gallery Functions
+function changeMainImage(imageSrc, index) {
+	const mainImage = document.getElementById('mainImage');
+	const imageCounter = document.getElementById('currentImageIndex');
+
+	// Fade out
+	mainImage.style.opacity = '0';
+
+	setTimeout(() => {
+		mainImage.src = imageSrc;
+		if (imageCounter) {
+			imageCounter.textContent = index + 1;
+		}
+
+		// Fade in
+		mainImage.style.opacity = '1';
+	}, 200);
+
+	// Update active thumbnail
+	document.querySelectorAll('.minimal-thumbnail').forEach((thumb, i) => {
+		if (i === index) {
+			thumb.classList.add('active');
+		} else {
+			thumb.classList.remove('active');
+		}
+	});
+}
+
+// Preloader
+window.addEventListener('load', function() {
+	const preloader = document.querySelector('.luxury-preloader');
+	if (preloader) {
+		setTimeout(() => {
+			preloader.style.opacity = '0';
+			setTimeout(() => {
+				preloader.style.display = 'none';
+			}, 300);
+		}, 500);
+	}
+});
+</script>
+
+<script>
+// Form Submission Handler
+document.querySelectorAll('.payment_form').forEach(form => {
+  form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    function formatDate(dateStr) {
+      const [year, month, day] = dateStr.split('-');
+      return `${day}-${month}-${year}`;
+    }
+
+    function showToast(message, color) {
+      Toastify({
+        text: message,
+        duration: 3000,
+        close: true,
+        gravity: "top",
+        position: "center",
+        style: { background: color },
+      }).showToast();
+    }
+
+    const checkInDate = event.target.querySelector('.checkininputs').value;
+    const checkOutDate = event.target.querySelector('.checkoutinput').value;
+
+    if (!checkInDate || !checkOutDate) {
+      showToast('Please fill in both check-in and check-out dates.', '#dc3545');
+      return;
+    }
+
+    const formattedCheckInDate = formatDate(checkInDate);
+    const formattedCheckOutDate = formatDate(checkOutDate);
+
+    const url = new URL(window.location.href);
+    const id = url.searchParams.get('id');
+    const submitBtn = document.getElementById('checkAvailability');
+
+    // Show loading state
+    const originalHTML = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="elegant-btn-text">Checking...</span><i class="fas fa-spinner fa-spin"></i>';
+    submitBtn.disabled = true;
+
+    const formData = {
+      start: formattedCheckInDate,
+      end: formattedCheckOutDate,
+      category_id: parseInt(id)
+    };
+
+    try {
+      const response = await fetch(`/check-availability/?end=${formData.end}&start=${formData.start}&category_id=${formData.category_id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        submitBtn.innerHTML = originalHTML;
+        submitBtn.disabled = false;
+
+        if (data?.data.availableRoomDetails.length > 0) {
+          showToast(data.message, '#28a745');
+          const roomNumbers = data.data.availableRoomDetails.map(room => room.room_number);
+          setTimeout(() => {
+            window.location.href = `/available-rooms?id=${data.data.category_id}&data=${roomNumbers.toString()}&start=${formData.start}&end=${formData.end}`;
+          }, 1000);
+        } else {
+          showToast(data.message, '#dc3545');
+        }
+      } else {
+        submitBtn.innerHTML = originalHTML;
+        submitBtn.disabled = false;
+        showToast(response.statusText, '#dc3545');
+      }
+    } catch (error) {
+      submitBtn.innerHTML = originalHTML;
+      submitBtn.disabled = false;
+      showToast(error.message, '#dc3545');
+      console.error('Error:', error);
+    }
+  });
+});
+
+</script>
+</body>
+
+<!-- Mirrored from kodesolution.com/html/2023/hoexr-html/room-details.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 25 Aug 2023 12:36:17 GMT -->
+</html>

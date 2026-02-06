@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Items Checklist</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo {
+      max-width: 150px;
+      height: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .item {
+      width: calc(25% - 10px); /* 4 items per row by default */
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+    .item input[type="checkbox"] {
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      accent-color: #94081a; /* Checkbox color */
+    }
+    .item label {
+      margin-left: 15px;
+      font-size: 18px; /* Larger text size */
+      font-weight: bold;
+      flex: 1;
+    }
+    button[type="submit"] {
+      display: block;
+      margin: 20px auto;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #94081a;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button[type="submit"]:hover {
+      background-color: #a30b21;
+    }
+    @media (max-width: 768px) {
+      .item {
+        width: calc(50% - 10px); /* 2 items per row on tablets */
+      }
+    }
+    @media (max-width: 480px) {
+      .item {
+        width: 100%; /* 1 item per row on mobile screens */
+      }
+    }
+    @media print {
+      body {
+        margin: 0;
+        padding: 0; /* Avoid empty first page */
+        font-size: 14px;
+      }
+      .logo-container {
+        display: block; /* Ensure logo is visible */
+        margin-bottom: 10px;
+        page-break-inside: avoid; /* Prevent splitting logo across pages */
+      }
+      .logo {
+        max-width: 120px; /* Adjust size for printing */
+        margin: 0 auto;
+      }
+      button {
+        display: none; /* Hide the submit button */
+      }
+      .item label {
+        font-size: 14px;
+      }
+      .item input[type="checkbox"] {
+        width: 25px;
+        height: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo-container">
+    <img src="/images/favicon.png" alt="Company Logo" class="logo">
+  </div>
+  <h1>Room Items Checklist</h1>
+  <form method="POST" action="/submit-report">
+    <div class="container">
+      <% const items = [
+        "Palour TV", "Intercom", "Ac Palour", "Tv Remote", "Ac Remote", "Shelf Glus", 
+        "Dstv Decoder", "Dstv Remote", "Light Switch (3) Parlor", "Lights", "Smart Door", 
+        "Wall Art", "Window Blind X 2 Parlor", "Toilet Door (Visitor Toilet)", 
+        "Shelf LED Light", "TV Guide (Parlor)", "Key Door Handle Balcony", "Sofa 2", 
+        "Light Switch (Kitchen)", "Fridge", "Microwave", "Socket Guide (Kitchen)", 
+        "Kitchen Utensils", "Mug 2", "Glass Cup 2", "Blender", "Flat Plate - 2", 
+        "Soup Bowl 2", "Napkin", "Serving Spoon 2", "Frying Pan - 1", "Fork - 6", 
+        "Spoon - 6", "Rolling Stick - 1", "Burner Socket", "Rice Strainer - 1", 
+        "Bowl - 1", "Knives - 4", "Scissors - 1", "Chopping Board - L", 
+        "Pot - 3", "Fry Pan - 1", "Plate Rack - 1", "Washing Hand Basin", 
+        "Bin Bucket", "Gas Cylinder & Hose", "Window Blind (Kitchen)", 
+        "Kitchen Cabinet", "Kitchen Light", "Door Handle (Kitchen)", 
+        "TV (Bedroom)", "TV Guide (Bedroom)", "Bedside Shelf", 
+        "Pillow (2)", "Pillow Case (2)", "Mattress - 1", "Window Blind - 2", 
+        "Bedroom Shelf", "Bed Cover", "AC (Bedroom)", "Wall Art (Bedroom - 1)", 
+        "Cupboard", "Room Switch - 6", "Room Door Handle", "Room Light", 
+        "Bathroom Window Blind (Room)", "Mirror (Room)", "Shower & Shower Handle", 
+        "Water Heater", "Bum Bum Washer", "Flusher (WC)", "WC Cover", 
+        "Washing Hand Basin / Tap", "Bathroom Glass Door", 
+        "Visitor Toilet Window Blind", "Visitor Toilet Mirror", 
+        "Bum Bum Washer", "Flusher (WC)", "WC Cover"
+      ]; %>
+      <% items.forEach((item, index) => { %>
+        <% if (index % 4 === 0) { %> <!-- Start a new row every 4 items -->
+        <div class="row">
+        <% } %>
+        <div class="item">
+          <input type="checkbox" id="item-<%= index %>" name="items[]" value="<%= item %>">
+          <label for="item-<%= index %>"><%= item %></label>
+        </div>
+        <% if ((index + 1) % 4 === 0 || index === items.length - 1) { %> <!-- End the row -->
+        </div>
+        <% } %>
+      <% }); %>
+    </div>
+    <button type="submit">Submit Report</button>
+  </form>
+</body>
+</html>

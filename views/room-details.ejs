@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Vistavilla Apartment - Room Details</title>
+	<!-- Stylesheets -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/booking-modern.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<link href="css/modern-client.css" rel="stylesheet">
+	<link href="css/luxury-booking.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="images/favicon.png" type="image/x-icon">
+	<!-- Responsive -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
+	<!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+	<style>
+	
+	@media screen and (max-width: 500px) {
+  .one {
+    display: none !important;
+  }
+  .two {
+    display: block !important;
+  }
+}
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #f3f3f3; /* Light color */
+  border-top: 2px solid #3498db; /* Blue */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 5px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+	</style>
+</head>
+
+<body>
+<div class="page-wrapper">
+	<!-- Luxury Preloader -->
+	<div class="luxury-preloader">
+		<div class="luxury-loader">
+			<div class="luxury-loader-ring luxury-loader-ring-1"></div>
+			<div class="luxury-loader-ring luxury-loader-ring-2"></div>
+			<div class="luxury-loader-ring luxury-loader-ring-3"></div>
+		</div>
+	</div>
+
+  <!-- Main Header-->
+  <%- include('partials/header', { title: 'Vistavilla Apartment',activeMarquees:activeMarquees }) %>
+
+	<!--End Main Header -->
+
+	<!-- Minimal Luxury Booking Hero -->
+	<section class="minimal-booking-hero">
+		<div class="minimal-hero-bg" style="background-image: url('<%= selectedRoomNumber.roomcategory.picture[0] %>');"></div>
+		<div class="minimal-hero-overlay"></div>
+		<div class="minimal-hero-content">
+			<div class="minimal-breadcrumb">
+				<a href="/">Home</a>
+				<span class="minimal-separator">/</span>
+				<a href="/rooms">Rooms</a>
+				<span class="minimal-separator">/</span>
+				<span><%= selectedRoomNumber.roomcategory.category_name %></span>
+			</div>
+			<div class="minimal-booking-badge">
+				<i class="fas fa-check-circle"></i>
+				<span>Available for Your Dates</span>
+			</div>
+			<h1 class="minimal-hero-title"><%= selectedRoomNumber.room_name %></h1>
+			<p class="minimal-hero-room-number">Room <%= selectedRoomNumber.room_number %></p>
+			<div class="minimal-booking-dates">
+				<div class="minimal-date-badge">
+					<i class="fas fa-calendar-alt"></i>
+					<div class="minimal-date-info">
+						<span class="minimal-date-label">Check-in</span>
+						<span class="minimal-date-value"><%= start %></span>
+					</div>
+				</div>
+				<div class="minimal-date-arrow">
+					<i class="fas fa-long-arrow-alt-right"></i>
+				</div>
+				<div class="minimal-date-badge">
+					<i class="fas fa-calendar-alt"></i>
+					<div class="minimal-date-info">
+						<span class="minimal-date-label">Check-out</span>
+						<span class="minimal-date-value"><%= end %></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Minimal Luxury Booking Section -->
+	<section class="minimal-luxury-booking">
+		<div class="minimal-container">
+			<div class="minimal-booking-layout">
+				<!-- Left Column: Gallery & Details -->
+				<div class="minimal-content-column">
+					<div class="minimal-gallery">
+						<%
+						// Use room-specific images if available, otherwise fall back to category images
+						const imagesToDisplay = (selectedRoomNumber.roomImages && selectedRoomNumber.roomImages.length > 0)
+							? selectedRoomNumber.roomImages
+							: selectedRoomNumber.roomcategory.picture;
+						%>
+						<div class="minimal-main-image-wrapper">
+							<img id="mainImage" src="<%= imagesToDisplay[0] %>" alt="<%= selectedRoomNumber.room_name %>" class="minimal-main-image">
+							<button class="minimal-fullscreen-btn" onclick="openImageModal(0)">
+								<i class="fas fa-expand"></i>
+							</button>
+							<div class="minimal-image-counter">
+								<span id="currentImageIndex">1</span> / <%= imagesToDisplay.length %>
+							</div>
+						</div>
+						<div class="minimal-thumbnail-slider">
+							<% imagesToDisplay.forEach((pkg, index) => { %>
+								<div class="minimal-thumbnail <%= index === 0 ? 'active' : '' %>" onclick="changeMainImage('<%= pkg %>', <%= index %>)">
+									<img src="<%= pkg %>" alt="View <%= index + 1 %>">
+								</div>
+							<% }); %>
+						</div>
+					</div>
+
+				<!-- Right Column: Booking Sidebar -->
+				<div class="minimal-booking-sidebar">
+					<div class="minimal-reservation-card">
+						<div class="minimal-card-header">
+							<h3 class="minimal-card-title">Complete Your Reservation</h3>
+							<p class="minimal-card-subtitle">You're just one step away from luxury</p>
+						</div>
+
+						<% if (selectedRoomNumber.roomcategory.hasSpecialPrice) { %>
+							<div class="minimal-special-offer">
+								<div class="minimal-offer-badge">
+									<i class="fas fa-tag"></i>
+									<span>Limited Time Offer</span>
+								</div>
+								<div class="minimal-price-comparison">
+									<span class="minimal-price-was">₦<%= (selectedRoomNumber.roomcategory.originalPrice || 0).toLocaleString() %></span>
+									<span class="minimal-price-now">₦<%= (selectedRoomNumber.roomcategory.price || 0).toLocaleString() %></span>
+								</div>
+								<span class="minimal-price-period">per night</span>
+							</div>
+						<% } else { %>
+							<div class="minimal-price-display">
+								<span class="minimal-price-amount">₦<%= (selectedRoomNumber.roomcategory.price || 0).toLocaleString() %></span>
+								<span class="minimal-price-period">per night</span>
+							</div>
+						<% } %>
+
+						<!-- Stay Summary -->
+						<div class="minimal-stay-summary">
+							<div class="minimal-summary-row">
+								<span class="minimal-summary-label">Check-in</span>
+								<span class="minimal-summary-value"><%= start %></span>
+							</div>
+							<div class="minimal-summary-divider"></div>
+							<div class="minimal-summary-row">
+								<span class="minimal-summary-label">Check-out</span>
+								<span class="minimal-summary-value"><%= end %></span>
+							</div>
+						</div>
+
+						<!-- Minimal Booking Form -->
+						<form id="payment_form" class="minimal-reservation-form">
+							<input type="hidden" name="start" value="<%= start %>">
+							<input type="hidden" name="end" value="<%= end %>">
+
+							<div class="minimal-form-section">
+								<label class="minimal-form-label">Guest Information</label>
+
+								<div class="minimal-input-group">
+									<i class="fas fa-user"></i>
+									<input name="guest_name" class="minimal-form-input" type="text" placeholder="Full Name" required>
+								</div>
+
+								<div class="minimal-input-row">
+									<div class="minimal-input-group">
+										<i class="fas fa-phone"></i>
+										<input name="guest_phone" class="minimal-form-input" type="tel" placeholder="Phone Number" required>
+									</div>
+									<div class="minimal-input-group">
+										<i class="fas fa-envelope"></i>
+										<input name="guest_email" class="minimal-form-input" type="email" placeholder="Email Address" required>
+									</div>
+								</div>
+
+								<div class="minimal-input-group">
+									<i class="fas fa-map-marker-alt"></i>
+									<input name="guest_address" class="minimal-form-input" type="text" placeholder="Address" required>
+								</div>
+							</div>
+
+							<button type="submit" class="minimal-reserve-btn" id="bookingSubmitBtn">
+								<span class="minimal-btn-content">
+									<span class="minimal-btn-text">Reserve This Room</span>
+									<span class="minimal-btn-subtext">Secure payment via Paystack</span>
+								</span>
+								<span class="minimal-btn-icon">
+									<i class="fas fa-lock"></i>
+								</span>
+							</button>
+
+							<div class="minimal-trust-badges">
+								<div class="minimal-trust-item">
+									<i class="fas fa-shield-alt"></i>
+									<span>Secure Payment</span>
+								</div>
+								<div class="minimal-trust-item">
+									<i class="fas fa-undo"></i>
+									<span>Free Cancellation</span>
+								</div>
+								<div class="minimal-trust-item">
+									<i class="fas fa-headset"></i>
+									<span>24/7 Support</span>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<!-- Room Description & Details -->
+			<div class="elegant-description-section">
+				<div class="elegant-section-header">
+					<h2 class="elegant-section-title">Room Description</h2>
+					<div class="elegant-divider"></div>
+				</div>
+				<p class="elegant-description-text"><%= selectedRoomNumber.roomcategory.description %></p>
+
+				<!-- Room Specifications -->
+				<div class="elegant-specs-grid">
+					<div class="elegant-spec-card">
+						<div class="elegant-spec-icon">
+							<i class="fas fa-door-open"></i>
+						</div>
+						<div class="elegant-spec-content">
+							<span class="elegant-spec-label">Room Type</span>
+							<span class="elegant-spec-value"><%= selectedRoomNumber.roomcategory.room_type %></span>
+						</div>
+					</div>
+					<div class="elegant-spec-card">
+						<div class="elegant-spec-icon">
+							<i class="fas fa-bed"></i>
+						</div>
+						<div class="elegant-spec-content">
+							<span class="elegant-spec-label">Beds</span>
+							<span class="elegant-spec-value"><%= selectedRoomNumber.roomcategory.num_beds %></span>
+						</div>
+					</div>
+					<div class="elegant-spec-card">
+						<div class="elegant-spec-icon">
+							<i class="fas fa-users"></i>
+						</div>
+						<div class="elegant-spec-content">
+							<span class="elegant-spec-label">Occupancy</span>
+							<span class="elegant-spec-value"><%= selectedRoomNumber.roomcategory.number_of_guests %> Guests</span>
+						</div>
+					</div>
+					<div class="elegant-spec-card">
+						<div class="elegant-spec-icon">
+							<i class="fas fa-utensils"></i>
+						</div>
+						<div class="elegant-spec-content">
+							<span class="elegant-spec-label">Food</span>
+							<span class="elegant-spec-value"><%= selectedRoomNumber.roomcategory.food %></span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Room Facilities -->
+			<div class="elegant-facilities-section">
+				<div class="elegant-section-header">
+					<h2 class="elegant-section-title">Room Facilities</h2>
+					<div class="elegant-divider"></div>
+				</div>
+				<div class="elegant-facilities-grid">
+					<% if (selectedRoomNumber.roomcategory.has_ac) { %>
+					<div class="elegant-facility-item">
+						<div class="elegant-facility-icon">
+							<i class="fas fa-snowflake"></i>
+						</div>
+						<span class="elegant-facility-name">Air Conditioner</span>
+					</div>
+					<% } %>
+					<% if (selectedRoomNumber.roomcategory.has_wifi) { %>
+					<div class="elegant-facility-item">
+						<div class="elegant-facility-icon">
+							<i class="fas fa-wifi"></i>
+						</div>
+						<span class="elegant-facility-name">Free WiFi</span>
+					</div>
+					<% } %>
+					<% if (selectedRoomNumber.roomcategory.has_tv) { %>
+					<div class="elegant-facility-item">
+						<div class="elegant-facility-icon">
+							<i class="fas fa-tv"></i>
+						</div>
+						<span class="elegant-facility-name">Television</span>
+					</div>
+					<% } %>
+					<% if (selectedRoomNumber.roomcategory.has_bathroom) { %>
+					<div class="elegant-facility-item">
+						<div class="elegant-facility-icon">
+							<i class="fas fa-bath"></i>
+						</div>
+						<span class="elegant-facility-name">Private Bathroom</span>
+					</div>
+					<% } %>
+				</div>
+		</div>
+	</section>
+
+  <!-- Main Footer -->
+  <%- include('partials/footer') %>
+  <!--End Main Footer -->
+
+</div><!-- End Page Wrapper -->
+
+<!-- Scroll To Top -->
+<div class="scroll-to-top scroll-to-target" data-target="html">
+	<span class="fa fa-angle-up"></span>
+</div>
+
+<!-- Scripts -->
+<script src="js/jquery.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/wow.js"></script>
+<script src="js/appear.js"></script>
+<script src="js/owl.js"></script>
+<script src="js/script.js"></script>
+
+<script>
+// Image Gallery Functions
+function changeMainImage(imageSrc, index) {
+	document.getElementById('mainImage').src = imageSrc;
+
+	// Update active thumbnail
+	document.querySelectorAll('.elegant-thumbnail').forEach((thumb, i) => {
+		if (i === index) {
+			thumb.classList.add('active');
+		} else {
+			thumb.classList.remove('active');
+		}
+	});
+}
+
+// Preloader
+window.addEventListener('load', function() {
+	const preloader = document.querySelector('.luxury-preloader');
+	if (preloader) {
+		setTimeout(() => {
+			preloader.style.opacity = '0';
+			setTimeout(() => {
+				preloader.style.display = 'none';
+			}, 300);
+		}, 500);
+	}
+});
+
+// Booking Form Submission
+document.getElementById('payment_form').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const url = new URL(window.location.href);
+  const id = url.searchParams.get('id');
+  const formData = new FormData(this);
+  const formObject = Object.fromEntries(formData.entries());
+  const submitButton = document.getElementById('bookingSubmitBtn');
+
+  // Show loading state
+  const originalHTML = submitButton.innerHTML;
+  submitButton.disabled = true;
+  submitButton.innerHTML = '<span class="elegant-btn-text">Processing...</span><i class="fas fa-spinner fa-spin"></i>';
+
+  // Send booking request
+  fetch('/payments/paystack/initialize', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ...formObject,
+      category_id: id,
+      room_number: '<%= selectedRoomNumber.room_number %>',
+      category_name: '<%= selectedRoomNumber.roomcategory.category_name %>',
+      room_name: '<%= selectedRoomNumber.room_name %>',
+      room_id: '<%= selectedRoomNumber._id %>'
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    submitButton.disabled = false;
+    submitButton.innerHTML = originalHTML;
+
+    console.log('Success:', data);
+    if (data.data && data.data.authorization_url) {
+      // Redirect to payment page
+      window.location.href = data.data.authorization_url;
+    } else {
+      alert('Failed to initialize payment. Please try again.');
+    }
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+    submitButton.disabled = false;
+    submitButton.innerHTML = originalHTML;
+    alert('An error occurred during payment initialization. Please try again.');
+  });
+});
+
+
+
+</script>
+</body>
+
+<!-- Mirrored from kodesolution.com/html/2023/hoexr-html/room-details.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 25 Aug 2023 12:36:17 GMT -->
+</html>

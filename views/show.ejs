@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+  <link rel="icon" href="images/favicon.png" type="image/x-icon">
+  <title>WishMeWell Apartment | Show</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Prevent scrolling */
+      background-color: #000;
+    }
+
+    .slideshow-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slideshow-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Ensure images cover the screen without distortion */
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .slideshow-image.active {
+      opacity: 1; /* Show the active image */
+    }
+  </style>
+</head>
+<body>
+  <div class="slideshow-container">
+    <% images.forEach((image, index) => { %>
+      <img
+        src="<%= image %>"
+        alt="Slideshow Image <%= index + 1 %>"
+        class="slideshow-image <%= index === 0 ? 'active' : '' %>"
+      >
+    <% }); %>
+  </div>
+
+  <script>
+    const images = document.querySelectorAll('.slideshow-image');
+    let currentIndex = 0;
+
+    function showNextImage() {
+      images[currentIndex].classList.remove('active'); // Hide current image
+      currentIndex = (currentIndex + 1) % images.length; // Move to next image
+      images[currentIndex].classList.add('active'); // Show next image
+    }
+
+    // Change the image every 5 seconds
+    setInterval(showNextImage, 5000);
+  </script>
+</body>
+</html>

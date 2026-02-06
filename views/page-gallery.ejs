@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vistavilla Apartment - Gallery</title>
+<!-- Stylesheets -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/booking-modern.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Responsive -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<link href="css/responsive.css" rel="stylesheet">
+<!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
+<!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+	<!-- Luxury Preloader -->
+	<div class="preloader">
+		<div class="luxury-loader-container">
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-ring"></div>
+			<div class="luxury-loader-ring-2"></div>
+			<div class="luxury-loader-core">
+				<img src="images/logo-2.png" alt="Vistavilla" class="luxury-loader-logo">
+			</div>
+		</div>
+		<div class="luxury-loader-text">VISTAVILLA</div>
+		<div class="luxury-loader-subtitle">Where every view feels like home</div>
+		<div class="luxury-loader-progress">
+			<div class="luxury-loader-progress-bar"></div>
+		</div>
+	</div>
+
+  <!-- Main Header-->
+  <%- include('partials/header', { title: 'Vistavilla Apartment',activeMarquees:activeMarquees }) %>
+
+	<!--End Main Header -->
+
+	<!-- Elegant Gallery Hero Section -->
+	<section class="elegant-gallery-hero">
+		<!-- Floating Decorations -->
+		<div class="hero-decoration hero-decoration-1">✦</div>
+		<div class="hero-decoration hero-decoration-2">❖</div>
+		<div class="hero-decoration hero-decoration-3">✦</div>
+		<div class="hero-decoration hero-decoration-4">❖</div>
+		<div class="hero-decoration hero-decoration-5">✦</div>
+
+		<div class="elegant-gallery-hero-container">
+			<div class="elegant-gallery-hero-badge">
+				<i class="fas fa-images"></i>
+				<span>Visual Tour</span>
+			</div>
+			<h1 class="elegant-gallery-hero-title">
+				<span>Our Gallery</span>
+			</h1>
+			<p class="elegant-gallery-hero-subtitle">Where every view feels like home. Explore the elegance and luxury of Vistavilla Apartment</p>
+
+			<!-- Breadcrumb -->
+			<nav class="elegant-breadcrumb">
+				<a href="/" class="elegant-breadcrumb-link">
+					<i class="fas fa-home"></i>
+					Home
+				</a>
+				<span class="elegant-breadcrumb-separator">/</span>
+				<span class="elegant-breadcrumb-current">Gallery</span>
+			</nav>
+		</div>
+	</section>
+
+	<!-- Masonry Gallery Section -->
+	<section class="masonry-gallery-section">
+		<div class="masonry-gallery-container">
+			<!-- Gallery Stats -->
+			<div class="gallery-stats">
+				<div class="stat-item">
+					<i class="fas fa-images"></i>
+					<span class="stat-number" id="totalImages"><%= images ? images.length : 0 %></span>
+					<span class="stat-label">Total Images</span>
+				</div>
+				<div class="stat-item">
+					<i class="fas fa-eye"></i>
+					<span class="stat-number" id="viewedImages">0</span>
+					<span class="stat-label">Viewed</span>
+				</div>
+			</div>
+
+			<!-- Masonry Grid -->
+			<div class="masonry-grid" id="masonryGrid">
+				<% if (images && images.length > 0) { %>
+					<% images.forEach((img, index) => { %>
+						<div class="masonry-item" data-index="<%= index %>" style="animation-delay: <%= (index % 20) * 0.05 %>s;">
+							<div class="masonry-card">
+								<img src="<%= img.url %>" alt="Gallery Image <%= index + 1 %>" class="masonry-image" loading="lazy">
+								<div class="masonry-overlay">
+									<button class="masonry-zoom-btn" onclick="openLightbox(<%= index %>)">
+										<i class="fas fa-expand"></i>
+									</button>
+									<div class="masonry-info">
+										<span class="masonry-date"><i class="fas fa-calendar"></i> <%= new Date(img.created_at).toLocaleDateString() %></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					<% }); %>
+				<% } else { %>
+					<div class="gallery-empty">
+						<i class="fas fa-images"></i>
+						<h3>No Images Available</h3>
+						<p>Check back soon for our stunning gallery</p>
+					</div>
+				<% } %>
+			</div>
+
+			<!-- Load More Button -->
+			<% if (images && images.length > 30) { %>
+				<div class="gallery-load-more">
+					<button class="load-more-btn" id="loadMoreBtn">
+						<span>Load More</span>
+						<i class="fas fa-chevron-down"></i>
+					</button>
+				</div>
+			<% } %>
+		</div>
+	</section>
+
+
+
+
+	<!-- Lightbox Modal -->
+	<div class="lightbox-modal" id="lightboxModal">
+		<button class="lightbox-close" onclick="closeLightbox()">
+			<i class="fas fa-times"></i>
+		</button>
+		<button class="lightbox-prev" onclick="navigateLightbox(-1)">
+			<i class="fas fa-chevron-left"></i>
+		</button>
+		<button class="lightbox-next" onclick="navigateLightbox(1)">
+			<i class="fas fa-chevron-right"></i>
+		</button>
+		<div class="lightbox-content">
+			<img src="" alt="" id="lightboxImage" class="lightbox-image">
+			<div class="lightbox-counter">
+				<span id="currentImageIndex">1</span> / <span id="totalImagesCount"><%= images ? images.length : 0 %></span>
+			</div>
+		</div>
+	</div>
+
+  <!-- Main Footer -->
+  <%- include('partials/footer') %>
+
+</div>
+<!--End pagewrapper-->
+
+<!-- Scroll To Top -->
+<div class="scroll-to-top scroll-to-target" data-target="html"><span class="fa fa-angle-up"></span></div>
+
+<script src="js/jquery.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.fancybox.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/wow.js"></script>
+<script src="js/appear.js"></script>
+<script src="js/select2.min.js"></script>
+<script src="js/swiper.min.js"></script>
+<script src="js/owl.js"></script>
+<script src="js/script.js"></script>
+
+<script>
+// Gallery Filter Functionality
+document.addEventListener('DOMContentLoaded', function() {
+	const filterBtns = document.querySelectorAll('.elegant-filter-btn');
+	const galleryItems = document.querySelectorAll('.elegant-gallery-item');
+
+	filterBtns.forEach(btn => {
+		btn.addEventListener('click', function() {
+			// Remove active class from all buttons
+			filterBtns.forEach(b => b.classList.remove('active'));
+			// Add active class to clicked button
+			this.classList.add('active');
+
+			const filter = this.getAttribute('data-filter');
+
+			galleryItems.forEach((item, index) => {
+				const category = item.getAttribute('data-category');
+
+				if (filter === 'all' || category === filter) {
+					item.style.display = 'block';
+					// Stagger animation
+					setTimeout(() => {
+						item.style.opacity = '0';
+						item.style.transform = 'scale(0.8)';
+						setTimeout(() => {
+							item.style.opacity = '1';
+							item.style.transform = 'scale(1)';
+						}, 50);
+					}, index * 30);
+				} else {
+					item.style.opacity = '0';
+					item.style.transform = 'scale(0.8)';
+					setTimeout(() => {
+						item.style.display = 'none';
+					}, 300);
+				}
+			});
+		});
+	});
+});
+
+// Image Modal Functionality
+let currentImageIndex = 0;
+let allImages = [];
+
+function openImageModal(imageUrl, title, type) {
+	const modal = document.getElementById('imageModal');
+	const modalImage = document.getElementById('modalImage');
+	const modalTitle = document.getElementById('modalTitle');
+	const modalType = document.getElementById('modalType');
+
+	// Get all visible images
+	const visibleItems = Array.from(document.querySelectorAll('.elegant-gallery-item'))
+		.filter(item => item.style.display !== 'none');
+
+	allImages = visibleItems.map(item => {
+		const img = item.querySelector('.elegant-gallery-image');
+		const title = item.querySelector('.elegant-gallery-overlay-title').textContent;
+		const type = item.querySelector('.elegant-gallery-overlay-type').textContent;
+		return { url: img.src, title, type };
+	});
+
+	currentImageIndex = allImages.findIndex(img => img.url === imageUrl);
+
+	modalImage.src = imageUrl;
+	modalTitle.textContent = title;
+	modalType.textContent = type;
+	modal.classList.add('active');
+	document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+	const modal = document.getElementById('imageModal');
+	modal.classList.remove('active');
+	document.body.style.overflow = '';
+}
+
+function navigateImage(direction) {
+	currentImageIndex += direction;
+
+	if (currentImageIndex < 0) {
+		currentImageIndex = allImages.length - 1;
+	} else if (currentImageIndex >= allImages.length) {
+		currentImageIndex = 0;
+	}
+
+	const image = allImages[currentImageIndex];
+	const modalImage = document.getElementById('modalImage');
+	const modalTitle = document.getElementById('modalTitle');
+	const modalType = document.getElementById('modalType');
+
+	// Fade out
+	modalImage.style.opacity = '0';
+	setTimeout(() => {
+		modalImage.src = image.url;
+		modalTitle.textContent = image.title;
+		modalType.textContent = image.type;
+		// Fade in
+		modalImage.style.opacity = '1';
+	}, 200);
+}
+
+// Masonry Gallery JavaScript
+let currentLightboxIndex = 0;
+let visibleCount = 30;
+
+// Initialize masonry layout
+function initMasonry() {
+	const grid = document.getElementById('masonryGrid');
+	if (!grid) return;
+
+	// Show only first 30 images initially
+	const items = grid.querySelectorAll('.masonry-item');
+	items.forEach((item, index) => {
+		if (index >= visibleCount) {
+			item.style.display = 'none';
+		}
+	});
+}
+
+// Load more functionality
+const loadMoreBtn = document.getElementById('loadMoreBtn');
+if (loadMoreBtn) {
+	loadMoreBtn.addEventListener('click', function() {
+		const items = document.querySelectorAll('.masonry-item');
+		const currentVisible = visibleCount;
+		visibleCount += 30;
+
+		items.forEach((item, index) => {
+			if (index >= currentVisible && index < visibleCount) {
+				item.style.display = 'block';
+				setTimeout(() => {
+					item.style.opacity = '1';
+					item.style.transform = 'translateY(0)';
+				}, (index - currentVisible) * 50);
+			}
+		});
+
+		if (visibleCount >= items.length) {
+			loadMoreBtn.style.display = 'none';
+		}
+	});
+}
+
+// Track viewed images
+const observer = new IntersectionObserver((entries) => {
+	entries.forEach(entry => {
+		if (entry.isIntersecting) {
+			entry.target.classList.add('viewed');
+			const viewedCount = document.querySelectorAll('.masonry-item.viewed').length;
+			document.getElementById('viewedImages').textContent = viewedCount;
+		}
+	});
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.masonry-item').forEach(item => {
+	observer.observe(item);
+});
+
+initMasonry();
+});
+
+// Lightbox Functionality
+function openLightbox(index) {
+	const modal = document.getElementById('lightboxModal');
+	const lightboxImage = document.getElementById('lightboxImage');
+	const images = <%= JSON.stringify(images || []) %>;
+
+	currentLightboxIndex = index;
+	lightboxImage.src = images[index].url;
+	document.getElementById('currentImageIndex').textContent = index + 1;
+
+	modal.classList.add('active');
+	document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+	const modal = document.getElementById('lightboxModal');
+	modal.classList.remove('active');
+	document.body.style.overflow = '';
+}
+
+function navigateLightbox(direction) {
+	const images = <%= JSON.stringify(images || []) %>;
+	currentLightboxIndex += direction;
+
+	if (currentLightboxIndex < 0) {
+		currentLightboxIndex = images.length - 1;
+	} else if (currentLightboxIndex >= images.length) {
+		currentLightboxIndex = 0;
+	}
+
+	const lightboxImage = document.getElementById('lightboxImage');
+
+	// Fade out
+	lightboxImage.style.opacity = '0';
+	setTimeout(() => {
+		lightboxImage.src = images[currentLightboxIndex].url;
+		document.getElementById('currentImageIndex').textContent = currentLightboxIndex + 1;
+		// Fade in
+		lightboxImage.style.opacity = '1';
+	}, 200);
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+	const modal = document.getElementById('lightboxModal');
+	if (modal && modal.classList.contains('active')) {
+		if (e.key === 'ArrowLeft') {
+			navigateLightbox(-1);
+		} else if (e.key === 'ArrowRight') {
+			navigateLightbox(1);
+		} else if (e.key === 'Escape') {
+			closeLightbox();
+		}
+	}
+});
+
+// Close lightbox on background click
+const lightboxModal = document.getElementById('lightboxModal');
+if (lightboxModal) {
+	lightboxModal.addEventListener('click', function(e) {
+		if (e.target === this) {
+			closeLightbox();
+		}
+	});
+}
+</script>
+
+</body>
+</html>

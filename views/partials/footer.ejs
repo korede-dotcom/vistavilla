@@ -1,0 +1,154 @@
+<!-- Modern Luxury Footer -->
+<footer class="modern-luxury-footer">
+  <div class="modern-footer-container">
+    <!-- Footer Main Content -->
+    <div class="modern-footer-main">
+      <div class="modern-footer-grid">
+        <!-- About Column -->
+        <div class="modern-footer-column">
+          <div class="modern-footer-logo">
+            <img src="images/logo-2.png" alt="Vistavilla Apartment">
+          </div>
+          <p class="modern-footer-about">
+            Where every view feels like home. Vistavilla Apartment offers world-class accommodation with exceptional service and premium amenities in the heart of Lagos.
+          </p>
+          <div class="modern-footer-social">
+            <a href="#" class="modern-social-link" aria-label="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="modern-social-link" aria-label="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="modern-social-link" aria-label="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="modern-social-link" aria-label="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Links Column -->
+        <div class="modern-footer-column">
+          <h4 class="modern-footer-title">Quick Links</h4>
+          <ul class="modern-footer-links">
+            <li><a href="/"><i class="fas fa-chevron-right"></i> Home</a></li>
+            <li><a href="/rooms"><i class="fas fa-chevron-right"></i> Rooms & Suites</a></li>
+            <li><a href="#gallery"><i class="fas fa-chevron-right"></i> Gallery</a></li>
+            <li><a href="/page-contact"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+            <li><a href="/terms-and-conditions"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Column -->
+        <div class="modern-footer-column">
+          <h4 class="modern-footer-title">Contact Info</h4>
+          <ul class="modern-footer-contact">
+            <li>
+              <i class="fas fa-map-marker-alt"></i>
+              <span>24, Kakawa Street, Lagos Island,<br>Lagos State, Nigeria</span>
+            </li>
+            <li>
+              <i class="fas fa-phone"></i>
+              <div>
+                <a href="tel:+2348085021450">+234 808 502 1450</a><br>
+                <a href="tel:+2349111458637">+234 911 145 8637</a>
+              </div>
+            </li>
+            <li>
+              <i class="fas fa-envelope"></i>
+              <a href="mailto:vistavillaapartment@gmail.com">vistavillaapartment@gmail.com</a>
+            </li>
+            <li>
+              <i class="fas fa-clock"></i>
+              <span>Open 24/7</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Newsletter Column -->
+        <div class="modern-footer-column">
+          <h4 class="modern-footer-title">Stay Updated</h4>
+          <p class="modern-footer-newsletter-text">
+            Subscribe to our newsletter for exclusive offers and updates.
+          </p>
+          <form class="modern-footer-newsletter" id="newsletterForm">
+            <div class="modern-newsletter-input-group">
+              <input
+                type="email"
+                placeholder="Your email address"
+                class="modern-newsletter-input"
+                required
+              >
+              <button type="submit" class="modern-newsletter-btn">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </form>
+          <div class="modern-footer-badges">
+            <div class="modern-footer-badge">
+              <i class="fas fa-shield-alt"></i>
+              <span>Secure Booking</span>
+            </div>
+            <div class="modern-footer-badge">
+              <i class="fas fa-award"></i>
+              <span>Best Rated</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="modern-footer-bottom">
+      <div class="modern-footer-bottom-content">
+        <p class="modern-footer-copyright">
+          © 2024 Vistavilla Apartment. All rights reserved.
+        </p>
+        <div class="modern-footer-bottom-links">
+          <a href="/terms-and-conditions">Privacy Policy</a>
+          <span class="modern-footer-divider">|</span>
+          <a href="/terms-and-conditions">Terms of Service</a>
+        </div>
+      </div>
+      <button class="modern-scroll-top" id="modernScrollTop">
+        <i class="fas fa-arrow-up"></i>
+      </button>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Scroll to top functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const scrollTopBtn = document.getElementById('modernScrollTop');
+
+  if (scrollTopBtn) {
+    window.addEventListener('scroll', function() {
+      if (window.pageYOffset > 300) {
+        scrollTopBtn.classList.add('visible');
+      } else {
+        scrollTopBtn.classList.remove('visible');
+      }
+    });
+
+    scrollTopBtn.addEventListener('click', function() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  }
+
+  // Newsletter form
+  const newsletterForm = document.getElementById('newsletterForm');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = this.querySelector('input[type="email"]').value;
+      alert('Thank you for subscribing! We\'ll send updates to ' + email);
+      this.reset();
+    });
+  }
+});
+</script>

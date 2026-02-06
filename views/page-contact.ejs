@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<title>Vistavilla Apartment - Contact Us</title>
+<!-- Stylesheets -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/booking-modern.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+<link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+<!-- Responsive -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
+<!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+<script src="https://unpkg.com/htmx.org@2.0.2"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+	<!-- Luxury Preloader -->
+	<div class="preloader">
+		<div class="luxury-loader-container">
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-ring"></div>
+			<div class="luxury-loader-ring-2"></div>
+			<div class="luxury-loader-ring-3"></div>
+			<div class="luxury-loader-icon">
+				<i class="fas fa-crown"></i>
+			</div>
+			<div class="luxury-loader-text">Vistavilla Apartment</div>
+			<div class="luxury-loader-progress"></div>
+		</div>
+	</div>
+
+  <!-- Main Header-->
+  <%- include('partials/header', { title: 'Vistavilla Apartment',activeMarquees:activeMarquees }) %>
+
+	<!--End Main Header -->
+
+	<!-- Elegant Contact Hero Section -->
+	<section class="elegant-contact-hero">
+		<!-- Floating Decorations -->
+		<div class="hero-decoration hero-decoration-1">✦</div>
+		<div class="hero-decoration hero-decoration-2">❖</div>
+		<div class="hero-decoration hero-decoration-3">✦</div>
+		<div class="hero-decoration hero-decoration-4">❖</div>
+
+		<div class="elegant-contact-hero-container">
+			<div class="elegant-contact-hero-badge">
+				<i class="fas fa-envelope"></i>
+				<span>Get In Touch</span>
+			</div>
+			<h1 class="elegant-contact-hero-title">
+				<span>Contact Us</span>
+			</h1>
+			<p class="elegant-contact-hero-subtitle">Where every view feels like home. We'd love to hear from you.</p>
+
+			<!-- Breadcrumb -->
+			<nav class="elegant-breadcrumb">
+				<a href="/" class="elegant-breadcrumb-link">
+					<i class="fas fa-home"></i>
+					Home
+				</a>
+				<span class="elegant-breadcrumb-separator">/</span>
+				<span class="elegant-breadcrumb-current">Contact</span>
+			</nav>
+		</div>
+	</section>
+
+	<!--Contact Details Start-->
+	<section class="elegant-contact-section">
+		<div class="elegant-contact-container">
+			<div class="elegant-contact-grid">
+				<!-- Contact Form -->
+				<div class="elegant-contact-form-wrapper">
+					<div class="elegant-section-header">
+						<div class="elegant-section-badge">
+							<i class="fas fa-paper-plane"></i>
+							<span>Send us a message</span>
+						</div>
+						<h2 class="elegant-section-title">Feel Free to Write</h2>
+						<p class="elegant-section-subtitle">Have a question or want to work together? We'd love to hear from you.</p>
+					</div>
+
+					<!-- Contact Form -->
+					<form id="contact_form" name="contact_form" class="elegant-contact-form">
+						<div class="elegant-form-row">
+							<div class="elegant-form-group">
+								<label class="elegant-form-label">
+									<i class="fas fa-user"></i>
+									Full Name
+								</label>
+								<input name="form_name" id="form_name" class="elegant-form-input" type="text" placeholder="John Doe" required>
+							</div>
+							<div class="elegant-form-group">
+								<label class="elegant-form-label">
+									<i class="fas fa-envelope"></i>
+									Email Address
+								</label>
+								<input name="form_email" id="form_email" class="elegant-form-input email" type="email" placeholder="john@example.com" required>
+							</div>
+						</div>
+						<div class="elegant-form-row">
+							<div class="elegant-form-group">
+								<label class="elegant-form-label">
+									<i class="fas fa-tag"></i>
+									Subject
+								</label>
+								<input name="form_subject" id="form_subject" class="elegant-form-input" type="text" placeholder="How can we help?" required>
+							</div>
+							<div class="elegant-form-group">
+								<label class="elegant-form-label">
+									<i class="fas fa-phone"></i>
+									Phone Number
+								</label>
+								<input name="form_phone" id="form_phone" class="elegant-form-input" type="text" placeholder="+234 800 000 0000" required>
+							</div>
+						</div>
+						<div class="elegant-form-group">
+							<label class="elegant-form-label">
+								<i class="fas fa-comment-dots"></i>
+								Your Message
+							</label>
+							<textarea name="form_message" id="form_message" class="elegant-form-textarea" rows="6" placeholder="Tell us more about your inquiry..." required></textarea>
+						</div>
+						<div class="elegant-form-actions">
+							<button type="submit" class="elegant-btn elegant-btn-primary" id="sendBtn">
+								<i class="fas fa-paper-plane"></i>
+								<span>Send Message</span>
+							</button>
+							<button type="reset" class="elegant-btn elegant-btn-secondary">
+								<i class="fas fa-redo"></i>
+								<span>Reset Form</span>
+							</button>
+						</div>
+					</form>
+				</div>
+
+				<!-- Contact Information -->
+				<div class="elegant-contact-info-wrapper">
+					<div class="elegant-section-header">
+						<div class="elegant-section-badge">
+							<i class="fas fa-info-circle"></i>
+							<span>Need any help?</span>
+						</div>
+						<h2 class="elegant-section-title">Get in Touch</h2>
+						<p class="elegant-section-subtitle">
+							Have any questions or need assistance? We're here to help! Reach out to us via phone, email, or visit us. Our dedicated team is ready to provide you with all the information you need.
+						</p>
+					</div>
+
+					<!-- Contact Info Cards -->
+					<div class="elegant-contact-info-cards">
+						<div class="elegant-contact-info-card">
+							<div class="elegant-contact-info-icon">
+								<i class="fas fa-phone-alt"></i>
+							</div>
+							<div class="elegant-contact-info-content">
+								<h3 class="elegant-contact-info-title">Call Us</h3>
+								<p class="elegant-contact-info-text">Mon-Fri from 8am to 5pm</p>
+								<a href="tel:+2348085021450" class="elegant-contact-info-link">
+									+234 808 502 1450
+								</a>
+							</div>
+						</div>
+
+						<div class="elegant-contact-info-card">
+							<div class="elegant-contact-info-icon">
+								<i class="fas fa-envelope"></i>
+							</div>
+							<div class="elegant-contact-info-content">
+								<h3 class="elegant-contact-info-title">Email Us</h3>
+								<p class="elegant-contact-info-text">We'll respond within 24 hours</p>
+								<a href="mailto:vistavillaapartment@gmail.com" class="elegant-contact-info-link">
+									vistavillaapartment@gmail.com
+								</a>
+							</div>
+						</div>
+
+						<div class="elegant-contact-info-card">
+							<div class="elegant-contact-info-icon">
+								<i class="fas fa-map-marker-alt"></i>
+							</div>
+							<div class="elegant-contact-info-content">
+								<h3 class="elegant-contact-info-title">Visit Us</h3>
+								<p class="elegant-contact-info-text">Come say hello at our office</p>
+								<span class="elegant-contact-info-link">
+									24, Kakawa Street<br>Lagos Island, Lagos
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Social Media -->
+					<div class="elegant-contact-social">
+						<h3 class="elegant-contact-social-title">Follow Us</h3>
+						<div class="elegant-contact-social-links">
+							<a href="#" class="elegant-social-link" aria-label="Facebook">
+								<i class="fab fa-facebook-f"></i>
+							</a>
+							<a href="#" class="elegant-social-link" aria-label="Twitter">
+								<i class="fab fa-twitter"></i>
+							</a>
+							<a href="#" class="elegant-social-link" aria-label="Instagram">
+								<i class="fab fa-instagram"></i>
+							</a>
+							<a href="#" class="elegant-social-link" aria-label="LinkedIn">
+								<i class="fab fa-linkedin-in"></i>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--Contact Details End-->
+
+	<!-- Elegant Map Section-->
+	<section class="elegant-map-section">
+		<div class="elegant-map-header">
+			<div class="elegant-section-badge">
+				<i class="fas fa-map-marked-alt"></i>
+				<span>Find Us</span>
+			</div>
+			<h2 class="elegant-section-title">Our Location</h2>
+			<p class="elegant-section-subtitle">Visit us at our office in the heart of Lagos Island</p>
+		</div>
+		<div class="elegant-map-container">
+			<iframe
+				class="elegant-map"
+				width="100%"
+				height="500"
+				src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=24%20Kakawa%20Street,%20Lagos%20Island,%20Lagos,%20Nigeria+(Vistavilla%20Apartment)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+				frameborder="0"
+				scrolling="no"
+				marginheight="0"
+				marginwidth="0"
+				loading="lazy">
+			</iframe>
+		</div>
+	</section>
+	<!--End Map Section-->
+
+  <!-- Main Footer -->
+  <%- include('partials/footer') %>
+  <!--End Main Footer -->
+
+</div><!-- End Page Wrapper -->
+
+
+<!-- Scroll To Top -->
+<div class="scroll-to-top scroll-to-target" data-target="html"><span class="fa fa-angle-up"></span></div>
+
+
+<script src="js/jquery.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.fancybox.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/wow.js"></script>
+<script src="js/appear.js"></script>
+<script src="js/owl.js"></script>
+<script src="js/script.js"></script>
+
+<!-- form submit -->
+<script src="js/jquery.validate.min.js"></script>
+<script src="js/jquery.form.min.js"></script>
+<script>
+	(function($) {
+		$("#contact_form").validate({
+			submitHandler: function(form) {
+				var form_btn = $(form).find('button[type="submit"]');
+				var form_result_div = '#form-result';
+				$(form_result_div).remove();
+				form_btn.before('<div id="form-result" class="alert alert-success" role="alert" style="display: none;"></div>');
+				var form_btn_old_msg = form_btn.html();
+				form_btn.html(form_btn.prop('disabled', true).data("loading-text"));
+				$(form).ajaxSubmit({
+					dataType:  'json',
+					success: function(data) {
+						if( data.status == 'true' ) {
+							$(form).find('.form-control').val('');
+						}
+						form_btn.prop('disabled', false).html(form_btn_old_msg);
+						$(form_result_div).html(data.message).fadeIn('slow');
+						setTimeout(function(){ $(form_result_div).fadeOut('slow') }, 6000);
+					}
+				});
+			}
+		});
+	})(jQuery);
+</script>
+<script>
+	document.getElementById('contact_form').addEventListener('submit', function(event) {
+	  event.preventDefault(); // Prevent form submission
+  
+	  // Get input values
+	  const formName = document.getElementById('form_name').value;
+	  const formEmail = document.getElementById('form_email').value;
+	  const formSubject = document.getElementById('form_subject').value;
+	  const formPhone = document.getElementById('form_phone').value;
+	  const formMessage = document.getElementById('form_message').value;
+  
+	  // Ensure all fields are filled (browser validation handles required fields, but adding this for extra security)
+	  if (!formName || !formEmail || !formSubject || !formPhone || !formMessage) {
+		Toastify({
+					text: "Please fill in all the required fields.",
+					duration: 3000,
+					//destination: "https://github.com/apvarun/toastify-js",
+					newWindow: true,
+					close: true,
+					gravity: "top", // `top` or `bottom`
+					position: "center", // `left`, `center` or `right`
+					stopOnFocus: true, // Prevents dismissing of toast on hover
+					style: {
+						background: "red",
+					},
+					onClick: function(){} // Callback after click
+					}).showToast();
+		return;
+	  }
+  
+	  // Create an object for the form data
+	  const formData = {
+		name: formName,
+		email: formEmail,
+		subject: formSubject,
+		phone: formPhone,
+		message: formMessage
+	  };
+  
+	  // Send the form data to /send-email using Fetch API
+	  fetch('/send-email', {
+		method: 'POST',
+		headers: {
+		  'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(formData)
+	  })
+	  .then(response => response.json())
+	  .then(data => {
+		if (data.status) {
+			Toastify({
+					text: data.message,
+					duration: 3000,
+					//destination: "https://github.com/apvarun/toastify-js",
+					newWindow: true,
+					close: true,
+					gravity: "top", // `top` or `bottom`
+					position: "center", // `left`, `center` or `right`
+					stopOnFocus: true, // Prevents dismissing of toast on hover
+					style: {
+						background: "green",
+					},
+					onClick: function(){} // Callback after click
+					}).showToast();
+					window.location.reload();
+					return 
+		} else {
+			Toastify({
+					text: data.message,
+					duration: 3000,
+					//destination: "https://github.com/apvarun/toastify-js",
+					newWindow: true,
+					close: true,
+					gravity: "top", // `top` or `bottom`
+					position: "center", // `left`, `center` or `right`
+					stopOnFocus: true, // Prevents dismissing of toast on hover
+					style: {
+						background: "red",
+					},
+					onClick: function(){} // Callback after click
+					}).showToast();
+		}
+	  })
+	  .catch(error => {
+		console.error('Error:', error);
+		Toastify({
+					text: error.message,
+					duration: 3000,
+					//destination: "https://github.com/apvarun/toastify-js",
+					newWindow: true,
+					close: true,
+					gravity: "top", // `top` or `bottom`
+					position: "center", // `left`, `center` or `right`
+					stopOnFocus: true, // Prevents dismissing of toast on hover
+					style: {
+						background: "red",
+					},
+					onClick: function(){} // Callback after click
+					}).showToast();
+	  });
+	});
+  </script>
+  
+
+
+</body>
+
+<!-- Mirrored from kodesolution.com/html/2023/hoexr-html/page-contact.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 25 Aug 2023 12:36:17 GMT -->
+</html>

@@ -1,0 +1,879 @@
+<%- include('partial/header', { title: 'Wishmewell Apartment',email:email,roleName:roleName }) %>
+<%- include('partial/sidebar', { name: name}) %>
+<style>
+.room-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+	cursor: pointer;
+}
+
+.room-box {
+    flex: 1 1 calc(25% - 10px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    background-color: #fff;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.room-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.room-box i {
+    font-size: 2em;
+    color: #c19b76; /* Fancy color */
+}
+
+.room-info {
+    margin-left: 15px;
+}
+
+.room-info h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.room-info .status {
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.booked {
+    border-color: #c19b76;
+    background-color: #ffe6e6;
+}
+
+.booked .status {
+    color: #c19b76;
+}
+
+.available {
+    border-color: #28a745;
+    background-color: #e6ffe6;
+}
+
+.available .status {
+    color: #28a745;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .room-box {
+        flex: 1 1 calc(33.33% - 10px);
+    }
+}
+
+@media (max-width: 768px) {
+    .room-box {
+        flex: 1 1 calc(50% - 10px);
+    }
+}
+
+@media (max-width: 480px) {
+    .room-box {
+        flex: 1 1 100%;
+    }
+}
+
+/* Pricing Info Card Animation */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive pricing card */
+@media (max-width: 768px) {
+    #pricingInfoCard > div {
+        flex-direction: column !important;
+    }
+    #pricingInfoCard > div > div {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Initially hidden */
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+	z-index: 9999999;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; 
+    max-width: 500px; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border-radius: 10px;
+    position: relative;
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #c19b76;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #882162;
+}
+
+.form-control.bg-white {
+            background-color: #fff;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .date-placeholder {
+            color: #6c757d; /* Bootstrap's secondary color for placeholder text */
+        }
+        .loader {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #007bff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+            display: none; /* Initially hidden */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+		.form-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #fff;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.form-select:focus {
+    border-color: #c19b76; /* Your desired focus color */
+    outline: none;
+}
+
+#roomModal {
+    display: none; /* Initially hidden */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Width of the modal */
+}
+
+
+
+
+</style>
+		<div class="page-wrapper">
+			<div class="content container-fluid">
+				<div class="page-header">
+					<div class="row align-items-center">
+						<div class="col">
+							
+							<h3 class="page-title mt-5">room of <%=category_name%></h3> 
+							<a href="/portal/add-booking">Go back</a> <br/>
+							<small>create a new booking by clicking on available room</small>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="room-container">
+							<!-- Room Boxes -->
+<% categories.forEach(element => { %>
+    <div class="room-box <%= element.status ? 'booked' : 'available' %>"onclick="openModal('<%= element.room_number %>', '<%= element.room_name %>', '<%= element.status ? 'Booked' : 'Available' %>','<%= element._id %>')">
+        <i class="fas <%= element.status ? 'fa-key' : 'fa-door-open' %>"></i>
+        <div class="room-info">
+            <h2>Room <%= element.room_number %> </h2>
+            <p id="price"></p>
+            <p><%= element.room_name %></p> 
+            <p class="status"><%= element.status ? 'Booked' : 'Available' %></p>
+            
+        </div>
+    </div>
+<% }) %>
+
+<!-- Modal Structure -->
+<div id="roomModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalRoomNumber">Room</h2>
+        <p id="modalRoomName"></p>
+        <p id="modalRoomStatus"></p>
+		
+		<form id="payment_form" name="contact_form" class="show">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Check In</label>
+                    <input id="checkIn" name="start" class="form-control bg-white" type="date">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Check Out</label>
+                    <input id="checkOut" name="end" class="form-control bg-white" type="date">
+                </div>
+
+                <!-- Pricing Information Card -->
+                <div class="col-12 mb-3">
+                    <div id="pricingInfoCard" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 20px; color: white; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <i class="fas fa-tag" style="font-size: 24px; color: #FFA500;"></i>
+                                    <div>
+                                        <div style="font-size: 12px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Special Pricing Active</div>
+                                        <div id="pricingConfigName" style="font-size: 18px; font-weight: 600; margin-top: 2px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-calendar-alt" style="font-size: 24px; color: #FFA500;"></i>
+                                    <div>
+                                        <div style="font-size: 12px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Valid Duration</div>
+                                        <div id="pricingDuration" style="font-size: 16px; font-weight: 600; margin-top: 2px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-money-bill-wave" style="font-size: 24px; color: #FFA500;"></i>
+                                    <div>
+                                        <div style="font-size: 12px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Special Price</div>
+                                        <div id="pricingAmount" style="font-size: 20px; font-weight: 700; margin-top: 2px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="pricingDescription" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 14px; opacity: 0.95; line-height: 1.5;"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input name="guest_name" class="form-control bg-white" type="text" placeholder="Full Name">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phone</label>
+                    <input name="guest_phone" class="form-control bg-white" type="text" placeholder="Phone Number">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input name="guest_email" class="form-control bg-white" type="text" placeholder="Email Address">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Address</label>
+                    <input name="guest_address" class="form-control bg-white" type="text" placeholder="Address">
+                </div>
+				<div class="col-md-6 mb-3">
+					<label class="form-label">Payment Type</label>
+					<select name="paymentmode" id="paymentmode" class="form-select">
+						<% modes.forEach(element => { %>
+							<option value="<%= element.mode %>"><%= element.mode %></option>
+						<% }) %>
+					</select>
+				</div>
+
+				<div class="col-md-6 mb-3">
+					<label class="form-label">ID Card <span class="text-muted">(Optional)</span></label>
+					<input name="id_card" id="id_card" class="form-control bg-white" type="file" accept="image/*">
+					<small class="form-text text-muted">Upload guest's ID card (JPG, PNG, WEBP - Max 10MB)</small>
+				</div>
+
+				<div class="col-md-6 mb-3">
+					<label class="form-label">Discount Per Night (₦) <span class="text-muted">(Optional)</span></label>
+					<input name="discount_per_night" id="discount_per_night" class="form-control bg-white" type="text" placeholder="Enter discount per night" value="0">
+					<small class="form-text text-muted">Discount will be applied to each night of the stay</small>
+				</div>
+
+				<div class="col-md-12 mb-3">
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" id="isPartPayment" name="is_part_payment">
+						<label class="form-check-label" for="isPartPayment">
+							<strong>Part Payment (Minimum 50% required)</strong>
+						</label>
+					</div>
+				</div>
+
+				<div class="col-md-6 mb-3" id="partPaymentAmountDiv" style="display: none;">
+					<label class="form-label">Amount to Pay Now <span class="text-danger">*</span></label>
+					<input name="amount_paid" id="amount_paid" class="form-control bg-white" type="text" placeholder="Enter amount">
+					<small class="form-text text-muted" id="minimumPaymentText"></small>
+				</div>
+
+			<!-- <button id="submit_button" type="submit" class="theme-btn btn-style-one w-100" data-loading-text="Please wait..." >Submit</button> -->
+        </form>
+		
+    </div>
+	<button id="submit_button" class="btn btn-danger mt-3" type="submit">
+		<span class="loader"></span>
+		Submit
+	</button>
+    <div id="paymentContainer"></div>
+</div>
+
+
+														
+						</div>
+						
+						
+					</div>
+				</div>
+				<!-- <button type="button" class="btn btn-primary buttonedit1">Create Booking</button> -->
+			</div>
+		</div>
+	</div>
+	<script src="assets/js/jquery-3.5.1.min.js"></script>
+	<script src="assets/js/popper.min.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script src="assets/js/moment.min.js"></script>
+	<script src="assets/js/bootstrap-datetimepicker.min.js"></script>
+	<script src="assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script src="assets/plugins/raphael/raphael.min.js"></script>
+	<script src="assets/js/script.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to open the modal
+        let room_id, room_name, room_number;
+      
+        
+        // Function to open the modal when a room is clicked
+        function openModal(roomNumber, roomName, roomStatus, roomId) {
+            const modal = document.getElementById('roomModal');
+            room_id = roomId;
+            room_name = roomName;
+            room_number = roomNumber;
+        
+            // Set modal content
+            document.getElementById('modalRoomNumber').innerText = "Room " + roomNumber;
+            document.getElementById('modalRoomName').innerText = roomName;
+            document.getElementById('modalRoomStatus').innerText = roomStatus;
+        
+            // Show the modal
+            modal.style.display = "flex";
+        }
+        
+        // Function to close the modal
+        function closeModal() {
+            const modal = document.getElementById('roomModal');
+            modal.style.display = "none";
+        }
+        
+        // Ensure modal is hidden when the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById('roomModal');
+    modal.style.display = "none"; // Hide modal on page load
+
+    const url = new URL(window.location.href);
+    let price = parseFloat(url.searchParams.get('price')); // Base price from URL
+    const categoryId = url.searchParams.get('id');
+
+    // Display initial price
+    document.querySelector('#price').innerText = `₦${price.toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+    // Helper to format date as 'YYYY-MM-DD'
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    // Set default dates for check-in and check-out
+    const setDefaultDates = () => {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        document.getElementById('checkIn').value = formatDate(today);
+        document.getElementById('checkOut').value = formatDate(tomorrow);
+    };
+
+    setDefaultDates(); // Initialize default dates
+
+    // Fetch special pricing for selected dates
+    async function fetchSpecialPricing(checkInDate) {
+        try {
+            const response = await fetch(`/portal/api/pricing/category/${categoryId}?date=${checkInDate}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.status && data.data.hasSpecialPrice) {
+                    price = parseFloat(data.data.price);
+                    const config = data.data.pricingConfig;
+                    const startDate = new Date(config.start_date).toLocaleDateString('en-NG', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                    const endDate = new Date(config.end_date).toLocaleDateString('en-NG', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+
+                    document.querySelector('#price').innerText = `₦${price.toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (Special Price)`;
+
+                    console.log('✅ Special pricing applied:', {
+                        price,
+                        duration: `${startDate} - ${endDate}`,
+                        configName: config.config_name
+                    });
+
+                    // Show pricing info card
+                    const pricingCard = document.getElementById('pricingInfoCard');
+                    const pricingConfigName = document.getElementById('pricingConfigName');
+                    const pricingDuration = document.getElementById('pricingDuration');
+                    const pricingAmount = document.getElementById('pricingAmount');
+                    const pricingDescription = document.getElementById('pricingDescription');
+
+                    pricingCard.style.display = 'block';
+                    pricingConfigName.textContent = config.config_name || 'Special Pricing';
+                    pricingDuration.textContent = `${startDate} - ${endDate}`;
+                    pricingAmount.textContent = `₦${price.toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2})} / night`;
+
+                    if (config.description) {
+                        pricingDescription.textContent = config.description;
+                        pricingDescription.style.display = 'block';
+                    } else {
+                        pricingDescription.style.display = 'none';
+                    }
+
+                    // Add animation
+                    pricingCard.style.animation = 'fadeInDown 0.5s ease-out';
+                } else {
+                    price = parseFloat(url.searchParams.get('price'));
+                    document.querySelector('#price').innerText = `₦${price.toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    console.log('✅ Using regular pricing:', price);
+
+                    // Hide pricing info card
+                    const pricingCard = document.getElementById('pricingInfoCard');
+                    pricingCard.style.display = 'none';
+                }
+                // Update minimum payment if part payment is checked
+                if (isPartPaymentCheckbox.checked) {
+                    updateMinimumPayment();
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error fetching special pricing:', error);
+        }
+    }
+
+    // Handle part payment checkbox
+    const isPartPaymentCheckbox = document.getElementById('isPartPayment');
+    const partPaymentAmountDiv = document.getElementById('partPaymentAmountDiv');
+    const amountPaidInput = document.getElementById('amount_paid');
+    const minimumPaymentText = document.getElementById('minimumPaymentText');
+    const paymentModeSelect = document.getElementById('paymentmode');
+
+    // Calculate total amount based on dates
+    function calculateTotalAmount() {
+        const checkIn = new Date(document.getElementById('checkIn').value);
+        const checkOut = new Date(document.getElementById('checkOut').value);
+        const pricePerNight = parseFloat(price); // Use current price (may be special price)
+        const discountPerNightInput = document.getElementById('discount_per_night').value || '0';
+        // Remove commas from discount value before parsing
+        const discountPerNight = parseFloat(discountPerNightInput.replace(/,/g, '')) || 0;
+
+        if (checkIn && checkOut && checkOut > checkIn) {
+            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+            const totalBeforeDiscount = nights * pricePerNight;
+            const totalDiscount = nights * discountPerNight;
+            const total = totalBeforeDiscount - totalDiscount;
+
+            console.log('💰 Calculate Total:', {
+                pricePerNight,
+                discountPerNight,
+                nights,
+                totalBeforeDiscount,
+                totalDiscount,
+                total
+            });
+
+            return total;
+        }
+        return 0;
+    }
+
+    // Update minimum payment text
+    function updateMinimumPayment() {
+        const totalAmount = calculateTotalAmount();
+        const minimumPayment = totalAmount * 0.5;
+        minimumPaymentText.textContent = `Minimum payment (50%): ₦${minimumPayment.toLocaleString()}`;
+        amountPaidInput.setAttribute('min', minimumPayment);
+        amountPaidInput.setAttribute('max', totalAmount);
+    }
+
+    // Show/hide part payment amount field
+    isPartPaymentCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            // Only allow part payment for Cash mode
+            if (paymentModeSelect.value !== 'Cash') {
+                showToast('Part payment is only available for Cash payment mode', 'red');
+                this.checked = false;
+                return;
+            }
+            partPaymentAmountDiv.style.display = 'block';
+            updateMinimumPayment();
+            amountPaidInput.required = true;
+        } else {
+            partPaymentAmountDiv.style.display = 'none';
+            amountPaidInput.required = false;
+        }
+    });
+
+    // Update minimum payment when dates change
+    document.getElementById('checkIn').addEventListener('change', async function() {
+        // Fetch special pricing for new check-in date
+        await fetchSpecialPricing(this.value);
+
+        if (isPartPaymentCheckbox.checked) {
+            updateMinimumPayment();
+        }
+    });
+
+    document.getElementById('checkOut').addEventListener('change', function() {
+        if (isPartPaymentCheckbox.checked) {
+            updateMinimumPayment();
+        }
+    });
+
+    // Format currency input as user types (improved version)
+    function formatCurrencyAsType(e) {
+        const input = e.target;
+
+        // Get the current value and cursor position
+        let cursorPosition = input.selectionStart;
+        let value = input.value;
+
+        // Count commas before cursor
+        const commasBeforeCursor = (value.substring(0, cursorPosition).match(/,/g) || []).length;
+
+        // Remove all non-numeric characters
+        const numericValue = value.replace(/[^0-9]/g, '');
+
+        // If empty, just return
+        if (numericValue === '') {
+            input.value = '';
+            return;
+        }
+
+        // Format with thousand separators
+        const formattedValue = parseInt(numericValue, 10).toLocaleString('en-NG');
+
+        // Set the formatted value
+        input.value = formattedValue;
+
+        // Calculate new cursor position
+        const commasAfterCursor = (formattedValue.substring(0, cursorPosition).match(/,/g) || []).length;
+        const commasDiff = commasAfterCursor - commasBeforeCursor;
+        const newCursorPosition = cursorPosition + commasDiff;
+
+        // Restore cursor position
+        input.setSelectionRange(newCursorPosition, newCursorPosition);
+    }
+
+    // Add currency formatting to discount input as user types
+    const discountInput = document.getElementById('discount_per_night');
+    discountInput.addEventListener('input', function(e) {
+        formatCurrencyAsType(e);
+
+        // Update minimum payment if part payment is checked
+        if (isPartPaymentCheckbox.checked) {
+            updateMinimumPayment();
+        }
+    });
+
+    // Add currency formatting to amount paid input as user types
+    const amountPaidInputField = document.getElementById('amount_paid');
+    amountPaidInputField.addEventListener('input', function(e) {
+        formatCurrencyAsType(e);
+    });
+
+    // Remove formatting before form submission to get raw number
+    function getNumericValue(formattedValue) {
+        return parseFloat(formattedValue.replace(/,/g, '')) || 0;
+    }
+
+    // Fetch special pricing on page load
+    fetchSpecialPricing(document.getElementById('checkIn').value);
+
+    // Disable part payment for non-cash modes
+    paymentModeSelect.addEventListener('change', function() {
+        if (this.value !== 'Cash' && isPartPaymentCheckbox.checked) {
+            isPartPaymentCheckbox.checked = false;
+            partPaymentAmountDiv.style.display = 'none';
+            amountPaidInput.required = false;
+        }
+    });
+
+    // Handle form submission
+    document.getElementById('submit_button').addEventListener('click', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+
+        // Retrieve form values
+        const checkInDate = document.getElementById('checkIn').value;
+        const checkOutDate = document.getElementById('checkOut').value;
+        const guestName = document.querySelector('input[name="guest_name"]').value;
+        const guestPhone = document.querySelector('input[name="guest_phone"]').value;
+        const guestEmail = document.querySelector('input[name="guest_email"]').value;
+        const guestAddress = document.querySelector('input[name="guest_address"]').value;
+        const paymentMode = document.querySelector('select[name="paymentmode"]').value;
+
+        const loader = document.querySelector('.loader');
+        const submitButton = document.getElementById('submit_button');
+
+        // Show loader and disable submit button
+        loader.style.display = 'inline-block';
+        submitButton.disabled = true;
+
+        // Field validation
+        if (!checkInDate || !checkOutDate || !guestName) {
+            showToast("Please fill out all required fields.", "red");
+            resetLoader(loader, submitButton);
+            return;
+        }
+
+        if (paymentMode === "customer-self-payment" && (!guestPhone || !guestEmail)) {
+            showToast("Email & phone number are required for customer payment link.", "red");
+            resetLoader(loader, submitButton);
+            return;
+        }
+
+        // Ensure check-out date is after check-in date
+        if (new Date(checkInDate) >= new Date(checkOutDate)) {
+            showToast("Check-out date must be after check-in date.", "red");
+            resetLoader(loader, submitButton);
+            return;
+        }
+
+        // Validate email format if provided
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (guestEmail && !emailPattern.test(guestEmail)) {
+            showToast("Please enter a valid email address.", "red");
+            resetLoader(loader, submitButton);
+            return;
+        }
+
+        // Validate part payment if checked
+        const isPartPayment = isPartPaymentCheckbox.checked;
+        const amountPaid = getNumericValue(amountPaidInput.value);
+
+        if (isPartPayment) {
+            const totalAmount = calculateTotalAmount();
+            const minimumPayment = totalAmount * 0.5;
+            const checkIn = new Date(document.getElementById('checkIn').value);
+            const checkOut = new Date(document.getElementById('checkOut').value);
+            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+            const discountPerNight = getNumericValue(document.getElementById('discount_per_night').value);
+
+            console.log('💰 Part Payment Validation:', {
+                pricePerNight: price,
+                nights,
+                discountPerNight,
+                totalBeforeDiscount: price * nights,
+                totalDiscount: discountPerNight * nights,
+                totalAmount,
+                minimumPayment,
+                amountPaid,
+                isValid: amountPaid >= minimumPayment && amountPaid <= totalAmount
+            });
+
+            if (amountPaid < minimumPayment) {
+                showToast(`Part payment must be at least ₦${minimumPayment.toLocaleString('en-NG', {minimumFractionDigits: 2})} (50% of total: ₦${totalAmount.toLocaleString('en-NG', {minimumFractionDigits: 2})})`, "red");
+                resetLoader(loader, submitButton);
+                return;
+            }
+
+            if (amountPaid > totalAmount) {
+                showToast(`Payment amount (₦${amountPaid.toLocaleString('en-NG', {minimumFractionDigits: 2})}) cannot exceed total amount (₦${totalAmount.toLocaleString('en-NG', {minimumFractionDigits: 2})})`, "red");
+                resetLoader(loader, submitButton);
+                return;
+            }
+        }
+
+        // Prepare payload for backend
+        const id = url.searchParams.get('id');
+        const cateName = url.searchParams.get('cat_id');
+        const discountPerNight = getNumericValue(document.getElementById('discount_per_night').value);
+
+        // Use FormData to support file upload
+        const formData = new FormData();
+        formData.append('start', checkInDate);
+        formData.append('end', checkOutDate);
+        formData.append('guest_name', guestName);
+        formData.append('guest_email', guestEmail || '-');
+        formData.append('guest_phone', guestPhone || '-');
+        formData.append('guest_address', guestAddress || '-');
+        formData.append('mode', paymentMode);
+        formData.append('category_id', id);
+        formData.append('room_id', room_id);
+        formData.append('room_name', room_name);
+        formData.append('room_number', room_number);
+        formData.append('category_name', cateName);
+        formData.append('is_part_payment', isPartPayment);
+        formData.append('amount_paid', isPartPayment ? (amountPaid * 100) : null);
+        formData.append('discount_per_night', discountPerNight * 100);
+
+        // Add ID card file if selected
+        const idCardInput = document.getElementById('id_card');
+        if (idCardInput.files && idCardInput.files[0]) {
+            formData.append('image', idCardInput.files[0]);
+        }
+
+        if (paymentMode === "Generate-Bank-Transfer" && (!guestPhone || !guestEmail)) {
+            formData.set('guest_email', "wishmewellapartment@gmail.com");
+            formData.set('guest_phone', "09111458637");
+        }
+
+        // Send the payment initialization request
+        const response = await fetch("/payments/paystack/initialize/reception", {
+            method: 'POST',
+            body: formData, // Send FormData instead of JSON
+        });
+        
+        const data = await response.json();
+        resetLoader(loader, submitButton);
+
+        if (!data.status) {
+            showToast(data.message, "red");
+            return;
+        }
+
+        // Handle response based on payment mode
+        if (paymentMode === "Generate-Bank-Transfer" && data.data.authorization_url) {
+            loadPaymentIframe(data.data.authorization_url);
+        } else if (paymentMode === "Cash") {
+            showToast(data.message, "green");
+            window.location.reload();
+        } else {
+            showToast("Payment link sent to customer's email and phone.", "green");
+        }
+    });
+
+    // Reset loader and enable button
+    function resetLoader(loader, button) {
+        loader.style.display = 'none';
+        button.disabled = false;
+    }
+
+    // Load Paystack payment iframe
+    function loadPaymentIframe(url) {
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.width = "100%";
+        iframe.height = "700px"; // Adjust the height as necessary
+        iframe.frameBorder = "0";
+
+        const paymentContainer = document.getElementById('paymentContainer');
+        paymentContainer.innerHTML = ''; // Clear previous content
+        paymentContainer.appendChild(iframe); // Append iframe
+
+        hideModalElements();
+    }
+
+    // Hide modal elements after loading iframe
+    function hideModalElements() {
+        document.querySelector(".show").style.display = "none";
+        document.getElementById('modalRoomNumber').style.display = "none";
+        document.getElementById('modalRoomName').style.display = "none";
+        document.getElementById('modalRoomStatus').style.display = "none";
+        document.getElementById('submit_button').style.display = "none";
+    }
+});
+
+        
+        // Helper function to show toast notifications
+        function showToast(message, color) {
+            Toastify({
+                text: message,
+                duration: 3000,
+                gravity: "top",
+                position: "center",
+                style: { background: color },
+            }).showToast();
+        }
+        </script>
+        
+</body>
+
+</html>

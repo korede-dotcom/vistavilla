@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Vistavilla Apartment - Rooms & Suites</title>
+	<!-- Stylesheets -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/booking-modern.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<link href="css/modern-client.css" rel="stylesheet">
+	<link href="css/luxury-booking.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="images/favicon.png" type="image/x-icon">
+	<!-- Responsive -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
+	<!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+  <style>
+    .image-2 img {
+width: 100%;
+height: 500px;
+object-fit: cover; /* Ensures the image covers the area without distortion */
+}
+
+/* Optional: Add some margin for small screens to better center */
+@media (max-width: 576px) {
+.room-block {
+margin-bottom: 20px;
+
+}
+.image-2 img{
+margin-inline: 10px;
+}
+}
+ </style>
+</head>
+
+<body>
+<div class="page-wrapper">
+	<!-- Luxury Preloader -->
+	<div class="preloader">
+		<div class="luxury-loader-container">
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-particle"></div>
+			<div class="luxury-loader-ring"></div>
+			<div class="luxury-loader-ring-2"></div>
+			<div class="luxury-loader-core">
+				<img src="images/logo-2.png" alt="Vistavilla" class="luxury-loader-logo">
+			</div>
+		</div>
+		<div class="luxury-loader-text">VISTAVILLA</div>
+		<div class="luxury-loader-subtitle">Where every view feels like home</div>
+		<div class="luxury-loader-progress">
+			<div class="luxury-loader-progress-bar"></div>
+		</div>
+	</div>
+
+  <!-- Main Header-->
+  <%- include('partials/header', { title: 'Vistavilla Apartment',activeMarquees:activeMarquees }) %>
+
+	<!--End Main Header -->
+
+	<!-- Modern Hero Section -->
+	<section class="luxury-rooms-hero">
+		<div class="luxury-rooms-hero-overlay"></div>
+
+		<!-- Floating Decorative Icons -->
+		<div class="luxury-hero-decorations">
+			<i class="fas fa-star luxury-float-icon luxury-float-1"></i>
+			<i class="fas fa-star luxury-float-icon luxury-float-2"></i>
+			<i class="fas fa-home luxury-float-icon luxury-float-3"></i>
+			<i class="fas fa-globe luxury-float-icon luxury-float-4"></i>
+			<i class="fas fa-star luxury-float-icon luxury-float-5"></i>
+			<i class="fas fa-bed luxury-float-icon luxury-float-6"></i>
+			<i class="fas fa-star luxury-float-icon luxury-float-7"></i>
+			<i class="fas fa-globe luxury-float-icon luxury-float-8"></i>
+		</div>
+
+		<div class="luxury-rooms-hero-content">
+			<span class="luxury-rooms-hero-badge">
+				<i class="fas fa-crown"></i>
+				<span>Premium Accommodations</span>
+			</span>
+			<h1 class="luxury-rooms-hero-title">Our <span class="luxury-gradient-text-white">Luxury Suites</span></h1>
+			<p class="luxury-rooms-hero-subtitle">Experience unparalleled comfort in our meticulously designed rooms</p>
+			<div class="luxury-rooms-hero-breadcrumb">
+				<a href="/"><i class="fas fa-home"></i> Home</a>
+				<span class="divider">/</span>
+				<span>Rooms & Suites</span>
+			</div>
+		</div>
+		<div class="luxury-rooms-hero-scroll">
+			<i class="fas fa-chevron-down"></i>
+		</div>
+	</section>
+
+	<!-- Filter Section -->
+	<section class="luxury-rooms-filter-section">
+		<div class="luxury-rooms-filter-container">
+			<div class="luxury-rooms-filter-header">
+				<div class="luxury-rooms-count">
+					<h3><i class="fas fa-bed"></i> <span id="roomCount"><%= categories.length %></span> Rooms Available</h3>
+					<p><i class="fas fa-search"></i> Find your perfect accommodation</p>
+				</div>
+				<div class="luxury-rooms-filter-controls">
+					<button class="luxury-filter-btn active" data-filter="all">
+						<i class="fas fa-th"></i>
+						<span>All</span>
+					</button>
+					<button class="luxury-filter-btn" data-filter="special">
+						<i class="fas fa-star"></i>
+						<span>Offers</span>
+					</button>
+					<button class="luxury-filter-btn" data-filter="luxury">
+						<i class="fas fa-gem"></i>
+						<span>Luxury</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+  <!-- Rooms Grid Section -->
+  <section class="luxury-rooms-grid-section">
+    <div class="luxury-rooms-grid-container">
+      <div class="luxury-rooms-grid">
+        <% categories.forEach((pkg, index) => { %>
+          <% if (pkg && pkg.category_name && pkg._id) { %>
+          <!-- Luxury Room Card -->
+          <div class="luxury-room-card-wrapper" data-category="<%= pkg.hasSpecialPrice ? 'special' : 'luxury' %>" data-aos="fade-up" data-aos-delay="<%= (index % 6) * 100 %>">
+            <div class="luxury-room-card">
+              <!-- Image Section -->
+              <div class="luxury-room-image-section">
+                <% if (pkg.picture && pkg.picture.length > 0) { %>
+                  <img src="<%= pkg.picture[0] %>" alt="<%= pkg.category_name || 'Room' %>" class="luxury-room-main-image">
+                <% } else { %>
+                  <img src="images/default-room.jpg" alt="<%= pkg.category_name || 'Room' %>" class="luxury-room-main-image">
+                <% } %>
+
+                <div class="luxury-room-image-overlay">
+                  <a href="/rooms?id=<%= pkg._id %>" class="luxury-room-view-btn">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>View Details</span>
+                  </a>
+                </div>
+
+                <% if (pkg.hasSpecialPrice) { %>
+                  <div class="luxury-room-special-badge">
+                    <i class="fas fa-star"></i>
+                    <span>Special Offer</span>
+                  </div>
+                <% } %>
+
+                <!-- Image Gallery Indicator -->
+                <% if (pkg.picture && pkg.picture.length > 1) { %>
+                  <div class="luxury-room-gallery-indicator">
+                    <i class="fas fa-images"></i>
+                    <span><%= pkg.picture.length %> Photos</span>
+                  </div>
+                <% } %>
+              </div>
+
+              <!-- Content Section -->
+              <div class="luxury-room-content-section">
+                <div class="luxury-room-header">
+                  <div class="luxury-room-category-badge">
+                    <i class="fas fa-bed"></i>
+                    <span><%= pkg.room_type || 'Suite' %></span>
+                  </div>
+                  <h3 class="luxury-room-title"><%= pkg.category_name || 'Room' %></h3>
+                </div>
+
+                <!-- Room Features -->
+                <div class="luxury-room-features">
+                  <div class="luxury-room-feature">
+                    <i class="fas fa-users"></i>
+                    <span><%= pkg.number_of_guests || 2 %> Guests</span>
+                  </div>
+                  <div class="luxury-room-feature">
+                    <i class="fas fa-bed"></i>
+                    <span><%= pkg.num_beds || 1 %> Bed<%= pkg.num_beds > 1 ? 's' : '' %></span>
+                  </div>
+                  <% if (pkg.has_wifi) { %>
+                    <div class="luxury-room-feature">
+                      <i class="fas fa-wifi"></i>
+                      <span>Free WiFi</span>
+                    </div>
+                  <% } %>
+                  <% if (pkg.has_ac) { %>
+                    <div class="luxury-room-feature">
+                      <i class="fas fa-snowflake"></i>
+                      <span>AC</span>
+                    </div>
+                  <% } %>
+                </div>
+
+                <!-- Amenities -->
+                <div class="luxury-room-amenities">
+                  <div class="luxury-room-amenity">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Private Bathroom</span>
+                  </div>
+                  <div class="luxury-room-amenity">
+                    <i class="fas fa-check-circle"></i>
+                    <span>24/7 Room Service</span>
+                  </div>
+                  <div class="luxury-room-amenity">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Premium Toiletries</span>
+                  </div>
+                </div>
+
+                <!-- Price Section -->
+                <div class="luxury-room-price-section">
+                  <div class="luxury-room-price-wrapper">
+                    <% if (pkg.hasSpecialPrice) { %>
+                      <div class="luxury-room-price-original">₦<%= (pkg.originalPrice || 0).toLocaleString() %></div>
+                      <div class="luxury-room-price-current">₦<%= (pkg.price || 0).toLocaleString() %></div>
+                    <% } else { %>
+                      <div class="luxury-room-price-current">₦<%= (pkg.price || 0).toLocaleString() %></div>
+                    <% } %>
+                    <div class="luxury-room-price-label">per night</div>
+                  </div>
+                  <a href="/rooms?id=<%= pkg._id %>" class="luxury-room-book-btn">
+                    <span>Book Now</span>
+                    <i class="fas fa-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% } %>
+        <% }); %>
+      </div>
+
+      <!-- Empty State -->
+      <% if (!categories || categories.length === 0) { %>
+        <div class="luxury-rooms-empty-state">
+          <i class="fas fa-bed"></i>
+          <h3>No Rooms Available</h3>
+          <p>Please check back later for available accommodations</p>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="luxury-rooms-cta-section">
+    <div class="luxury-rooms-cta-container">
+      <div class="luxury-rooms-cta-content">
+        <h2>Can't Find What You're Looking For?</h2>
+        <p>Contact our concierge team for personalized room recommendations</p>
+        <a href="/page-contact" class="luxury-rooms-cta-btn">
+          <i class="fas fa-phone"></i>
+          <span>Contact Us</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterBtns = document.querySelectorAll('.luxury-filter-btn');
+      const roomCards = document.querySelectorAll('.luxury-room-card-wrapper');
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const filter = this.getAttribute('data-filter');
+
+          // Update active button
+          filterBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+
+          // Filter rooms
+          let visibleCount = 0;
+          roomCards.forEach(card => {
+            if (filter === 'all' || card.getAttribute('data-category') === filter) {
+              card.style.display = 'block';
+              visibleCount++;
+            } else {
+              card.style.display = 'none';
+            }
+          });
+
+          // Update count
+          document.getElementById('roomCount').textContent = visibleCount;
+        });
+      });
+
+      // Scroll animation for hero
+      const heroScroll = document.querySelector('.luxury-rooms-hero-scroll');
+      if (heroScroll) {
+        heroScroll.addEventListener('click', function() {
+          document.querySelector('.luxury-rooms-filter-section').scrollIntoView({
+            behavior: 'smooth'
+          });
+        });
+      }
+    });
+  </script>
+  <!-- End rooms-section -->
+
+  <!-- Main Footer -->
+  <%- include('partials/footer') %>
+  <!--End Main Footer -->
+
+	</div><!-- End Page Wrapper -->
+	<!-- Scroll To Top -->
+	<div class="scroll-to-top scroll-to-target" data-target="html"><span class="fa fa-angle-up"></span></div>
+	<script src="js/jquery.js"></script>
+	<script src="js/popper.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.fancybox.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script src="js/wow.js"></script>
+	<script src="js/appear.js"></script>
+	<script src="js/owl.js"></script>
+	<script src="js/script.js"></script>
+</body>
+
+
+<!-- Mirrored from kodesolution.com/html/2023/hoexr-html/page-rooms.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 25 Aug 2023 12:36:12 GMT -->
+</html>
