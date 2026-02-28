@@ -25,7 +25,7 @@ class CloudinaryRepo {
     this._parser = multer({
       storage: storage,
       limits: { fileSize: 10 * 1024 * 1024 } // 10MB
-    }).any('image');
+    }).any(); // Accept files from any field
   }
 
   upload(files) {

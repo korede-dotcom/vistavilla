@@ -115,7 +115,7 @@ const sendResetPasswordToken = async (email) => {
           <td align="center">
             <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
               <tr>
-                <td align="center" style="background-color: #c19b76; padding: 20px;">
+                <td align="center" style="background-color: #1c2830; padding: 20px;">
                   <h2 style="color: #ffffff; font-size: 24px; margin: 0;">Password Reset Request</h2>
                 </td>
               </tr>
@@ -125,7 +125,7 @@ const sendResetPasswordToken = async (email) => {
                   <p style="font-size: 16px; margin-bottom: 20px;">You requested a password reset for your account.</p>
                   <p style="font-size: 16px; margin-top: 20px;">reset your password via a link, please click the button below:</p>
                   <div style="text-align: center; margin: 20px 0;">
-                    <a href="https://Wishmewell Apartment/portal/recovery?id=${token}" style="display: inline-block; padding: 12px 24px; background-color: #c19b76; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px;">Reset Password</a>
+                    <a href="https://Wishmewell Apartment/portal/recovery?id=${token}" style="display: inline-block; padding: 12px 24px; background-color: #1c2830; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px;">Reset Password</a>
                   </div>
                   <p style="font-size: 16px; margin-top: 20px;">this link expires in five minutes</p>
                   <p style="font-size: 16px; margin-top: 20px;">If you didn’t request this, please ignore this email.</p>

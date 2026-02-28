@@ -32,8 +32,8 @@
   }
 
   .fc-button {
-    background-color: #c19b76 !important;
-    border-color: #c19b76 !important;
+    background-color: #1c2830 !important;
+    border-color: #1c2830 !important;
     color: white !important;
     text-transform: capitalize !important;
     font-weight: 500 !important;
@@ -43,8 +43,8 @@
   }
 
   .fc-button:hover {
-    background-color: #a67c52 !important;
-    border-color: #a67c52 !important;
+    background-color: #2a3a45 !important;
+    border-color: #2a3a45 !important;
     transform: translateY(-1px);
   }
 
@@ -71,7 +71,7 @@
   }
 
   .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-    background-color: #c19b76;
+    background-color: #1c2830;
     color: white !important;
     border-radius: 50%;
     width: 32px;
@@ -103,7 +103,7 @@
     padding: 15px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 8px;
-    border-left: 4px solid #c19b76;
+    border-left: 4px solid #1c2830;
   }
 
   .legend-item {
@@ -178,7 +178,7 @@
 
   /* Modal Enhancements */
   .modal-header {
-    background: linear-gradient(135deg, #c19b76 0%, #a67c52 100%);
+    background: linear-gradient(135deg, #1c2830 0%, #2a3a45 100%);
     color: white;
     border-radius: 8px 8px 0 0;
   }
@@ -216,7 +216,7 @@
 						<div class="col">
 							<div class="mt-5">
 								<h4 class="card-title float-left mt-2">
-									<i class="fas fa-calendar-alt" style="color: #c19b76;"></i> Bookings Calendar
+									<i class="fas fa-calendar-alt" style="color: #1c2830;"></i> Bookings Calendar
 								</h4>
                                 <a href="/portal/add-booking" class="btn btn-primary float-right veiwbutton">
 									<i class="fas fa-plus"></i> Add Booking
@@ -229,7 +229,7 @@
 				<!-- Stats Cards -->
 				<div class="calendar-stats">
 					<div class="stat-card confirmed">
-						<div class="stat-value" style="color: #c19b76;" id="confirmedCount">0</div>
+						<div class="stat-value" style="color: #1c2830;" id="confirmedCount">0</div>
 						<div class="stat-label">Confirmed Bookings</div>
 					</div>
 					<div class="stat-card partial">
@@ -249,7 +249,7 @@
 				<!-- Legend -->
 				<div class="calendar-legend">
 					<div class="legend-item">
-						<div class="legend-color" style="background-color: #c19b76;"></div>
+						<div class="legend-color" style="background-color: #1c2830;"></div>
 						<span class="legend-label">Confirmed Booking</span>
 					</div>
 					<div class="legend-item">
@@ -261,7 +261,7 @@
 						<span class="legend-label">Retained Room</span>
 					</div>
 					<div class="legend-item">
-						<div class="legend-color" style="background-color: #fff9e6; border: 2px solid #c19b76;"></div>
+						<div class="legend-color" style="background-color: #fff9e6; border: 2px solid #1c2830;"></div>
 						<span class="legend-label">Today</span>
 					</div>
 				</div>
@@ -394,8 +394,8 @@
     title: booking.guest_name + ' - ' + booking.room_name + ' - ' + booking.night + ' - ' + booking.checked_in_by,
     start: booking.start,
     end: booking.end,
-    backgroundColor: '#c19b76', // Background color for events
-    borderColor: '#c19b76',     // Border color for events
+    backgroundColor: '#1c2830', // Background color for events
+    borderColor: '#1c2830',     // Border color for events
     textColor: '#fff',          // Optional: Text color for readability
     description: `
       Room: ${booking.room_name} (${booking.room_number})<br>
@@ -468,15 +468,15 @@
   // Format bookings for FullCalendar events
   var events = bookings.map(booking => {
     // Determine color based on booking status
-    let backgroundColor = '#c19b76'; // Default color
-    let borderColor = '#c19b76';
+    let backgroundColor = '#1c2830'; // Default color
+    let borderColor = '#1c2830';
 
     if (booking.status === 'part-payment' || booking.is_part_payment) {
       backgroundColor = '#FFA500'; // Orange for part payment
       borderColor = '#FFA500';
     } else if (booking.status === 'success') {
-      backgroundColor = '#c19b76'; // Gold for confirmed
-      borderColor = '#c19b76';
+      backgroundColor = '#1c2830'; // Gold for confirmed
+      borderColor = '#1c2830';
     }
 
     return {
@@ -646,7 +646,7 @@
           <div class="row">
             <div class="col-md-12 mb-3">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h5 style="color: #c19b76; margin: 0;">
+                <h5 style="color: #1c2830; margin: 0;">
                   <i class="fas fa-user-circle"></i> ${info.event.extendedProps.guestName}
                 </h5>
                 ${partPaymentBadge}

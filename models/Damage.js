@@ -55,6 +55,11 @@ const Damage = sequelize.define('damage', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  images: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Array of image URLs from Cloudinary'
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: Sequelize.NOW,

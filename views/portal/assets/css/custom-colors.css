@@ -120,7 +120,8 @@
 }
 
 .header .header-left {
-    background-color: #ffffff !important;
+    background-color: #1c2830 !important;
+    /* background-color: #ffffff !important; */
 }
 
 /* Links */
@@ -129,7 +130,7 @@ a {
 }
 
 a:hover {
-    color: #4a4a4a !important;
+    color: #000 !important;
 }
 
 /* Badges */

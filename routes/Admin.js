@@ -28,6 +28,7 @@ const DamageController = require("../controllers/Damage");
 const PartPayment = require("../models/PartPayment");
 const PricingConfig = require("../models/PricingConfig");
 const RoomTransfer = require("../models/RoomTransfer");
+const cloudinaryRepo = require("../repos/cloudinary");
 const Expense = require("../models/Expense");
 const Damage = require("../models/Damage");
 const pricingConfigRepo = require("../repos/PricingConfig-repo");
@@ -1022,7 +1023,7 @@ routes.post("/add-staff",checkAuthCookie,expressAsyncHandler(async (req, res) =>
                 <td align="center">
                   <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
                     <tr>
-                      <td align="center" style="background-color: #c19b76; padding: 20px;">
+                      <td align="center" style="background-color: #1c2830; padding: 20px;">
                         <h2 style="color: #ffffff; font-size: 24px; margin: 0;">Welcome Aboard!</h2>
                       </td>
                     </tr>
@@ -1032,7 +1033,7 @@ routes.post("/add-staff",checkAuthCookie,expressAsyncHandler(async (req, res) =>
                         <p style="font-size: 16px; margin-bottom: 20px;">Welcome to Wishmewell Apartment and Suites! We're excited to have you as our new staff member with role ${saveUser.roleName === "hotel receptionist" ? "Receptionist" : saveUser.roleName} . Below are your login credentials:</p>
                         <p style="font-size: 16px; margin-bottom: 20px;">Email: ${saveUser.email}</p>
                         <p style="font-size: 16px; margin-bottom: 20px;">Password: ${randPass}</p>
-                        <p style="font-size: 16px; margin-top: 20px;">You can log in to your account here: <a href="https://wishmewellapartment.com/portal" style="color: #c19b76; text-decoration: underline;">Wishmewell Apartment and Suites Portal</a></p>
+                        <p style="font-size: 16px; margin-top: 20px;">You can log in to your account here: <a href="https://wishmewellapartment.com/portal" style="color: #1c2830; text-decoration: underline;">Wishmewell Apartment and Suites Portal</a></p>
                         <p style="font-size: 16px; margin-top: 20px;">If you have any questions, feel free to reach out to us.</p>
                       </td>
                     </tr>
@@ -1549,8 +1550,8 @@ routes.get('/expenses-csv', checkAuthCookie, async (req, res) => {
 
 // Damage Routes
 routes.get("/damages", checkAuthCookie, DamageController.renderDamagesPage);
-routes.post("/damages/create", checkAuthCookie, DamageController.createDamage);
-routes.put("/damages/update/:id", checkAuthCookie, DamageController.updateDamage);
+routes.post("/damages/create", checkAuthCookie, cloudinaryRepo._parser, DamageController.createDamage);
+routes.put("/damages/update/:id", checkAuthCookie, cloudinaryRepo._parser, DamageController.updateDamage);
 routes.put("/damages/status/:id", checkAuthCookie, DamageController.updateDamageStatus);
 routes.delete("/damages/delete/:id", checkAuthCookie, DamageController.deleteDamage);
 routes.get("/damages/api/:id", checkAuthCookie, DamageController.getDamageById);

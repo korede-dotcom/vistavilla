@@ -3,6 +3,7 @@ const damageRepo = require("../repos/Damage-repo");
 const RoomRepo = require("../repos/Room-repo");
 const RoomNumber = require("../models/RoomNumbers");
 const Room = require("../models/Room");
+const cloudinaryRepo = require("../repos/cloudinary");
 
 const renderDamagesPage = asynchandler(async (req, res) => {
   let damages;
@@ -45,10 +46,20 @@ const renderDamagesPage = asynchandler(async (req, res) => {
 
 const createDamage = asynchandler(async (req, res) => {
   const { room_number, room_name, damage_description, action_type, amount, damage_date, notes } = req.body;
-  
+
   // Convert amount to kobo
   const amountInKobo = parseFloat(amount) * 100;
-  
+
+  // Handle image uploads if files are present
+  let imageUrls = [];
+  if (req.files && req.files.length > 0) {
+    const uploadedImages = await cloudinaryRepo.uploadMany(req.files);
+    imageUrls = uploadedImages.map(img => ({
+      url: img.url,
+      public_id: img.public_id
+    }));
+  }
+
   const damage = await damageRepo.create({
     room_number,
     room_name,
@@ -58,9 +69,10 @@ const createDamage = asynchandler(async (req, res) => {
     damage_date: damage_date || new Date(),
     status: 'pending',
     recorded_by: req.user ? req.user.name : null,
-    notes
+    notes,
+    images: imageUrls.length > 0 ? imageUrls : null
   });
-  
+
   return res.status(201).json({
     status: true,
     message: "Damage report created successfully",
@@ -71,7 +83,7 @@ const createDamage = asynchandler(async (req, res) => {
 const updateDamage = asynchandler(async (req, res) => {
   const { id } = req.params;
   const { room_number, room_name, damage_description, action_type, amount, damage_date, status, notes } = req.body;
-  
+
   const updateData = {};
   if (room_number) updateData.room_number = room_number;
   if (room_name) updateData.room_name = room_name;
@@ -82,13 +94,27 @@ const updateDamage = asynchandler(async (req, res) => {
   if (status) updateData.status = status;
   if (notes) updateData.notes = notes;
   updateData.updated_at = new Date();
-  
+
+  // Handle image uploads if files are present
+  if (req.files && req.files.length > 0) {
+    const uploadedImages = await cloudinaryRepo.uploadMany(req.files);
+    const imageUrls = uploadedImages.map(img => ({
+      url: img.url,
+      public_id: img.public_id
+    }));
+
+    // Get existing images and append new ones
+    const existingDamage = await damageRepo.findById(id);
+    const existingImages = existingDamage.images || [];
+    updateData.images = [...existingImages, ...imageUrls];
+  }
+
   if (status === 'completed') {
     updateData.completed_date = new Date();
   }
-  
+
   const damage = await damageRepo.update(id, updateData);
-  
+
   return res.status(200).json({
     status: true,
     message: "Damage report updated successfully",

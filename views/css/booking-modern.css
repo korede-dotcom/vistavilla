@@ -4,10 +4,10 @@
    ======================================== */
 
 :root {
-  /* Primary Brand Colors - Black & White Glass Design */
-  --primary-brand: #000000;
-  --primary-dark: #1a1a1a;
-  --primary-light: #333333;
+  /* Primary Brand Colors - Dark Blue-Grey Design */
+  --primary-brand: #1c2830;
+  --primary-dark: #141d24;
+  --primary-light: #2a3a45;
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-bg-dark: rgba(0, 0, 0, 0.3);
   --glass-border: rgba(255, 255, 255, 0.15);
@@ -4745,9 +4745,9 @@ button {
 }
 
 .marble-icon-dark {
-  background: rgba(0, 0, 0, 0.1);
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  color: #000000;
+  background: rgba(28, 40, 48, 0.1);
+  border: 2px solid rgba(28, 40, 48, 0.2);
+  color: var(--primary-brand);
 }
 
 .marble-box:hover .marble-icon-dark {
@@ -4765,7 +4765,7 @@ button {
 }
 
 .marble-title-dark {
-  color: #000000;
+  color: var(--primary-brand);
 }
 
 /* Marble Box Text */
@@ -4813,7 +4813,7 @@ button {
   font-family: 'Playfair Display', Georgia, serif;
   font-size: 56px;
   font-weight: 800;
-  color: #000000;
+  color: var(--primary-brand);
   margin: 0 0 24px 0;
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -4828,7 +4828,7 @@ button {
 }
 
 .luxury-gradient-text-dark {
-  background: linear-gradient(135deg, #000000 0%, #3a3a3a 100%);
+  background: linear-gradient(135deg, var(--primary-brand) 0%, var(--primary-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -4884,9 +4884,9 @@ button {
 }
 
 .luxury-cta-btn.primary {
-  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, var(--primary-brand) 0%, var(--primary-dark) 100%);
   color: #ffffff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(28, 40, 48, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .luxury-cta-btn.primary::before {
@@ -4912,15 +4912,15 @@ button {
 
 .luxury-cta-btn.secondary {
   background: rgba(255, 255, 255, 0.9);
-  color: #000000;
-  border: 2px solid rgba(0, 0, 0, 0.2);
+  color: var(--primary-brand);
+  border: 2px solid rgba(28, 40, 48, 0.2);
 }
 
 .luxury-cta-btn.secondary:hover {
   background: #ffffff;
-  border-color: #000000;
+  border-color: var(--primary-brand);
   transform: translateY(-4px);
-  color: #000000;
+  color: var(--primary-brand);
 }
 
 .luxury-cta-btn i {
@@ -4949,7 +4949,7 @@ button {
 }
 
 .luxury-cta-feature i {
-  color: #000000;
+  color: var(--primary-brand);
   font-size: 18px;
 }
 
