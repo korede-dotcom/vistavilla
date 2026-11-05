@@ -180,7 +180,9 @@ const clientHotelRoom = asynchandler(async (req,res) => {
 // console.log("🚀 ~ clientHotelRoom ~ activeMarquees:", activeMarquees);
 
 
-   return res.render('index', {
+   return res.render(require('path').join(__dirname, '../views/index.ejs'), {
+        landingDefaults: require('../utils/landingContent').defaults,
+        content: await require('../models/LandingSettings').get(),
         pkgs: pkgsWithPricing,
         activeMarquees:activeMarquees
       });

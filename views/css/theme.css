@@ -1,0 +1,225 @@
+/* Site-wide appearance controls and dark surfaces. */
+html[data-theme="dark"],
+html[data-theme="dark"] body,
+html[data-theme="dark"] .page-wrapper { background: #0c0c0c !important; color: #f8f8f8 !important; }
+html[data-theme="dark"] .modern-luxury-header,
+html[data-theme="dark"] .modern-luxury-header.scrolled,
+html[data-theme="dark"] .modern-mobile-menu,
+html[data-theme="dark"] .modern-mobile-menu-header {
+  background: #111111 !important;
+  color: #f8f8f8 !important;
+}
+html[data-theme="dark"] .modern-nav-link,
+html[data-theme="dark"] .modern-mobile-nav-link,
+html[data-theme="dark"] .modern-mobile-close,
+html[data-theme="dark"] .modern-mobile-contact a { color: #f8f8f8 !important; }
+html[data-theme="dark"] .modern-hamburger { background: #eeeeee !important; }
+html[data-theme="dark"] .modern-mobile-toggle { border-color: #80808055 !important; }
+html[data-theme="dark"] .modern-search-section,
+html[data-theme="dark"] .modern-features-section,
+html[data-theme="dark"] .modern-about-section,
+html[data-theme="dark"] .luxury-categories-section,
+html[data-theme="dark"] .luxury-amenities-section,
+html[data-theme="dark"] .modern-rooms-section,
+html[data-theme="dark"] .luxury-testimonials-section,
+html[data-theme="dark"] .luxury-gallery-section,
+html[data-theme="dark"] .luxury-why-choose-section {
+  background: #0c0c0c !important;
+  background-image: none !important;
+}
+html[data-theme="dark"] .modern-search-card,
+html[data-theme="dark"] .modern-feature-card,
+html[data-theme="dark"] .luxury-category-card,
+html[data-theme="dark"] .luxury-amenity-card,
+html[data-theme="dark"] .modern-room-card,
+html[data-theme="dark"] .modern-room-content,
+html[data-theme="dark"] .luxury-testimonial-card,
+html[data-theme="dark"] .luxury-why-choose-card,
+html[data-theme="dark"] .luxury-gallery-card-clean {
+  background: #191919 !important;
+  background-image: none !important;
+  border: 1px solid #80808055 !important;
+  box-shadow: 0 12px 32px #0003 !important;
+}
+html[data-theme="dark"] .modern-search-card { border-top: 0 !important; }
+html[data-theme="dark"] .modern-features-title,
+html[data-theme="dark"] .modern-section-title,
+html[data-theme="dark"] .modern-search-card-title,
+html[data-theme="dark"] .modern-feature-card-title,
+html[data-theme="dark"] .luxury-category-title,
+html[data-theme="dark"] .luxury-category-title a,
+html[data-theme="dark"] .luxury-amenity-title,
+html[data-theme="dark"] .modern-room-title,
+html[data-theme="dark"] .modern-room-title a,
+html[data-theme="dark"] .luxury-testimonial-author,
+html[data-theme="dark"] .luxury-testimonial-author h4,
+html[data-theme="dark"] .luxury-why-choose-title,
+html[data-theme="dark"] .text-shadow-luxury,
+html[data-theme="dark"] .luxury-cta-title {
+  color: #f8f8f8 !important;
+  text-shadow: none !important;
+}
+html[data-theme="dark"] .modern-features-subtitle,
+html[data-theme="dark"] .modern-section-subtitle,
+html[data-theme="dark"] .modern-feature-card-text,
+html[data-theme="dark"] .luxury-text,
+html[data-theme="dark"] .luxury-amenity-text,
+html[data-theme="dark"] .modern-room-description,
+html[data-theme="dark"] .luxury-testimonial-text,
+html[data-theme="dark"] .luxury-why-choose-text,
+html[data-theme="dark"] .modern-stat-label,
+html[data-theme="dark"] .luxury-price-label,
+html[data-theme="dark"] .luxury-price-period,
+html[data-theme="dark"] .modern-price-label,
+html[data-theme="dark"] .modern-price-period,
+html[data-theme="dark"] .luxury-cta-subtitle-dark { color: #c8c8c8 !important; }
+html[data-theme="dark"] .modern-form-label { color: #ececec !important; }
+html[data-theme="dark"] .modern-form-input,
+html[data-theme="dark"] .modern-form-select,
+html[data-theme="dark"] .modern-newsletter-input {
+  background: #0f0f0f !important;
+  color: #f7f7f7 !important;
+  border-color: #80808055 !important;
+  color-scheme: dark;
+}
+html[data-theme="dark"] .modern-form-input::placeholder,
+html[data-theme="dark"] .modern-newsletter-input::placeholder { color: #b1b1b1 !important; opacity: 1; }
+html[data-theme="dark"] .modern-form-select option { background: #191919; color: #f7f7f7; }
+html[data-theme="dark"] .modern-feature-icon,
+html[data-theme="dark"] .luxury-amenity-icon {
+  background: #ffffff0a !important;
+  color: #eeeeee !important;
+  border: 1px solid #80808055 !important;
+}
+html[data-theme="dark"] .luxury-price-amount,
+html[data-theme="dark"] .modern-price-amount,
+html[data-theme="dark"] .luxury-testimonial-rating,
+html[data-theme="dark"] .luxury-testimonial-quote { color: #eeeeee !important; }
+html[data-theme="dark"] .section-badge,
+html[data-theme="dark"] .luxury-cta-badge,
+html[data-theme="dark"] .modern-room-badge {
+  background: #ffffff0a !important;
+  color: #eeeeee !important;
+  border: 1px solid #80808055 !important;
+}
+html[data-theme="dark"] .luxury-category-price,
+html[data-theme="dark"] .modern-room-footer { border-color: #80808055 !important; }
+html[data-theme="dark"] .luxury-cta-section,
+html[data-theme="dark"] .modern-luxury-footer { background: #222222 !important; }
+html[data-theme="dark"] .luxury-cta-overlay { background: linear-gradient(125deg, #0c0c0ccc, #222222e6) !important; }
+html[data-theme="dark"] .luxury-cta-btn.secondary { color: #eeeeee !important; border: 1px solid #80808055 !important; background: transparent !important; }
+html[data-theme="dark"] .modern-footer-about,
+html[data-theme="dark"] .modern-footer-newsletter-text,
+html[data-theme="dark"] .modern-footer-contact,
+html[data-theme="dark"] .modern-footer-contact a,
+html[data-theme="dark"] .modern-footer-links a,
+html[data-theme="dark"] .modern-footer-copyright,
+html[data-theme="dark"] .modern-footer-bottom-links a { color: #eaeaea !important; }
+html[data-theme="dark"] .modern-footer-bottom { border-color: #80808055 !important; }
+html[data-theme="dark"] .modern-footer-links a:hover,
+html[data-theme="dark"] .modern-footer-contact a:hover { color: #eeeeee !important; }
+html[data-theme="dark"] a:focus-visible,
+html[data-theme="dark"] button:focus-visible { outline: 2px solid #80808055; outline-offset: 4px; }
+
+.theme-toggle {
+  position: fixed; bottom: 18px; left: 18px; z-index: 11000;
+  border: 1px solid #80808055; border-radius: 24px; padding: 10px 16px;
+  background: #fff; color: #222222; box-shadow: 0 4px 18px #0002;
+  font: 600 12px/1.5 Arial,sans-serif; cursor: pointer;
+}
+html[data-theme="dark"] .theme-toggle { background: #191919; color: #eeeeee; }
+.theme-toggle:focus-visible { outline: 3px solid #80808055; outline-offset: 4px; }
+/* Extend the landing palette to room pages, account screens and admin tools. */
+html[data-theme="dark"] body { background: #0c0c0c !important; color: #f4f4f4 !important; }
+html[data-theme="dark"] :is(.header,.sidebar,.sidebar-inner,.main-wrapper,.account-wrapper,.account-page,.account-box,.content,.card,.card-body,.card-header,.card-footer,.modal-content,.modal-header,.modal-footer,.dropdown-menu,.list-group-item,.table,.table-responsive,.booking-form,.luxury-booking-card,.luxury-room-card,.luxury-room-content,.luxury-rooms-hero,.luxury-rooms-section,.luxury-contact-section,.luxury-gallery-section,.site-header,.stay,.rooms,.about,.minimal-luxury-hero) {
+  background-color: #191919 !important; color: #f4f4f4 !important; border-color: #80808055 !important;
+}
+html[data-theme="dark"] :is(h1,h2,h3,h4,h5,h6,.page-title,.card-title,.card-header a,.sidebar-menu a,.header .user-menu a,.dropdown-item,.breadcrumb-item,.form-group label,.text-dark,.text-body,.table th,.table td) { color: #f4f4f4 !important; }
+html[data-theme="dark"] :is(.text-muted,.form-text,.breadcrumb-item.active,.card p,.account-subtitle,.luxury-room-description,.luxury-room-price-label) { color: #c8c8c8 !important; }
+html[data-theme="dark"] :is(.form-control,.form-select,.custom-select,.select2-selection,.select2-dropdown,.select2-results,.input-group-text,.dataTables_wrapper select,.dataTables_wrapper input) { background: #0f0f0f !important; color: #f4f4f4 !important; border-color: #80808055 !important; }
+html[data-theme="dark"] input::placeholder, html[data-theme="dark"] textarea::placeholder { color: #b1b1b1 !important; }
+html[data-theme="dark"] :is(.table-striped tbody tr:nth-of-type(odd),.table-hover tbody tr:hover,.dropdown-item:hover,.sidebar-menu li.active>a,.sidebar-menu li>a:hover,.bg-light,.bg-white,.pagination .page-link) { background-color: #282828 !important; color: #f4f4f4 !important; }
+html[data-theme="dark"] :is(.table td,.table th,.table thead th,.modal-header,.modal-footer,.dropdown-divider) { border-color: #80808055 !important; }
+html[data-theme="dark"] :is(.btn-primary,.btn-outline-primary:hover,.pagination .page-item.active .page-link) { background: #dddddd !important; color: #232323 !important; border-color: #80808055 !important; }
+html[data-theme="dark"] :is(.sidebar-menu .menu-arrow,.close,.header-left a,.mobile_btn,.user-link) { color: #eeeeee !important; }
+html[data-theme="dark"] :is(.sidebar-menu ul ul,.sidebar-menu .submenu_class) { background: #111111 !important; }
+html[data-theme="dark"] :is(.luxury-room-title,.luxury-room-title a,.luxury-room-price,.luxury-room-price-value,.luxury-room-features,.luxury-contact-title,.luxury-contact-label) { color: #f4f4f4 !important; }
+html[data-theme="dark"] :is(.flatpickr-calendar,.flatpickr-months .flatpickr-month,.flatpickr-current-month .flatpickr-monthDropdown-months,.flatpickr-weekdays,span.flatpickr-weekday) { background: #191919 !important; color: #f4f4f4 !important; }
+html[data-theme="dark"] .flatpickr-day { color: #f4f4f4; }
+html[data-theme="dark"] .flatpickr-day.selected { background: #dddddd; color: #232323; border-color: #80808055; }
+html[data-theme="dark"] .flatpickr-day.flatpickr-disabled { color: #767676; }
+@media(max-width:640px) { .theme-toggle { left: 12px; bottom: 12px; padding: 9px 12px; } }
+@media print { .theme-toggle { display: none !important; } }
+html[data-theme="dark"] :is(.search-modal-content,.search-modal-header,.search-modal-body,.search-modal-footer,.search-result-item,.luxury-contact-card,.luxury-contact-form,.luxury-contact-info,.luxury-booking-form,.luxury-booking-summary,.luxury-room-details,.luxury-rooms-grid,.contact-form) { background-color: #191919 !important; color: #f4f4f4 !important; border-color: #80808055 !important; }
+html[data-theme="dark"] :is(.search-modal-title,.search-result-value,.search-modal-subtitle,.search-result-label,.contact-form label) { color: #f4f4f4 !important; }
+/* Keep printed invoices and reports on readable white paper. */
+@media print {
+  html[data-theme="dark"], html[data-theme="dark"] body,
+  html[data-theme="dark"] .page-wrapper, html[data-theme="dark"] .table,
+  html[data-theme="dark"] .table th, html[data-theme="dark"] .table td {
+    background: white !important; color: black !important;
+  }
+}
+
+/* Keep navbar branding legible on dark backgrounds, including mobile menus. */
+html[data-theme="dark"] .modern-logo-img,
+html[data-theme="dark"] .modern-mobile-logo img,
+html[data-theme="dark"] .header-left .logo img {
+  filter: brightness(0) invert(1) !important;
+}
+html[data-theme="dark"] .header-left .logoclass { color: #ffffff !important; }
+
+/* Page-specific surfaces used outside the homepage. */
+html[data-theme="dark"] :is(
+  .luxury-rooms-filter-section,.luxury-rooms-grid-section,.luxury-rooms-cta-section,
+  .elegant-contact-hero,.elegant-contact-section,.elegant-map-section,
+  .elegant-gallery-hero,.masonry-gallery-section,.gallery-stats,
+  .minimal-luxury-details,.minimal-luxury-booking,.minimal-form-section,
+  .room-details-section,.booking-section,.terms-container
+) {
+  background: #101010 !important;
+  color: #eeeeee !important;
+}
+html[data-theme="dark"] :is(
+  .luxury-room-content-section,.luxury-room-footer,.luxury-rooms-empty-state,
+  .elegant-contact-form-wrapper,.elegant-contact-info-card,.elegant-contact-social,
+  .elegant-map-header,.masonry-card,.masonry-info,.gallery-empty-state,
+  .minimal-reservation-card,.minimal-price-card,.minimal-description-wrapper,
+  .minimal-amenities-section,.minimal-amenity-item,.minimal-stay-summary,
+  .minimal-date-field,.minimal-input-group,.luxury-booking-details,
+  .luxury-detail-row,.luxury-glass
+) {
+  background: #191919 !important;
+  color: #eeeeee !important;
+  border-color: #383838 !important;
+}
+html[data-theme="dark"] :is(
+  .elegant-contact-hero-title,.elegant-gallery-hero-title,.elegant-section-title,
+  .elegant-contact-info-title,.elegant-contact-social-title,.elegant-form-label,
+  .elegant-contact-info-link,.elegant-breadcrumb-current,.elegant-breadcrumb-link,
+  .luxury-rooms-count h3,.luxury-room-title,.luxury-room-price-amount,
+  .minimal-card-title,.minimal-section-title,.minimal-amenities-title,
+  .minimal-price-amount,.minimal-price-now,.minimal-summary-value,
+  .minimal-date-value,.minimal-form-label,.minimal-date-label,
+  .luxury-details-title,.luxury-detail-value,.stat-number
+) { color: #eeeeee !important; }
+html[data-theme="dark"] :is(
+  .elegant-contact-hero-subtitle,.elegant-gallery-hero-subtitle,
+  .elegant-section-subtitle,.elegant-contact-info-text,.luxury-rooms-count p,
+  .luxury-room-feature,.luxury-room-amenity,.luxury-room-price-period,
+  .minimal-card-subtitle,.minimal-description-text,.minimal-price-period,
+  .minimal-summary-label,.minimal-trust-item,.minimal-trust-item span,
+  .minimal-amenity-item span,.minimal-feature,.luxury-detail-label,.stat-label
+) { color: #bdbdbd !important; }
+html[data-theme="dark"] :is(
+  .elegant-form-input,.elegant-form-textarea,.minimal-form-input,
+  .minimal-date-input,.luxury-form-input,.luxury-form-select
+) {
+  background: #111111 !important;
+  color: #eeeeee !important;
+  border-color: #484848 !important;
+  color-scheme: dark;
+}
+html[data-theme="dark"] :is(.elegant-form-input,.elegant-form-textarea,.minimal-form-input,.minimal-date-input)::placeholder { color: #aaaaaa !important; }
+html[data-theme="dark"] :is(.luxury-filter-btn,.elegant-section-badge,.elegant-contact-info-icon,.elegant-social-link,.minimal-date-badge,.minimal-amenity-item i) { background: #262626 !important; color: #eeeeee !important; border-color: #484848 !important; }
+html[data-theme="dark"] .luxury-filter-btn.active { background: #eeeeee !important; color: #222222 !important; }

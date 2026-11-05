@@ -1,0 +1,27 @@
+<%- include('partial/header', { title: 'Website settings', email, roleName }) %>
+<%- include('partial/sidebar', { name }) %>
+<div class="page-wrapper"><main class="content container-fluid" style="max-width:1000px;padding-top:40px">
+<h1>Website & landing page</h1><p>Shape your first impression. Changes are published when you save.</p>
+<p><a href="/" target="_blank" rel="noopener">View website ↗</a> · Manage room photos and prices in <a href="/portal/room-category">Room Categories</a>.</p>
+<% if (error) { %><div class="alert alert-danger" role="alert"><%= error %></div><% } %>
+<% if (saved) { %><div class="alert alert-success" role="status">Website changes saved.</div><% } %>
+<form method="post" action="/portal/landing-settings">
+<input type="hidden" name="csrf" value="<%= csrf %>">
+<% const labels = {eyebrow:'Hero caption',headline:'Hero headline',introduction:'Hero introduction',heroImage:'Hero image URL',aboutTitle:'About heading',aboutText:'About description',aboutImage:'About image URL',roomsTitle:'Rooms heading',amenities:'Amenities (one per line)',phone:'Contact phone',email:'Contact email',address:'Address',showAbout:'Show about section',showRooms:'Show rooms section',showAmenities:'Show amenities section'}; %>
+<% Object.keys(defaults).forEach(key => { %>
+<div class="form-group">
+<% if (typeof defaults[key] === 'boolean') { %>
+<label><input type="checkbox" name="<%= key %>" <%= content[key] === true || content[key] === 'on' ? 'checked' : '' %>> <%= labels[key] %></label>
+<% } else { %>
+<label for="<%= key %>"><%= labels[key] %></label>
+<% if (['introduction','aboutText','amenities'].includes(key)) { %>
+<textarea class="form-control" id="<%= key %>" name="<%= key %>" rows="4" maxlength="1500" required><%= content[key] %></textarea>
+<% } else { %>
+<input class="form-control" id="<%= key %>" name="<%= key %>" value="<%= content[key] %>" maxlength="300" type="<%= key === 'email' ? 'email' : 'text' %>" required>
+<% } %>
+<% if (key.endsWith('Image')) { %><small>Paste an HTTPS image URL (including Cloudinary), or a local /images/ path.</small><% } %>
+<% } %></div>
+<% }); %>
+<button class="btn btn-primary" type="submit">Save & publish changes</button>
+</form></main></div>
+<%- include('partial/footer') %>

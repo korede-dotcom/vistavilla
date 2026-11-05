@@ -162,10 +162,21 @@ app.use(cors());
 app.set('view engine', 'ejs');
 
 // Middleware to serve static files (like CSS, JS, images)
-app.use(express.static(path.join(__dirname, 'views')));
+const staticOptions = {
+  // Cache assets while keeping templates and other responses revalidated.
+  setHeaders(res, filePath) {
+    if (['sw.js', 'manifest.webmanifest'].includes(path.basename(filePath))) {
+      res.setHeader('Cache-Control', 'no-cache');
+    } else if (/\.(?:css|js|png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|eot)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'public, max-age=604800');
+    }
+  }
+};
+app.use(express.static(path.join(__dirname, 'views'), staticOptions));
+// Register portal assets once, rather than adding middleware on every request.
+app.use(express.static(path.join(__dirname, 'views/portal'), staticOptions));
 app.use((req, res, next) => {
   if (req.path.startsWith('/portal')) {
-    app.use(express.static(path.join(__dirname, 'views/portal')));
     app.set('views', path.join(__dirname, 'views', 'portal'));
   } else {
     app.set('views', path.join(__dirname, 'views'));

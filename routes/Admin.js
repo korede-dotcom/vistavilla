@@ -35,6 +35,8 @@ const pricingConfigRepo = require("../repos/PricingConfig-repo");
 
 const fs = require('fs');
 
+routes.use('/landing-settings', require('./Landing'));
+
 routes.get("/",async (req,res) => {
             res.render('login', {
               pkgs: "jhgfhghh",

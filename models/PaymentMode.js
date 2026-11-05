@@ -9,19 +9,19 @@ const PaymentMode = sequelize.define('paymentmode', {
     foreignKey: true,
     autoIncrement: true,
   },
-  mode:{
+  mode: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique:true,
+    unique: true,
   },
-  status:{
-    type:DataTypes.BOOLEAN,
-    defaultValue:true
+  status: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   }
 });
 
 
 
-PaymentMode.sync({alter:true});
+PaymentMode.sync({});
 
 module.exports = PaymentMode;

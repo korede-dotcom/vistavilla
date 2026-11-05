@@ -1,0 +1,16 @@
+{
+  "id": "/",
+  "name": "Vistavilla Apartment",
+  "short_name": "Vistavilla",
+  "description": "Your own corner of Lagos. Explore apartments and plan your stay.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8f6f0",
+  "theme_color": "#222222",
+  "icons": [
+    { "src": "/images/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/images/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/images/pwa-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

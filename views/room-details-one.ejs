@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+<script src="/js/theme.js?v=1"></script>
 	<meta charset="utf-8">
 	<title>Vistavilla Apartment - <%= category.category_name %></title>
 	<!-- Stylesheets -->
@@ -17,18 +18,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<link rel="stylesheet" href="/css/theme.css?v=5">
 </head>
 
 <body>
 <div class="page-wrapper">
-	<!-- Luxury Preloader -->
-	<div class="luxury-preloader">
-		<div class="luxury-loader">
-			<div class="luxury-loader-ring luxury-loader-ring-1"></div>
-			<div class="luxury-loader-ring luxury-loader-ring-2"></div>
-			<div class="luxury-loader-ring luxury-loader-ring-3"></div>
-		</div>
-	</div>
 
   <!-- Main Header-->
   <%- include('partials/header', { title: 'Vistavilla Apartment',activeMarquees:activeMarquees }) %>
@@ -276,18 +270,6 @@ function changeMainImage(imageSrc, index) {
 	});
 }
 
-// Preloader
-window.addEventListener('load', function() {
-	const preloader = document.querySelector('.luxury-preloader');
-	if (preloader) {
-		setTimeout(() => {
-			preloader.style.opacity = '0';
-			setTimeout(() => {
-				preloader.style.display = 'none';
-			}, 300);
-		}, 500);
-	}
-});
 </script>
 
 <script>

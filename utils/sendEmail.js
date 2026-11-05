@@ -1,34 +1,32 @@
 const nodemailer = require('nodemailer');
 
-
-const SendEmail = async (subject,text,html,to) => {
+const SendEmail = async (subject, text, html, to) => {
     const transporter = nodemailer.createTransport({
-        host: process.env.smtp_host,
-        port: process.env.smtp_port,
+        host: "mail.privateemail.com",
+        port: 587,
+        secure: false, // true for 465, false for 587
         auth: {
-          user: process.env.smtp_user, // Your Gmail address
-          pass: process.env.smtp_pass, 
+            user: "contact@vistavillaapartments.org",
+            pass: process.env.SMTP_PASSWORD,
         },
-      
-  });
-  
-  // Set up email data with Unicode symbols
-  const mailOptions = {
-      from: 'wishmewellapartment@gmail.com',         // Sender address
-      to: to,    // List of recipients
-      subject: subject,     // Subject line
-      text: text,         // Plain text body
-      html: html,  // HTML body
-  };
-  
-  // Send mail with defined transport object
-  transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-          return console.log(error);
-      }
-      console.log('Message sent: %s', info.messageId);
-  });
-  
-}
+    });
+
+    const mailOptions = {
+        from: '"Vista Villa Apartments" <contact@vistavillaapartments.org>',
+        to: to,
+        subject: subject,
+        text: text,
+        html: html,
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Message sent: %s', info.messageId);
+        return info;
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
+};
 
 module.exports = SendEmail;

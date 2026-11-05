@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/js/theme.js?v=1"></script>
 <meta charset="utf-8">
 <title>Vistavilla Apartment - Gallery</title>
 <!-- Stylesheets -->
@@ -14,31 +15,13 @@
 <link href="css/responsive.css" rel="stylesheet">
 <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
 <!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+<link rel="stylesheet" href="/css/theme.css?v=5">
 </head>
 
 <body>
 
 <div class="page-wrapper">
 
-	<!-- Luxury Preloader -->
-	<div class="preloader">
-		<div class="luxury-loader-container">
-			<div class="luxury-loader-particle"></div>
-			<div class="luxury-loader-particle"></div>
-			<div class="luxury-loader-particle"></div>
-			<div class="luxury-loader-particle"></div>
-			<div class="luxury-loader-ring"></div>
-			<div class="luxury-loader-ring-2"></div>
-			<div class="luxury-loader-core">
-				<img src="images/logo-2.png" alt="Vistavilla" class="luxury-loader-logo">
-			</div>
-		</div>
-		<div class="luxury-loader-text">VISTAVILLA</div>
-		<div class="luxury-loader-subtitle">Where every view feels like home</div>
-		<div class="luxury-loader-progress">
-			<div class="luxury-loader-progress-bar"></div>
-		</div>
-	</div>
 
   <!-- Main Header-->
   <%- include('partials/header', { title: 'Vistavilla Apartment',activeMarquees:activeMarquees }) %>
@@ -99,7 +82,7 @@
 					<% images.forEach((img, index) => { %>
 						<div class="masonry-item" data-index="<%= index %>" style="animation-delay: <%= (index % 20) * 0.05 %>s;">
 							<div class="masonry-card">
-								<img src="<%= img.url %>" alt="Gallery Image <%= index + 1 %>" class="masonry-image" loading="lazy">
+								<img loading="lazy" decoding="async" src="<%= img.url %>" alt="Gallery Image <%= index + 1 %>" class="masonry-image" loading="lazy">
 								<div class="masonry-overlay">
 									<button class="masonry-zoom-btn" onclick="openLightbox(<%= index %>)">
 										<i class="fas fa-expand"></i>
@@ -147,7 +130,7 @@
 			<i class="fas fa-chevron-right"></i>
 		</button>
 		<div class="lightbox-content">
-			<img src="" alt="" id="lightboxImage" class="lightbox-image">
+			<img decoding="async" src="" alt="" id="lightboxImage" class="lightbox-image">
 			<div class="lightbox-counter">
 				<span id="currentImageIndex">1</span> / <span id="totalImagesCount"><%= images ? images.length : 0 %></span>
 			</div>

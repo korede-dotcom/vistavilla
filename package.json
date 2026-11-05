@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test:landing": "node --test tests/landing.test.js",
+    "test:theme": "node --test tests/theme.test.js"
   },
   "author": "",
   "license": "ISC",
