@@ -1,4 +1,4 @@
-<%- include('partial/header', { title: 'Wishmewell Apartment',email:email,roleName:roleName }) %>
+<%- include('partial/header', { title: 'Vistavilla Apartment',email:email,roleName:roleName }) %>
 <%- include('partial/sidebar', { name: name}) %>
 
 
@@ -44,7 +44,7 @@
 <!-- <h4 class="payslip-title text-center">booked on</h4> -->
 <div class="row">
 <div class="col-sm-6 m-b-20">
-<img src="assets/img/apple-touch-icon.png" class="inv-logo" alt="image" style="background-color: grey;border-radius: 50%;">
+<img src="/images/logo-2.png" class="inv-logo" alt="image" style="background-color: grey;border-radius: 50%;">
 <ul class="list-unstyled mb-0">
 <li>Hotel</li>
 <li>66 Campbell Street Lagos Onikan TBS</li>
@@ -237,9 +237,17 @@ eight only.)</p> -->
 						<small class="form-text text-muted">Only available rooms in the selected category are shown</small>
 					</div>
 
-					<div class="alert alert-warning" style="display: none;" id="transferWarning">
+					<div class="transfer-payment-panel" id="transferPaymentPanel" data-room-select="newRoomNumber" data-confirm="confirmTransferBtn">
+<label for="transferPaid">Amount paid now (₦)</label>
+<input class="form-control" type="number" min="0" step="0.01" value="0" id="transferPaid">
+<label for="transferMethod">Payment method</label>
+<select class="form-control" id="transferMethod"><option value="cash">Cash</option><option value="transfer">Bank transfer</option><option value="card">Card</option></select>
+<p class="mt-2" data-transfer-quote role="status">Select a destination room to see the revised total and balance.</p>
+<small class="text-muted">The new room rate applies to all booked nights. Previous payments are retained; any unpaid balance goes to Part Payments, flagged with the room change.</small>
+</div>
+<div class="alert alert-warning" style="display: none;" id="transferWarning">
 						<i class="fas fa-exclamation-triangle"></i>
-						<strong>Note:</strong> The booking dates and guest information will remain the same. Only the room assignment will change.
+						<strong>Note:</strong> The booking dates and guest information will remain the same. The destination room rate will update the booking total and outstanding balance.
 					</div>
 				</form>
 			</div>
@@ -294,6 +302,11 @@ eight only.)</p> -->
 
 	// Load categories when modal opens
 	$('#transferRoomModal').on('show.bs.modal', async function () {
+  const paymentPanel = document.getElementById('transferPaymentPanel');
+  paymentPanel.dataset.reference = currentBooking.reference_id;
+  paymentPanel.dataset.oldRoom = currentBooking.room_id;
+  document.getElementById('transferPaid').value = '0';
+
 		try {
 			console.log('🔄 Loading categories from: /portal/api/hotel/categories');
 			const response = await fetch('/portal/api/hotel/categories', {
@@ -403,6 +416,8 @@ eight only.)</p> -->
 
 	// Handle transfer confirmation
 	document.getElementById('confirmTransferBtn').addEventListener('click', async function() {
+  if (!document.getElementById('transferPaid').reportValidity()) return;
+
 		const newCategoryId = document.getElementById('newRoomCategory').value;
 		const newRoomId = document.getElementById('newRoomNumber').value;
 		const newRoomSelect = document.getElementById('newRoomNumber');
@@ -435,7 +450,9 @@ eight only.)</p> -->
 					new_room_number: newRoomNumber,
 					new_room_name: newRoomName,
 					new_category_id: newCategoryId,
-					new_category_name: newCategoryName
+					new_category_name: newCategoryName,
+        amount_paid_now: document.getElementById('transferPaid').value,
+        payment_method: document.getElementById('transferMethod').value
 				})
 			});
 
@@ -538,3 +555,4 @@ eight only.)</p> -->
 </script>
 </body>
 </html>
+<script defer src="/js/transfer-payment.js?v=1"></script>

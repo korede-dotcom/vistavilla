@@ -79,6 +79,7 @@ routes.get("/dashboard/monthly-bookings",checkAuthCookie,async (req,res) => {
       });
 })
 routes.get("/dashboard",checkAuthCookie,async (req,res) => {
+      const outstandingPayments = await PartPayment.sum('balance', { where: { payment_status: 'partial', balance: { [Op.gt]: 0 } } }) || 0;
       // Get today's date range
       const startOfToday = new Date();
       startOfToday.setHours(0, 0, 0, 0);
@@ -195,6 +196,7 @@ const barSummary = await DrinkLog.findAll({
               roleName:req.user.roleName,
               data:{
                   todayBooking:total,
+                  outstandingPayments,
                   availableroomCount:availableroomCount,
                   totalStaff:totalStaff,
                   customerCount:distinctCustomer.length,
@@ -1032,17 +1034,17 @@ routes.post("/add-staff",checkAuthCookie,expressAsyncHandler(async (req, res) =>
                     <tr>
                       <td style="padding: 20px; color: #333;">
                         <p style="font-size: 16px; margin-bottom: 20px;">Hi ${saveUser.name},</p>
-                        <p style="font-size: 16px; margin-bottom: 20px;">Welcome to Wishmewell Apartment and Suites! We're excited to have you as our new staff member with role ${saveUser.roleName === "hotel receptionist" ? "Receptionist" : saveUser.roleName} . Below are your login credentials:</p>
+                        <p style="font-size: 16px; margin-bottom: 20px;">Welcome to Vistavilla Apartment and Suites! We're excited to have you as our new staff member with role ${saveUser.roleName === "hotel receptionist" ? "Receptionist" : saveUser.roleName} . Below are your login credentials:</p>
                         <p style="font-size: 16px; margin-bottom: 20px;">Email: ${saveUser.email}</p>
                         <p style="font-size: 16px; margin-bottom: 20px;">Password: ${randPass}</p>
-                        <p style="font-size: 16px; margin-top: 20px;">You can log in to your account here: <a href="https://wishmewellapartment.com/portal" style="color: #1c2830; text-decoration: underline;">Wishmewell Apartment and Suites Portal</a></p>
+                        <p style="font-size: 16px; margin-top: 20px;">You can log in to your account here: <a href="https://test.vistavillaapartments.org/portal" style="color: #1c2830; text-decoration: underline;">Vistavilla Apartment and Suites Portal</a></p>
                         <p style="font-size: 16px; margin-top: 20px;">If you have any questions, feel free to reach out to us.</p>
                       </td>
                     </tr>
                     <tr>
                       <td align="center" style="background-color: #f4f4f4; padding: 20px; color: #666; font-size: 14px;">
                         <p style="margin: 0;">Best regards,</p>
-                        <p style="margin: 5px 0 0;">Wishmewell Apartment and Suites</p>
+                        <p style="margin: 5px 0 0;">Vistavilla Apartment and Suites</p>
                       </td>
                     </tr>
                   </table>
@@ -1051,7 +1053,7 @@ routes.post("/add-staff",checkAuthCookie,expressAsyncHandler(async (req, res) =>
             </table>
             `,
             saveUser.email,
-            "wishmewellapartment@gmail.com"
+            "vistavillaapartment@gmail.com"
         );
         
       // sendSMS
@@ -1456,6 +1458,8 @@ routes.get('/part-payments-csv', checkAuthCookie, async (req, res) => {
       "Room Name": payment.room_name || '',
       "Room Number": payment.room_number || '',
       "Category": payment.category_name || '',
+      "Room Changed": payment.is_room_transfer ? "Yes" : "No",
+      "Previous Room": payment.previous_room_number || '',
       "Total Amount (₦)": payment.total_amount ? (payment.total_amount / 100).toFixed(2) : '0.00',
       "Amount Paid (₦)": payment.amount_paid ? (payment.amount_paid / 100).toFixed(2) : '0.00',
       "Balance (₦)": payment.balance ? (payment.balance / 100).toFixed(2) : '0.00',
@@ -1727,125 +1731,24 @@ routes.get("/api/hotel/rooms/category/:categoryId", checkAuthCookie, expressAsyn
   });
 }));
 
-// Room Transfer Route
-routes.post("/transfer-room", checkAuthCookie, expressAsyncHandler(async (req, res) => {
-  const {
-    reference_id,
-    old_room_id,
-    old_room_number,
-    new_room_id,
-    new_room_number,
-    new_room_name,
-    new_category_id,
-    new_category_name
-  } = req.body;
-
-  if (!reference_id || !old_room_id || !new_room_id) {
-    return res.status(400).json({
-      status: false,
-      message: "Missing required fields"
-    });
-  }
-
-  // Check if new room is available
-  const newRoom = await RoomNumber.findOne({ where: { _id: new_room_id } });
-  if (!newRoom) {
-    return res.status(404).json({
-      status: false,
-      message: "New room not found"
-    });
-  }
-
-  if (newRoom.status) {
-    return res.status(400).json({
-      status: false,
-      message: "Selected room is already booked"
-    });
-  }
-
-  // Get the booking
-  const booking = await HotelBooking.findOne({ where: { reference_id } });
-  if (!booking) {
-    return res.status(404).json({
-      status: false,
-      message: "Booking not found"
-    });
-  }
-
-  // Start transaction
-  const t = await connectDB.transaction();
-
+routes.get('/transfer-room-quote', checkAuthCookie, expressAsyncHandler(async (req, res) => {
   try {
-    // Save transfer history
-    await RoomTransfer.create({
-      booking_reference: reference_id,
-      guest_name: booking.guest_name,
-      old_room_id: old_room_id,
-      old_room_number: old_room_number,
-      old_room_name: booking.room_name,
-      old_category_id: booking.category_id,
-      old_category_name: booking.category_name,
-      new_room_id: new_room_id,
-      new_room_number: new_room_number,
-      new_room_name: new_room_name,
-      new_category_id: new_category_id,
-      new_category_name: new_category_name,
-      transferred_by: req.user.name,
-      transfer_reason: req.body.transfer_reason || null,
-      booking_start: booking.start,
-      booking_end: booking.end
-    }, { transaction: t });
+    const data = await require('../services/transferRoom')(req.query, req.user, true);
+    return res.json({ status: true, data });
+  } catch (error) { return res.status(400).json({ status: false, message: error.message }); }
+}));
 
-    // Update the booking with new room details
-    await HotelBooking.update(
-      {
-        room_id: new_room_id,
-        room_number: new_room_number,
-        room_name: new_room_name,
-        category_id: new_category_id,
-        category_name: new_category_name
-      },
-      { where: { reference_id }, transaction: t }
-    );
-
-    // Free up the old room (set status to false)
-    await RoomNumber.update(
-      { status: false },
-      { where: { _id: old_room_id }, transaction: t }
-    );
-
-    // Mark the new room as booked (set status to true) if booking is active
-    const now = new Date();
-    const bookingStart = new Date(booking.start);
-    const bookingEnd = new Date(booking.end);
-
-    if (now >= bookingStart && now <= bookingEnd && booking.checked_in) {
-      await RoomNumber.update(
-        { status: true },
-        { where: { _id: new_room_id }, transaction: t }
-      );
-    }
-
-    // Commit transaction
-    await t.commit();
-
-    return res.status(200).json({
-      status: true,
-      message: `Room successfully transferred from ${old_room_number} to ${new_room_number}`,
-      data: {
-        old_room: old_room_number,
-        new_room: new_room_number
-      }
-    });
-
+// Transfer assignment, repricing and payment records commit together.
+routes.post('/transfer-room', checkAuthCookie, expressAsyncHandler(async (req, res) => {
+  if (!req.body.reference_id || !req.body.old_room_id || !req.body.new_room_id) {
+    return res.status(400).json({ status: false, message: 'Missing required fields' });
+  }
+  try {
+    const data = await require('../services/transferRoom')(req.body, req.user);
+    return res.json({ status: true, message: `Room transferred from ${data.old_room} to ${data.new_room}. Balance: ₦${(data.balance / 100).toLocaleString('en-NG')}`, data });
   } catch (error) {
-    // Rollback transaction on error
-    await t.rollback();
-    console.error('Error transferring room:', error);
-    return res.status(500).json({
-      status: false,
-      message: "Failed to transfer room: " + error.message
-    });
+    console.error('Room transfer failed:', error);
+    return res.status(400).json({ status: false, message: error.message });
   }
 }));
 

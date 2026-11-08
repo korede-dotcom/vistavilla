@@ -22,9 +22,10 @@ require('dotenv').config();
 
 app.use(cors());
 
-(async () => {
+const databaseReady = (async () => {
   await connectDB.authenticate().then(async () => {
-    console.log('DB Connected...');
+    await require('./config/ensureStartupSchema')(connectDB);
+    console.log('DB connected; room-transfer payment schema ready.');
 
     // Seed payment modes if necessary
     const paymentModes = [
@@ -43,7 +44,7 @@ app.use(cors());
           console.log("🚀 ~ seed ~ createAdmin:", createAdmin)
       }
   }
-      seed()
+      await seed()
 
     // cron.schedule("0 12 * * *" async () => {
     //   try {
@@ -155,11 +156,17 @@ app.use(cors());
     }
 
   }).catch(err => {
-    console.log(err);
+    throw err;
   });
 })();
 
 app.set('view engine', 'ejs');
+
+// Override browsers requesting the old root favicon automatically.
+app.get('/favicon.ico', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.redirect(302, '/images/vistavilla-app-192.png?v=3');
+});
 
 // Middleware to serve static files (like CSS, JS, images)
 const staticOptions = {
@@ -177,6 +184,7 @@ app.use(express.static(path.join(__dirname, 'views'), staticOptions));
 app.use(express.static(path.join(__dirname, 'views/portal'), staticOptions));
 app.use((req, res, next) => {
   if (req.path.startsWith('/portal')) {
+    res.setHeader('Cache-Control', 'no-store');
     app.set('views', path.join(__dirname, 'views', 'portal'));
   } else {
     app.set('views', path.join(__dirname, 'views'));
@@ -209,9 +217,13 @@ app.use(errorHandler);
 
 const port = process.env.Port || 9800;
 
-const server = app.listen(port, () => console.log(`Server running on ${port}`));
-
-// Increase timeout for image uploads (5 minutes)
-server.timeout = 300000; // 5 minutes in milliseconds
-server.keepAliveTimeout = 300000;
-server.headersTimeout = 310000; // Slightly more than keepAliveTimeout
+databaseReady.then(() => {
+  const server = app.listen(port, () => console.log(`Server running on ${port}`));
+  // Allow up to five minutes for image uploads.
+  server.timeout = 300000;
+  server.keepAliveTimeout = 300000;
+  server.headersTimeout = 310000;
+}).catch(error => {
+  console.error('Startup failed; server was not started:', error.message);
+  process.exit(1);
+});

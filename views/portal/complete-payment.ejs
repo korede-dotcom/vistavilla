@@ -1,4 +1,4 @@
-<%- include('partial/header', { title: 'Complete Payment - Wishmewell Apartment',email:email,roleName:roleName }) %>
+<%- include('partial/header', { title: 'Complete Payment - Vistavilla Apartment',email:email,roleName:roleName }) %>
 <%- include('partial/sidebar', { name: name}) %>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -57,6 +57,7 @@
                                     <p class="font-weight-bold">
                                         <i class="fas fa-bed" style="color: #6b6b6b;"></i> <%= partPayment.room_name %>
                                         <span class="badge badge-secondary ml-2"><%= partPayment.room_number %></span>
+                                        <% if (partPayment.is_room_transfer) { %><span class="badge badge-warning">Room changed: <%= partPayment.previous_room_number %> → <%= partPayment.room_number %></span><% } %>
                                     </p>
                                 </div>
                                 <div class="mb-3">

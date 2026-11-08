@@ -3,12 +3,11 @@
 <head>
 <script src="/js/theme.js?v=1"></script>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 	<meta http-equiv="Pragma" content="no-cache">
 	<meta http-equiv="Expires" content="0">
 	<title><%= title %></title>
-	<link rel="shortcut icon" type="image/x-icon" href="assets/img/hotel_logo.png">
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/plugins/fontawesome/css/fontawesome.min.css">
 	<link rel="stylesheet" href="assets/plugins/fontawesome/css/all.min.css">
@@ -193,13 +192,21 @@
     }
   </style>
 <link rel="stylesheet" href="/css/theme.css?v=5">
+<link rel="manifest" href="/manifest.webmanifest?v=3">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/vistavilla-app-180.png?v=3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vistavilla">
+<link rel="stylesheet" href="/css/pwa.css?v=1">
+<script defer src="/js/pwa.js?v=2"></script>
+<link rel="icon" type="image/png" sizes="192x192" href="/images/vistavilla-app-192.png?v=3">
 </head>
 <body>
 	<div class="main-wrapper">
 <div class="header">
 	<div class="header-left">
-		<a href="/portal/dashboard" class="logo"> <img src="assets/img/apple-touch-icon.png" width="50" height="70" alt="logo"> <span class="logoclass"><%= title %></span> </a>
-		<a href="/portal/dashboard" class="logo logo-small"> <img src="assets/img/apple-touch-icon.png" alt="Logo" width="30" height="30"> </a>
+		<a href="/portal/dashboard" class="logo"> <img src="/images/logo-2.png" width="50" height="70" alt="logo"> <span class="logoclass"><%= title %></span> </a>
+		<a href="/portal/dashboard" class="logo logo-small"> <img src="/images/logo-2.png" alt="Logo" width="30" height="30"> </a>
 	</div>
 	<a href="javascript:void(0);" id="toggle_btn"> <i class="fe fe-text-align-left"></i> </a>
 	<a class="mobile_btn" id="mobile_btn"> <i class="fas fa-bars"></i> </a>
@@ -268,10 +275,10 @@
 			</div> -->
 		</li>
 		<li class="nav-item dropdown has-arrow">
-			<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown"> <span class="user-img"><img class="rounded-circle" src="assets/img/apple-touch-icon.png" width="31" alt="Soeng Souy"></span> </a>
+			<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown"> <span class="user-img"><img class="rounded-circle" src="/images/logo-2.png" width="31" alt="Vistavilla Apartments"></span> </a>
 			<div class="dropdown-menu">
 				<div class="user-header">
-					<div class="avatar avatar-sm"> <img src="assets/img/apple-touch-icon.png" alt="User Image" class="avatar-img rounded-circle"> </div>
+					<div class="avatar avatar-sm"> <img src="/images/logo-2.png" alt="User Image" class="avatar-img rounded-circle"> </div>
 					<div class="user-text">
 						<h6><%= name %></h6>
 						<h6><%= email %></h6>

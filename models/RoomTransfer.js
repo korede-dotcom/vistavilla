@@ -3,6 +3,11 @@ const connectDb = require("../config/connectDB");
 const sequelize = connectDb;
 
 const RoomTransfer = sequelize.define('roomtransfer', {
+    old_total: { type: DataTypes.DOUBLE },
+    new_total: { type: DataTypes.DOUBLE },
+    price_adjustment: { type: DataTypes.DOUBLE },
+    amount_paid_now: { type: DataTypes.DOUBLE, defaultValue: 0 },
+    balance_after: { type: DataTypes.DOUBLE },
     booking_reference: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -75,6 +80,6 @@ const RoomTransfer = sequelize.define('roomtransfer', {
     tableName: 'roomtransfers'
 });
 
-RoomTransfer.sync({alter:true});
+// Table creation and transfer fields are awaited by config/ensureStartupSchema.
 module.exports = RoomTransfer;
 

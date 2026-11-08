@@ -48,12 +48,21 @@ class PartPaymentRepository {
   }
 
   async completePayment(id, remainingAmount, recordedBy = null) {
-    const partPayment = await this.findById(id);
+    const db = require('../config/connectDB');
+    return db.transaction(async transaction => {
+    const initial = await this.findById(id);
+    if (!initial) throw new Error('Part payment not found');
+    // Same lock order as transfers: booking, then its payment ledger.
+    await HotelBooking.findOne({ where: { reference_id: initial.reference_id }, transaction, lock: transaction.LOCK.UPDATE });
+    const partPayment = await PartPayment.findOne({ where: { _id: id }, transaction, lock: transaction.LOCK.UPDATE });
     if (!partPayment) {
       throw new Error('Part payment not found');
     }
 
-    const paymentAmountInKobo = parseFloat(remainingAmount) * 100;
+    const value = Number(remainingAmount);
+    if (!Number.isFinite(value) || value <= 0 || Math.abs(value * 100 - Math.round(value * 100)) > 0.00001) throw new Error('Invalid payment amount');
+    const paymentAmountInKobo = Math.round(value * 100);
+    if (partPayment.payment_status === 'completed' || paymentAmountInKobo > Number(partPayment.balance)) throw new Error('Payment exceeds the remaining balance');
     const balanceBefore = parseFloat(partPayment.balance);
     const newAmountPaid = parseFloat(partPayment.amount_paid) + paymentAmountInKobo;
     const newBalance = parseFloat(partPayment.total_amount) - newAmountPaid;
@@ -80,14 +89,14 @@ class PartPaymentRepository {
       room_number: partPayment.room_number,
       recorded_by: recordedBy,
       payment_date: new Date()
-    });
+    }, { transaction });
 
     await partPayment.update({
       amount_paid: newAmountPaid,
       balance: newBalance > 0 ? newBalance : 0,
       payment_status: isCompleted ? 'completed' : 'partial',
       updated_at: new Date()
-    });
+    }, { transaction });
 
     // Update the booking status if payment is completed
     if (isCompleted) {
@@ -98,7 +107,7 @@ class PartPaymentRepository {
           amount_paid: newAmountPaid,
           balance: 0
         },
-        { where: { reference_id: partPayment.reference_id } }
+        { where: { reference_id: partPayment.reference_id }, transaction }
       );
     } else {
       await HotelBooking.update(
@@ -106,11 +115,12 @@ class PartPaymentRepository {
           amount_paid: newAmountPaid,
           balance: newBalance
         },
-        { where: { reference_id: partPayment.reference_id } }
+        { where: { reference_id: partPayment.reference_id }, transaction }
       );
     }
 
     return { partPayment, paymentCompleted: isCompleted };
+    });
   }
 
   async delete(id) {

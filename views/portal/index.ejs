@@ -1,5 +1,5 @@
 ﻿
-		<%- include('partial/header', { title: 'Wishmewell Apartment',email:email,roleName:roleName }) %>
+		<%- include('partial/header', { title: 'Vistavilla Apartment',email:email,roleName:roleName }) %>
 		<%- include('partial/sidebar', { name: name}) %>
 
 <style>
@@ -157,6 +157,18 @@
 					<h2><i class="fas fa-chart-line"></i> Welcome back, <%= name %>!</h2>
 					<p><i class="far fa-calendar-alt"></i> <%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></p>
 				</div>
+
+                <% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
+                <div class="row"><div class="col-xl-3 col-sm-6 col-12">
+                  <a href="/portal/part-payments" aria-label="View payments yet to receive">
+                    <div class="stat-card warning">
+                      <div class="icon-wrapper"><i class="fas fa-hourglass-half"></i></div>
+                      <h3><%= ((data.outstandingPayments || 0) / 100).toLocaleString('en-NG', {style:'currency',currency:'NGN'}) %></h3>
+                      <p>Payment Yet to Receive</p><small>All outstanding part-payment balances</small>
+                    </div>
+                  </a>
+                </div></div>
+                <% } %>
 				<!-- Quick Stats Section -->
 				<h5 class="section-title"><i class="fas fa-tachometer-alt"></i> Quick Stats</h5>
 				<div class="row">

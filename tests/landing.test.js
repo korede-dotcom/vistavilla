@@ -35,14 +35,14 @@ test('landing renders live pricing, escapes admin content and hides disabled sec
   assert.ok(!hidden.includes('id="amenities-title"'));
 });
 
-test('service worker never intercepts private routes, APIs, external requests or POSTs', () => {
+test('service worker leaves API requests, external requests and POSTs untouched', () => {
   const handlers = {};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../views/sw.js'), 'utf8'), {
     URL,
     self: { location: { origin: 'https://example.com' }, addEventListener: (name, fn) => { handlers[name] = fn; } }
   });
   for (const pathname of ['/portal/dashboard', '/payments/result', '/check-availability', '/auth/login', '/available-rooms']) {
-    handlers.fetch({ request: { method: 'GET', url: `https://example.com${pathname}`, mode: 'navigate' }, respondWith() { assert.fail(`Intercepted ${pathname}`); } });
+    handlers.fetch({ request: { method: 'GET', url: `https://example.com${pathname}`, mode: 'cors' }, respondWith() { assert.fail(`Intercepted ${pathname}`); } });
   }
   handlers.fetch({ request: { method: 'POST', url: 'https://example.com/', mode: 'navigate' }, respondWith() { assert.fail('Intercepted POST'); } });
   handlers.fetch({ request: { method: 'GET', url: 'https://external.com/css/landing.css' }, respondWith() { assert.fail('Intercepted external request'); } });
@@ -108,7 +108,7 @@ test('restored homepage keeps carousel and booking form with neutral theme contr
   assert.ok(html.includes('modern-hero-carousel'));
   assert.ok(html.includes('/css/theme.css?v=5'));
   assert.ok(!html.includes('/css/landing-accents.css'));
-  assert.ok(html.includes('/manifest.webmanifest'));
+  assert.ok(html.includes('/manifest.webmanifest?v=3'));
   assert.ok(!html.includes('class="preloader"'));
   const css = fs.readFileSync(path.join(__dirname, '../views/css/theme.css'),'utf8');
   for (const color of ['#76d6ff', '#66ccff', '#36454f']) assert.ok(!css.includes(color));

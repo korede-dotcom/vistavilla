@@ -125,7 +125,7 @@ const sendResetPasswordToken = async (email) => {
                   <p style="font-size: 16px; margin-bottom: 20px;">You requested a password reset for your account.</p>
                   <p style="font-size: 16px; margin-top: 20px;">reset your password via a link, please click the button below:</p>
                   <div style="text-align: center; margin: 20px 0;">
-                    <a href="https://Wishmewell Apartment/portal/recovery?id=${token}" style="display: inline-block; padding: 12px 24px; background-color: #1c2830; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px;">Reset Password</a>
+                    <a href="https://test.vistavillaapartments.org/portal/recovery?id=${token}" style="display: inline-block; padding: 12px 24px; background-color: #1c2830; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px;">Reset Password</a>
                   </div>
                   <p style="font-size: 16px; margin-top: 20px;">this link expires in five minutes</p>
                   <p style="font-size: 16px; margin-top: 20px;">If you didn’t request this, please ignore this email.</p>
@@ -134,7 +134,7 @@ const sendResetPasswordToken = async (email) => {
               <tr>
                 <td align="center" style="background-color: #f4f4f4; padding: 20px; color: #666; font-size: 14px;">
                   <p style="margin: 0;">Best regards,</p>
-                  <p style="margin: 5px 0 0;">Wishmewell Apartment and Suites</p>
+                  <p style="margin: 5px 0 0;">Vistavilla Apartment and Suites</p>
                 </td>
               </tr>
             </table>
@@ -143,7 +143,7 @@ const sendResetPasswordToken = async (email) => {
       </table>
       `,
       user.email,
-      "wishmewellapartment@gmail.com"
+      "vistavillaapartment@gmail.com"
     );
     
     

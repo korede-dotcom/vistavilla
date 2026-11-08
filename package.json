@@ -1,5 +1,5 @@
 {
-  "name": "Wishmewell Apartmenthotel",
+  "name": "vistavilla-apartments",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,9 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test:landing": "node --test tests/landing.test.js",
-    "test:theme": "node --test tests/theme.test.js"
+    "test:theme": "node --test tests/theme.test.js",
+    "test:transfer": "node --test tests/transfer.test.js",
+    "test:pwa": "node --test tests/pwa.test.js"
   },
   "author": "",
   "license": "ISC",

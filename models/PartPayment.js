@@ -8,6 +8,8 @@ const PartPayment = sequelize.define('partpayment', {
     primaryKey: true,
     autoIncrement: true,
   },
+  is_room_transfer: { type: DataTypes.BOOLEAN, defaultValue: false },
+  previous_room_number: { type: DataTypes.STRING, allowNull: true },
   booking_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
@@ -72,7 +74,7 @@ const PartPayment = sequelize.define('partpayment', {
   }
 });
 
-PartPayment.sync({ alter: true });
+// Table creation and transfer fields are awaited by config/ensureStartupSchema.
 
 module.exports = PartPayment;
 

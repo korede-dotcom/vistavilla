@@ -1,4 +1,4 @@
-<%- include('partial/header', { title: 'Part Payments - Wishmewell Apartment',email:email,roleName:roleName }) %>
+<%- include('partial/header', { title: 'Part Payments - Vistavilla Apartment',email:email,roleName:roleName }) %>
 <%- include('partial/sidebar', { name: name}) %>
 
 <div class="page-wrapper">
@@ -181,6 +181,9 @@
                                                 </td>
                                                 <td>
                                                     <strong><%= payment.room_name %></strong><br>
+                                                    <% if (payment.is_room_transfer) { %>
+                                                    <span class="badge badge-warning">Room changed: <%= payment.previous_room_number %> → <%= payment.room_number %></span><br>
+                                                    <% } %>
                                                     <span class="badge badge-secondary" style="font-size: 10px;">
                                                         <i class="fas fa-door-open"></i> <%= payment.room_number %>
                                                     </span>

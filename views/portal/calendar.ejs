@@ -1,4 +1,4 @@
-<%- include('partial/header', { title: 'Bookings Calendar - Wishmewell Apartment',email:email,roleName:roleName }) %>
+<%- include('partial/header', { title: 'Bookings Calendar - Vistavilla Apartment',email:email,roleName:roleName }) %>
 <%- include('partial/sidebar', { name: name}) %>
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
@@ -338,7 +338,15 @@
                     </select>
                   </div>
 
-                  <div class="alert alert-warning" id="transferWarningCalendar" style="display: none;">
+                  <div class="transfer-payment-panel" id="transferPaymentPanelCalendar" data-room-select="newRoomNumberCalendar" data-confirm="confirmTransferBtnCalendar">
+<label for="transferPaidCalendar">Amount paid now (₦)</label>
+<input class="form-control" type="number" min="0" step="0.01" value="0" id="transferPaidCalendar">
+<label for="transferMethodCalendar">Payment method</label>
+<select class="form-control" id="transferMethodCalendar"><option value="cash">Cash</option><option value="transfer">Bank transfer</option><option value="card">Card</option></select>
+<p class="mt-2" data-transfer-quote role="status">Select a destination room to see the revised total and balance.</p>
+<small class="text-muted">The new room rate applies to all booked nights. Previous payments are retained; any unpaid balance goes to Part Payments, flagged with the room change.</small>
+</div>
+<div class="alert alert-warning" id="transferWarningCalendar" style="display: none;">
                     <i class="fas fa-exclamation-triangle"></i>
                     <strong>Warning:</strong> This will move the guest to the selected room. The current room will be freed up.
                   </div>
@@ -753,6 +761,11 @@ document.getElementById('transferRoomBtnCalendar').addEventListener('click', fun
 
 // Load categories when transfer modal opens
 $('#transferRoomModalCalendar').on('show.bs.modal', async function () {
+  const paymentPanel = document.getElementById('transferPaymentPanelCalendar');
+  paymentPanel.dataset.reference = currentBookingCalendar.reference_id;
+  paymentPanel.dataset.oldRoom = currentBookingCalendar.room_id;
+  document.getElementById('transferPaidCalendar').value = '0';
+
   try {
     console.log('🔄 Loading categories from: /portal/api/hotel/categories');
     const response = await fetch('/portal/api/hotel/categories', {
@@ -862,6 +875,8 @@ document.getElementById('newRoomNumberCalendar').addEventListener('change', func
 
 // Handle transfer confirmation
 document.getElementById('confirmTransferBtnCalendar').addEventListener('click', async function() {
+  if (!document.getElementById('transferPaidCalendar').reportValidity()) return;
+
   const newRoomId = document.getElementById('newRoomNumberCalendar').value;
   const newRoomSelect = document.getElementById('newRoomNumberCalendar');
   const selectedOption = newRoomSelect.options[newRoomSelect.selectedIndex];
@@ -896,7 +911,9 @@ document.getElementById('confirmTransferBtnCalendar').addEventListener('click', 
         new_room_number: newRoomNumber,
         new_room_name: newRoomName,
         new_category_id: newCategoryId,
-        new_category_name: newCategoryName
+        new_category_name: newCategoryName,
+        amount_paid_now: document.getElementById('transferPaidCalendar').value,
+        payment_method: document.getElementById('transferMethodCalendar').value
       })
     });
 
@@ -948,3 +965,4 @@ function showToast(message, type) {
 </body>
 
 </html>
+<script defer src="/js/transfer-payment.js?v=1"></script>
