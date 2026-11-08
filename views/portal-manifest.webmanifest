@@ -1,0 +1,45 @@
+{
+  "id": "/portal",
+  "name": "Vistavilla Admin",
+  "short_name": "Vistavilla Admin",
+  "description": "Vistavilla administration: bookings, rooms, transfers and payments.",
+  "start_url": "/portal",
+  "scope": "/portal",
+  "display": "standalone",
+  "background_color": "#141414",
+  "theme_color": "#222222",
+  "icons": [
+    {
+      "src": "/images/vistavilla-app-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/vistavilla-app-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/vistavilla-app-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/portal/dashboard"
+    },
+    {
+      "name": "Bookings",
+      "url": "/portal/all-booking"
+    },
+    {
+      "name": "Calendar",
+      "url": "/portal/calendar"
+    }
+  ]
+}

@@ -172,7 +172,7 @@ app.get('/favicon.ico', (req, res) => {
 const staticOptions = {
   // Cache assets while keeping templates and other responses revalidated.
   setHeaders(res, filePath) {
-    if (['sw.js', 'manifest.webmanifest'].includes(path.basename(filePath))) {
+    if (path.basename(filePath) === 'sw.js' || path.extname(filePath) === '.webmanifest') {
       res.setHeader('Cache-Control', 'no-cache');
     } else if (/\.(?:css|js|png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|eot)$/i.test(filePath)) {
       res.setHeader('Cache-Control', 'public, max-age=604800');

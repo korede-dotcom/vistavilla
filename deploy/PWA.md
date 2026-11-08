@@ -6,10 +6,12 @@ the manifest and root service worker without response caching. Express serves
 both with revalidation headers. No new credentials or database changes are needed
 for PWA installation.
 
-All public pages, portal pages and login screens include the same manifest and
-root-scoped service worker. The installed app opens `/portal/dashboard`; existing
-authentication redirects unauthenticated users to login. Website, bookings and
-calendar shortcuts remain within its scope. The app does not bypass sign-in or
+Public pages use `/manifest.webmanifest` (identity `/`, start `/`). Portal and
+login pages use `/portal-manifest.webmanifest` (identity `/portal`, start `/portal`,
+scope `/portal`), named **Vistavilla Admin**. This gives the admin app its own
+installation identity instead of sharing the public website's installation.
+Both use the root-scoped service worker. Sign in from the installed admin app to
+open the dashboard. Bookings and calendar shortcuts remain within admin scope. The app does not bypass sign-in or
 provide new account access.
 
 An **Install Vistavilla** control appears above the theme switch. On browsers
@@ -41,3 +43,10 @@ Before production rollout, check on a phone/tablet and desktop: login, sidebar,
 bookings, calendar, room transfer, balance collection, theme selection and install.
 Toggle offline and verify no private records appear. Reconnect before submitting
 changes. Tests: `node --test tests/pwa.test.js tests/theme.test.js tests/landing.test.js tests/transfer.test.js`.
+
+The install listener now runs in the head and captures `beforeinstallprompt`
+before DOM readiness. The portal button calls the native prompt when available.
+Browsers control whether to offer that event: an already-installed app, platform
+limitations, or nested-app promotion policies can suppress it. A site cannot force
+native installation. When no event is available, instructions describe the actual
+browser menu action rather than reporting installation as completed.

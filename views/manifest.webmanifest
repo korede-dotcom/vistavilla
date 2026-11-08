@@ -3,7 +3,7 @@
   "name": "Vistavilla Apartments",
   "short_name": "Vistavilla",
   "description": "Vistavilla Apartments: bookings, room management, payments and guest services.",
-  "start_url": "/portal/dashboard",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#141414",

@@ -13,8 +13,8 @@ test('every standalone page and admin head has the shared installable app setup'
     const source=fs.readFileSync(file,'utf8');
     if(!source.includes('<head>'))continue;
     assert.equal((source.match(/rel="manifest"/g)||[]).length,1,file);
-    assert.ok(source.includes('/manifest.webmanifest?v=3'),file);
-    assert.ok(source.includes('/js/pwa.js?v=3'),file);
+    assert.ok(source.includes(file.startsWith('views/portal/') ? '/portal-manifest.webmanifest?v=1' : '/manifest.webmanifest?v=3'),file);
+    assert.ok(source.includes('/js/pwa.js?v=4'),file);
     assert.ok(source.includes('/images/vistavilla-app-180.png'),file);
     assert.ok(!/wish\s*me\s*well\s+apartment/i.test(source),file);
     ejs.compile(source,{filename:file});
@@ -23,10 +23,15 @@ test('every standalone page and admin head has the shared installable app setup'
  }
  scan('views');
 });
-test('installed app opens portal and shortcuts remain inside full-app scope',()=>{
+test('portal has its own install identity while the public app opens the website',()=>{
  const manifest=JSON.parse(fs.readFileSync('views/manifest.webmanifest','utf8'));
  assert.equal(manifest.id,'/');assert.equal(manifest.scope,'/');
- assert.equal(manifest.start_url,'/portal/dashboard');
+ assert.equal(manifest.start_url,'/');
+ const admin=JSON.parse(fs.readFileSync('views/portal-manifest.webmanifest','utf8'));
+ assert.notEqual(admin.id,manifest.id);
+ assert.equal(admin.start_url,'/portal');
+ assert.equal(admin.scope,'/portal');
+ assert.equal(admin.name,'Vistavilla Admin');
  assert.equal(manifest.name,'Vistavilla Apartments');
  assert.ok(manifest.shortcuts.some(s=>s.url==='/portal/calendar'));
  assert.ok(manifest.shortcuts.some(s=>s.url==='/'));
@@ -55,4 +60,19 @@ test('live portal responses are returned directly, without cache writes',async()
  let response;
  handlers.fetch({request:{method:'GET',url:'https://example.com/portal/dashboard',mode:'navigate'},respondWith:p=>{response=p;}});
  assert.equal(await response,result);
+});
+
+test('portal install button opens a prompt captured before DOM readiness',async()=>{
+ const events={},domEvents={},elements=[];
+ let prompted=0,modals=0,prevented=0;
+ const action={hidden:false,addEventListener:(name,fn)=>{action[name]=fn;}};
+ const section={hidden:false};
+ function element(){return {hidden:false,setAttribute(){},addEventListener(name,fn){this[name]=fn;},querySelector(){return {textContent:''};},showModal(){modals++;},close(){}};}
+ const document={readyState:'loading',addEventListener:(name,fn)=>{domEvents[name]=fn;},createElement:()=>{const item=element();elements.push(item);return item;},querySelectorAll:selector=>selector==='[data-pwa-install]'?[action]:[section],body:{append(){}}};
+ vm.runInNewContext(fs.readFileSync('views/js/pwa.js','utf8'),{document,location:{pathname:'/portal'},navigator:{},console,window:{addEventListener:(name,fn)=>{events[name]=fn;},matchMedia:()=>({matches:false})}});
+ events.beforeinstallprompt({preventDefault(){prevented++;},prompt:async()=>{prompted++;},userChoice:Promise.resolve({outcome:'accepted'})});
+ domEvents.DOMContentLoaded();
+ await action.click();
+ assert.equal(prevented,1);assert.equal(prompted,1);assert.equal(modals,0);
+ assert.equal(action.hidden,true);assert.equal(section.hidden,true);
 });
