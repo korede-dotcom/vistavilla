@@ -19,17 +19,28 @@
   dialog.setAttribute('aria-labelledby', 'pwa-install-title');
   dialog.innerHTML = '<img src="/images/vistavilla-app-192.png" width="80" height="80" alt="Vistavilla Apartments"><h2 id="pwa-install-title">Vistavilla on your device</h2><p>Use the full website and admin portal as an app.</p><ul><li>iPhone or iPad: open in Safari, tap Share, then Add to Home Screen.</li><li>Android: open the browser menu and choose Install app or Add to Home screen.</li><li>Laptop: use your browser’s install icon, or its Install app / Add to Dock menu option.</li></ul><p>Sign in to access the portal. Bookings and payments require an internet connection.</p><form method="dialog"><button>Close</button></form>';
   document.body.append(button, dialog);
-  button.addEventListener('click', async () => {
+  const installButtons = [button, ...document.querySelectorAll('[data-pwa-install]')];
+  const installSections = document.querySelectorAll('[data-pwa-install-section]');
+  if (standalone()) {
+    installButtons.forEach(control => { control.hidden = true; });
+    installSections.forEach(section => { section.hidden = true; });
+  }
+  installButtons.forEach(control => control.addEventListener('click', async () => {
     if (prompt) {
       await prompt.prompt();
       await prompt.userChoice;
       prompt = null;
     } else dialog.showModal();
-  });
+  }));
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault();
     prompt = event;
     if (!standalone()) button.hidden = false;
   });
-  window.addEventListener('appinstalled', () => { prompt = null; button.hidden = true; dialog.close(); });
+  window.addEventListener('appinstalled', () => {
+    prompt = null;
+    installButtons.forEach(control => { control.hidden = true; });
+    installSections.forEach(section => { section.hidden = true; });
+    dialog.close();
+  });
 })();

@@ -345,8 +345,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Vistavilla">
-<link rel="stylesheet" href="/css/pwa.css?v=1">
-<script defer src="/js/pwa.js?v=2"></script>
+<link rel="stylesheet" href="/css/pwa.css?v=2">
+<script defer src="/js/pwa.js?v=3"></script>
 <link rel="icon" type="image/png" sizes="192x192" href="/images/vistavilla-app-192.png?v=3">
 </head>
 
@@ -395,7 +395,14 @@
 							</button>
 						</div>
 					</form>
-					<div class="forgot-password">
+					<section class="portal-install-panel" data-pwa-install-section aria-label="Install the admin app">
+                      <img src="/images/vistavilla-app-192.png" alt="Vistavilla Apartments" width="56" height="56">
+                      <h2>Take your admin portal with you</h2>
+                      <p>Install Vistavilla on your phone, tablet or laptop.</p>
+                      <button type="button" class="portal-install-action" data-pwa-install>Install Admin App</button>
+                      <small>iPhone/iPad: Safari → Share → Add to Home Screen. Android: tap Install or use your browser menu.</small>
+                    </section>
+                    <div class="forgot-password">
 						<a href="forgot-password">
 							<i class="fas fa-key"></i> Forgot Password?
 						</a>

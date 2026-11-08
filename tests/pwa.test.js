@@ -14,7 +14,7 @@ test('every standalone page and admin head has the shared installable app setup'
     if(!source.includes('<head>'))continue;
     assert.equal((source.match(/rel="manifest"/g)||[]).length,1,file);
     assert.ok(source.includes('/manifest.webmanifest?v=3'),file);
-    assert.ok(source.includes('/js/pwa.js?v=2'),file);
+    assert.ok(source.includes('/js/pwa.js?v=3'),file);
     assert.ok(source.includes('/images/vistavilla-app-180.png'),file);
     assert.ok(!/wish\s*me\s*well\s+apartment/i.test(source),file);
     ejs.compile(source,{filename:file});
