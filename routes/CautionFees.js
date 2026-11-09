@@ -21,7 +21,7 @@ router.get('/',asyncHandler(async(req,res)=>{
   const bookings = await Booking.findAll({ where: { caution_fee_amount: { [Op.gt]: 0 } }, order: [['createdAt','DESC']] });
   res.render(require('path').join(__dirname,'../views/portal/caution-fees.ejs'),{
     name:req.user.name,email:req.user.email,roleName:req.user.roleName,bookings,
-    total:await fees.summary(),defaultFee:setting?Number(setting.caution_fee_default):0,csrf:token(req),saved:req.query.saved==='1'
+    reference:typeof req.query.reference==='string'?req.query.reference:'',total:await fees.summary(),defaultFee:setting?Number(setting.caution_fee_default):0,csrf:token(req),saved:req.query.saved==='1'
   });
 }));
 router.get('/default',asyncHandler(async(req,res)=>{
@@ -36,6 +36,13 @@ router.post('/default',asyncHandler(async(req,res)=>{
  const setting=await Settings.findByPk(1);
  if(setting)await setting.update({caution_fee_default:amount});
  else await Settings.create({id:1,caution_fee_default:amount});
+ res.redirect('/portal/caution-fees?saved=1');
+}));
+router.post('/collect',asyncHandler(async(req,res)=>{
+ const expected=Buffer.from(token(req));const actual=Buffer.from(typeof req.body.csrf==='string'?req.body.csrf:'');
+ if(actual.length!==expected.length||!crypto.timingSafeEqual(actual,expected))return res.status(403).send('Reload the caution fee page and try again.');
+ try{await fees.collect(req.body.reference_id,req.body.amount,req.user);}
+ catch(error){return res.status(400).send(error.message);}
  res.redirect('/portal/caution-fees?saved=1');
 }));
 router.post('/:id/status',asyncHandler(async(req,res)=>{

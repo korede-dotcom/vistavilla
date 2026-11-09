@@ -3,8 +3,13 @@
 <div class="page-wrapper"><main class="content container-fluid">
 <div class="page-header"><h1 class="page-title">Caution Fees</h1><p>Track customer deposits separately from room revenue.</p></div>
 <% if(saved){ %><div class="alert alert-success" role="status">Caution fee status updated.</div><% } %>
-<div class="card"><div class="card-body"><h2>Default caution fee</h2>
-<form method="post" action="/portal/caution-fees/default"><input type="hidden" name="csrf" value="<%= csrf %>"><label for="default-caution">Amount (₦)</label><input id="default-caution" type="number" name="amount" min="0" step="0.01" value="<%= (defaultFee/100).toFixed(2) %>" required class="form-control"><button type="submit" class="btn btn-primary mt-2">Save default fee</button></form><p class="mt-2">Prefills new bookings. Managers and receptionists can adjust the collected amount per booking. Existing deposits and refunds are unchanged.</p></div></div>
+<div class="card"><div class="card-body"><h2>Suggested manual amount</h2>
+<form method="post" action="/portal/caution-fees/default"><input type="hidden" name="csrf" value="<%= csrf %>"><label for="default-caution">Amount (₦)</label><input id="default-caution" type="number" name="amount" min="0" step="0.01" value="<%= (defaultFee/100).toFixed(2) %>" required class="form-control"><button type="submit" class="btn btn-primary mt-2">Save suggested amount</button></form><p class="mt-2">Only suggests an amount for the manual form below. Booking creation never collects a caution fee. Existing deposits and refunds are unchanged.</p></div></div>
+<div class="card"><div class="card-body"><h2>Record caution fee manually</h2><p>Use the customer's booking reference and enter money already received.</p>
+<form method="post" action="/portal/caution-fees/collect"><input type="hidden" name="csrf" value="<%= csrf %>">
+<div class="row"><div class="col-md-6 form-group"><label for="caution-reference">Booking reference</label><input class="form-control" id="caution-reference" name="reference_id" value="<%= reference %>" maxlength="255" required></div>
+<div class="col-md-6 form-group"><label for="manual-caution-amount">Amount received (₦)</label><input class="form-control" type="number" id="manual-caution-amount" name="amount" min="0.01" step="0.01" value="<%= defaultFee>0?(defaultFee/100).toFixed(2):'' %>" required></div></div>
+<button type="submit" class="btn btn-primary">Record caution fee</button></form></div></div>
 <div class="row">
 <div class="col-md-4"><div class="card"><div class="card-body"><h2><%= (total/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'}) %></h2><p>Caution money currently held</p><small>Paid and held fees, excluding refunds.</small></div></div></div>
 <div class="col-md-4"><div class="card"><div class="card-body"><h2><%= (bookings.reduce((sum,b)=>sum+Number(b.caution_fee_amount),0)/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'}) %></h2><p>Total collected</p></div></div></div>

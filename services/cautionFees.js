@@ -18,3 +18,18 @@ exports.changeStatus = async (id, action, staff) => db.transaction(async transac
   await Booking.update(data, { where: { id: booking.id }, transaction });
   return status;
 });
+
+exports.collect = async (reference, value, staff) => {
+ const amount = require('../utils/cautionFee').amountInKobo(value);
+ if (amount <= 0) throw Error('Enter a caution fee greater than zero.');
+ if (typeof reference !== 'string' || !reference.trim() || reference.length > 255) throw Error('Enter the booking reference.');
+ return db.transaction(async transaction => {
+  const booking = await Booking.findOne({where:{reference_id:reference.trim()},transaction,lock:transaction.LOCK.UPDATE});
+  if (!booking) throw Error('Booking not found. Check the booking reference.');
+  if (Number(booking.caution_fee_amount) > 0) throw Error('A caution fee already exists for this booking. Use its existing Hold or Refund actions.');
+  await Booking.update({caution_fee_amount:amount,caution_fee_status:'paid',caution_fee_collected_at:new Date(),caution_fee_collected_by:staff.name,
+    caution_fee_refunded_at:null,caution_fee_refunded_by:null,caution_fee_held_at:null,caution_fee_held_by:null
+  },{where:{id:booking.id},transaction});
+  return booking.id;
+ });
+};

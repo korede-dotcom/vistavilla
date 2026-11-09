@@ -1,9 +1,15 @@
 # Caution fees
 
-Staff can enter **Caution fee collected (₦)** while creating a booking. Enter only
-money already received; zero means no deposit. It is recorded separately from
-room revenue, room balance and part payments, including when the room payment is
-being handled by a separate payment link.
+Caution fees are recorded manually from **Caution Fees → Record caution fee
+manually**, using the customer's booking reference and actual amount received.
+Booking Details also has a **Record Caution Fee** shortcut for bookings without a
+fee. Booking creation does not show, prefill or record deposits, and the server
+strips any legacy or forged caution-fee fields from booking requests.
+
+The editable suggested amount only prefills the separate manual collection form;
+it never collects money or attaches fees to bookings automatically. Existing fees
+are retained. Duplicate collection for the same booking is rejected, including
+fees previously refunded, so historical deposit/refund records are not overwritten.
 
 **Caution Fees** in the portal lists paid customers, booking reference, current
 room, fee, status, collection staff and timestamps. Paid and On Hold amounts count

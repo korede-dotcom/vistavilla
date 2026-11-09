@@ -11,4 +11,9 @@ function nextStatus(current, action) {
   if (current === 'hold' && action === 'hold') throw new Error('This caution fee is already on hold.');
   return action === 'refund' ? 'refunded' : 'hold';
 }
-module.exports = { amountInKobo, nextStatus };
+function withoutBookingFee(input) {
+ const result={...input};
+ for(const key of Object.keys(result))if(key==='caution_fee'||key.startsWith('caution_fee_'))delete result[key];
+ return result;
+}
+module.exports = { amountInKobo, nextStatus, withoutBookingFee };

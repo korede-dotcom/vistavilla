@@ -18,8 +18,8 @@ server log. ORM change records use the operation's transaction when provided.
 This is an operational activity trail, not tamper-proof external storage.
 
 Caution Fees has a **Default caution fee** form available to CEO, hotel manager and
-receptionist. New booking forms prefill this value; staff may override the amount
-collected per booking. Changing the default does not rewrite old deposits or
+receptionist. This suggests the amount in the separate manual fee collection form. Booking
+creation does not create or prefill caution fees. Changing the default does not rewrite old deposits or
 refunds. An empty/unconfigured setting defaults to zero. Zero overrides remain
 possible when no deposit was received.
 

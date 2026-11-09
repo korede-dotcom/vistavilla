@@ -10,6 +10,7 @@
 </div>
 <div class="col-sm-7 col-8 text-right m-b-30">
 <div class="btn-group btn-group-sm">
+<% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName) && !Number(bookings.caution_fee_amount)) { %><a class="btn btn-secondary" href="/portal/caution-fees?reference=<%= encodeURIComponent(bookings.reference_id) %>">Record Caution Fee</a><% } %>
 <% if (!bookings.checked_out && ['success','confirmed','part-payment','completed'].includes(bookings.status)) { %>
 <% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
 <a class="btn btn-secondary" href="/portal/edit-booking/<%= encodeURIComponent(bookings.reference_id) %>">Edit Booking</a>

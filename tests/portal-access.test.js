@@ -7,7 +7,7 @@ stub('../models/User',{findByPk:async()=>({roleName:role})});
 stub('../models/ActivityLog',{findAndCountAll:async()=>({rows:[],count:0})});
 stub('../models/HotelBooking',{findAll:async()=>[],findOne:async()=>({id:7,reference_id:'BOOK',status:'success',checked_out:false,start:new Date('2099-01-01'),end:new Date('2099-01-03'),updatedAt:new Date('2098-12-31'),night:2,amount:6000000})});
 stub('../models/HotelSettings',{findByPk:async()=>({caution_fee_default:1250000,update:async data=>{saved=data;}})});
-stub('../services/cautionFees',{summary:async()=>0});
+stub('../services/cautionFees',{summary:async()=>0,collect:async()=>{}});
 process.env.JWT_SECRET='test-only';
 const logs=require('../routes/ActivityLogs'),fees=require('../routes/CautionFees');
 function request(router,method='GET',url='/',body={}){return new Promise((resolve,reject)=>{

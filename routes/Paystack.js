@@ -38,22 +38,7 @@ function generateRandomString(length) {
 // console.log(randomString); // Example output: 'aB3dEfGh'
 
 routes.post('/paystack/initialize/reception', checkAuthCookie, cloudinaryRepo._parser, expressAsyncHandler( async (req, res) => {
-  let cautionFee;
-  try { cautionFee = require('../utils/cautionFee').amountInKobo(req.body.caution_fee || '0'); }
-  catch (error) { return res.status(400).json({status:false,message:error.message}); }
-
-  // Internal deposit state is assigned only by the server, never by form metadata.
-  for (const key of Object.keys(req.body)) {
-    if (key.startsWith('caution_fee_')) delete req.body[key];
-  }
-  const cautionFields = {
-    caution_fee_amount: cautionFee,
-    caution_fee_status: cautionFee > 0 ? 'paid' : 'none',
-    caution_fee_collected_at: cautionFee > 0 ? new Date() : null,
-    caution_fee_collected_by: cautionFee > 0 ? req.user.name : null,
-    caution_fee_refunded_at: null, caution_fee_refunded_by: null,
-    caution_fee_held_at: null, caution_fee_held_by: null
-  };
+  req.body = require('../utils/cautionFee').withoutBookingFee(req.body);
   const { category_id, start, end, mode,room_number } = req.body;
   console.log("🚀 ~ routes.post ~ req.body:", req.body)
   console.log("🚀 ~ routes.post ~ req.files:", req.files)
@@ -230,7 +215,6 @@ console.log(bookedRooms);
         checked_in:dateState.active || dateState.ended,
         checked_out:dateState.ended,
         id_card_url: idCardUrl,
-        ...cautionFields,
       });
 
       // Create part payment record if applicable
@@ -351,8 +335,7 @@ console.log(bookedRooms);
               booked_from:'reception',
               booked_by:req.body.guest_name,
               id_card_url: idCardUrl,
-              ...cautionFields,
-      });
+            });
 
 
     console.log("🚀 ~ routes.post ~ saveData:", saveData)
@@ -397,6 +380,7 @@ console.log(bookedRooms);
   }));
   
 routes.post('/paystack/initialize', expressAsyncHandler( async (req, res) => {
+    req.body = require('../utils/cautionFee').withoutBookingFee(req.body);
     const { category_id,start,end } = req.body;
     console.log(req.body)
 
