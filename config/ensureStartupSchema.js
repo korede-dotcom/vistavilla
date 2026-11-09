@@ -5,12 +5,14 @@
 async function ensureStartupSchema(db, models) {
   if (!models) models = {
     PartPayment: require('../models/PartPayment'),
-    RoomTransfer: require('../models/RoomTransfer')
+    RoomTransfer: require('../models/RoomTransfer'),
+    Booking: require('../models/HotelBooking')
   };
   const additions = [
     [models.PartPayment, ['is_room_transfer', 'previous_room_number']],
     [models.RoomTransfer, ['old_total', 'new_total', 'price_adjustment', 'amount_paid_now', 'balance_after']]
   ];
+  if (models.Booking) additions.push([models.Booking, ['caution_fee_amount','caution_fee_status','caution_fee_collected_at','caution_fee_collected_by','caution_fee_refunded_at','caution_fee_refunded_by','caution_fee_held_at','caution_fee_held_by']]);
   await db.transaction(async transaction => {
     // Serialize this migration when multiple Node processes start together.
     if (db.getDialect() === 'postgres') {

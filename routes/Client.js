@@ -25,8 +25,8 @@ routes.get("/event/pkg",managerControl.active)
         .post("/send-email",async(req,res) => {
                 const {subject,email:to,message} = req.body;
                 
-                await SendEmail(subject,message,message,"vistavillaapartment@gmail.com",to)
-                await SendEmail(subject,"your email to us has been received we will reachout to you shortly","your email to us has been received we will reachout to you shortly",to,"vistavillaapartment@gmail.com")
+                await SendEmail(subject,message,message,require('../config/mail')().inbox,{ replyTo: to })
+                await SendEmail(subject,"Your email has been received. We will reach out to you shortly.","Your email has been received. We will reach out to you shortly.",to)
                 return res.json({message: "Email sent successfully",status:true,})
         })
         // .post("/bookroom",protect ,checkHotelStatus,hotemanagerControl.bookRoom)

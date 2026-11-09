@@ -3,6 +3,14 @@ const connectDb = require("../config/connectDB");
 const sequelize = connectDb;
 
 const HotelBooking = sequelize.define('hotelbooking', {
+    caution_fee_amount: { type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0 },
+    caution_fee_status: { type: DataTypes.STRING, allowNull: false, defaultValue: 'none' },
+    caution_fee_collected_at: { type: DataTypes.DATE },
+    caution_fee_collected_by: { type: DataTypes.STRING },
+    caution_fee_refunded_at: { type: DataTypes.DATE },
+    caution_fee_refunded_by: { type: DataTypes.STRING },
+    caution_fee_held_at: { type: DataTypes.DATE },
+    caution_fee_held_by: { type: DataTypes.STRING },
    
     start: {
         type: DataTypes.DATE,
@@ -148,6 +156,6 @@ const HotelBooking = sequelize.define('hotelbooking', {
     }
 });
 
-HotelBooking.sync({ alter: true });
+// Creation and additive field setup are awaited during application startup.
 
 module.exports = HotelBooking;

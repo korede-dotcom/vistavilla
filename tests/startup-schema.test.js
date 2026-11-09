@@ -51,3 +51,13 @@ test('non-Postgres setup does not issue a PostgreSQL advisory lock',async()=>{
  await ensureSchema(f.db,f.models);
  assert.ok(!f.calls.includes('lock'));
 });
+
+test('startup adds caution-fee columns to existing booking tables',async()=>{
+ const f=fixture();const fields=['caution_fee_amount','caution_fee_status','caution_fee_collected_at','caution_fee_collected_by','caution_fee_refunded_at','caution_fee_refunded_by','caution_fee_held_at','caution_fee_held_by'];
+ f.tables.hotelbookings={id:{},amount:{}};
+ f.models.Booking={getTableName:()=> 'hotelbookings',rawAttributes:Object.fromEntries(fields.map(name=>[name,{type:'test',defaultValue:name==='caution_fee_amount'?0:undefined}])),sync:async()=>{}};
+ await ensureSchema(f.db,f.models);
+ for(const name of fields)assert.ok(f.tables.hotelbookings[name]);
+ assert.equal(f.tables.hotelbookings.caution_fee_amount.defaultValue,0);
+ assert.ok(f.tables.hotelbookings.amount);
+});

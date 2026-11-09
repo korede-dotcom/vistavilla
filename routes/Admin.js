@@ -36,6 +36,7 @@ const pricingConfigRepo = require("../repos/PricingConfig-repo");
 const fs = require('fs');
 
 routes.use('/landing-settings', require('./Landing'));
+routes.use('/caution-fees', require('./CautionFees'));
 
 routes.get("/",async (req,res) => {
             res.render('login', {
@@ -79,6 +80,7 @@ routes.get("/dashboard/monthly-bookings",checkAuthCookie,async (req,res) => {
       });
 })
 routes.get("/dashboard",checkAuthCookie,async (req,res) => {
+      const cautionFeesHeld = await require('../services/cautionFees').summary();
       const outstandingPayments = await PartPayment.sum('balance', { where: { payment_status: 'partial', balance: { [Op.gt]: 0 } } }) || 0;
       // Get today's date range
       const startOfToday = new Date();
@@ -197,6 +199,7 @@ const barSummary = await DrinkLog.findAll({
               data:{
                   todayBooking:total,
                   outstandingPayments,
+                  cautionFeesHeld,
                   availableroomCount:availableroomCount,
                   totalStaff:totalStaff,
                   customerCount:distinctCustomer.length,
@@ -1052,8 +1055,7 @@ routes.post("/add-staff",checkAuthCookie,expressAsyncHandler(async (req, res) =>
               </tr>
             </table>
             `,
-            saveUser.email,
-            "vistavillaapartment@gmail.com"
+            saveUser.email
         );
         
       // sendSMS

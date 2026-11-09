@@ -169,7 +169,10 @@
                   </a>
                 </div></div>
                 <% } %>
-				<!-- Quick Stats Section -->
+				<% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
+<div class="row"><div class="col-xl-3 col-sm-6 col-12"><a href="/portal/caution-fees"><div class="stat-card info"><div class="icon-wrapper"><i class="fas fa-shield-alt"></i></div><h3><%= ((data.cautionFeesHeld || 0)/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'}) %></h3><p>Caution Fees Held</p><small>Collected fees less refunds</small></div></a></div></div>
+<% } %>
+<!-- Quick Stats Section -->
 				<h5 class="section-title"><i class="fas fa-tachometer-alt"></i> Quick Stats</h5>
 				<div class="row">
 					<% if (roleName === 'ceo' || roleName === "hotelmanager" || roleName === "hotel receptionist") { %>

@@ -1,32 +1,24 @@
+'use strict';
 const nodemailer = require('nodemailer');
+const mailConfig = require('../config/mail');
 
-const SendEmail = async (subject, text, html, to) => {
-    const transporter = nodemailer.createTransport({
-        host: "mail.privateemail.com",
-        port: 587,
-        secure: false, // true for 465, false for 587
-        auth: {
-            user: "contact@vistavillaapartments.org",
-            pass: process.env.SMTP_PASSWORD,
-        },
+// Every system email authenticates and sends from the same custom mailbox.
+const SendEmail = async (subject, text, html, to, options = {}) => {
+  const config = mailConfig();
+  if (!to) throw new Error('Email recipient is required.');
+  const transporter = nodemailer.createTransport(config.transport);
+  try {
+    return await transporter.sendMail({
+      from: config.from, to, subject, text, html,
+      ...(options && typeof options === 'object' && options.replyTo ? { replyTo: options.replyTo } : {})
     });
-
-    const mailOptions = {
-        from: '"Vista Villa Apartments" <contact@vistavillaapartments.org>',
-        to: to,
-        subject: subject,
-        text: text,
-        html: html,
-    };
-
-    try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Message sent: %s', info.messageId);
-        return info;
-    } catch (error) {
-        console.error('Error sending email:', error);
-        throw error;
+  } catch (error) {
+    if (error.code === 'EAUTH') {
+      throw new Error('Custom mailbox authentication failed. Check SMTP_USER and SMTP_PASSWORD on the server.', { cause: error });
     }
+    throw error;
+  } finally {
+    transporter.close();
+  }
 };
-
 module.exports = SendEmail;

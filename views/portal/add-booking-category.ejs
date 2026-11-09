@@ -365,6 +365,11 @@ button:hover {
 					<small class="form-text text-muted">Discount will be applied to each night of the stay</small>
 				</div>
 
+<div class="col-md-6 mb-3">
+<label class="form-label" for="caution_fee">Caution fee collected (₦)</label>
+<input name="caution_fee" id="caution_fee" class="form-control" type="number" min="0" step="0.01" value="0">
+<small class="form-text text-muted">Enter money already received. Separate from the room charge; refundable through Caution Fees.</small>
+</div>
 				<div class="col-md-12 mb-3">
 					<div class="form-check">
 						<input class="form-check-input" type="checkbox" id="isPartPayment" name="is_part_payment">
@@ -793,6 +798,8 @@ button:hover {
         formData.append('is_part_payment', isPartPayment);
         formData.append('amount_paid', isPartPayment ? (amountPaid * 100) : null);
         formData.append('discount_per_night', discountPerNight * 100);
+        if (!document.getElementById('caution_fee').reportValidity()) { resetLoader(loader, submitButton); return; }
+        formData.append('caution_fee', document.getElementById('caution_fee').value || '0');
 
         // Add ID card file if selected
         const idCardInput = document.getElementById('id_card');

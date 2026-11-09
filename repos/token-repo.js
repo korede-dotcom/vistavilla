@@ -142,8 +142,7 @@ const sendResetPasswordToken = async (email) => {
         </tr>
       </table>
       `,
-      user.email,
-      "vistavillaapartment@gmail.com"
+      user.email
     );
     
     

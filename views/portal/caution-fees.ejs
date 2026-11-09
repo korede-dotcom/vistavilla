@@ -1,0 +1,33 @@
+<%- include('partial/header',{title:'Caution Fees - Vistavilla Apartments',email,roleName}) %>
+<%- include('partial/sidebar',{name}) %>
+<div class="page-wrapper"><main class="content container-fluid">
+<div class="page-header"><h1 class="page-title">Caution Fees</h1><p>Track customer deposits separately from room revenue.</p></div>
+<% if(saved){ %><div class="alert alert-success" role="status">Caution fee status updated.</div><% } %>
+<div class="row">
+<div class="col-md-4"><div class="card"><div class="card-body"><h2><%= (total/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'}) %></h2><p>Caution money currently held</p><small>Paid and held fees, excluding refunds.</small></div></div></div>
+<div class="col-md-4"><div class="card"><div class="card-body"><h2><%= (bookings.reduce((sum,b)=>sum+Number(b.caution_fee_amount),0)/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'}) %></h2><p>Total collected</p></div></div></div>
+<div class="col-md-4"><div class="card"><div class="card-body"><h2><%= (bookings.filter(b=>b.caution_fee_status==='refunded').reduce((sum,b)=>sum+Number(b.caution_fee_amount),0)/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'}) %></h2><p>Total refunded</p></div></div></div>
+</div>
+<p><strong>Hold</strong> retains the deposit in the current total. <strong>Refund</strong> records a full refund already returned to the customer and removes it from the current total. It does not send money through a bank or payment provider.</p>
+<div class="card"><div class="card-body"><div class="table-responsive"><table class="table table-hover">
+<thead><tr><th>Customer</th><th>Booking / room</th><th>Caution fee</th><th>Status</th><th>Collected</th><th>Refund / hold record</th><th>Actions</th></tr></thead>
+<tbody>
+<% if(!bookings.length){ %><tr><td colspan="7">No caution fees collected yet.</td></tr><% } %>
+<% bookings.forEach(booking=>{ %>
+<tr><td><strong><%= booking.guest_name %></strong><br><%= booking.guest_phone %><br><%= booking.guest_email %></td>
+<td><%= booking.reference_id %><br>Room <%= booking.room_number %></td>
+<td><%= (booking.caution_fee_amount/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'}) %></td>
+<td><span class="badge badge-<%= booking.caution_fee_status==='refunded'?'success':booking.caution_fee_status==='hold'?'warning':'info' %>"><%= booking.caution_fee_status==='hold'?'On hold':booking.caution_fee_status==='refunded'?'Refunded':'Paid' %></span></td>
+<td><%= booking.caution_fee_collected_at?new Date(booking.caution_fee_collected_at).toLocaleString('en-NG'):'' %><br><%= booking.caution_fee_collected_by || '' %></td>
+<td><% if(booking.caution_fee_refunded_at){ %>Refunded <%= new Date(booking.caution_fee_refunded_at).toLocaleString('en-NG') %><br><%= booking.caution_fee_refunded_by %><% } %>
+<% if(booking.caution_fee_held_at){ %><br>Held <%= new Date(booking.caution_fee_held_at).toLocaleString('en-NG') %><br><%= booking.caution_fee_held_by %><% } %></td>
+<td><% if(booking.caution_fee_status!=='refunded'){ %>
+<form method="post" action="/portal/caution-fees/<%= booking.id %>/status" onsubmit="return confirm('Record this caution fee action? Only mark refunded after returning the money to the customer.');">
+<input type="hidden" name="csrf" value="<%= csrf %>">
+<% if(booking.caution_fee_status!=='hold'){ %><button class="btn btn-warning btn-sm mb-2" name="action" value="hold">Hold</button><% } %>
+<button class="btn btn-success btn-sm mb-2" name="action" value="refund">Mark Refunded</button>
+</form><% }else{ %>Refund recorded<% } %></td>
+</tr>
+<% }); %></tbody></table></div></div></div>
+</main></div>
+<%- include('partial/footer') %>
