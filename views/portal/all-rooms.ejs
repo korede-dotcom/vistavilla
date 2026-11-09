@@ -23,12 +23,11 @@
 					<div class="row align-items-center">
 						<div class="col">
 							<div class="mt-5">
-								<% if (roleName !== 'hotel receptionist') { %>
-								<h4 class="card-title float-left mt-2">All Rooms</h4> <a href="/portal/add-room" class="btn btn-primary float-right veiwbutton">Add Room</a> </div>
-								<% } else { %>
-									<h4 class="card-title float-left mt-2">All Rooms</h4>
-                                <!-- <h4 class="card-title float-left mt-2">My Rooms</h4> <a href="/portal/my-rooms" class="btn btn-primary float-right veiwbutton">View All</a> </div> -->
+								<h4 class="card-title mt-2">All Rooms</h4>
+                                <% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
+                                <a href="/portal/add-room" class="btn btn-primary mb-3">Add Room</a>
                                 <% } %>
+                            </div>
 						</div>
 					</div>
 				</div>
