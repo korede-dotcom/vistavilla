@@ -31,6 +31,7 @@
 <% if (Number(bookings.discount_total || 0) > 0 || Number(bookings.discount_per_night || 0) > 0) { %>
 <div class="alert alert-info">Recorded discount: <strong><%= bookings.discount_type === 'percentage' ? Number(bookings.discount_value) + '%' : bookings.discount_scope === 'booking' ? '₦' + Number(bookings.discount_value || 0).toLocaleString('en-NG') + ' flat off booking total' : '₦' + (Number(bookings.discount_per_night || 0)/100).toLocaleString('en-NG') + ' per night' %></strong>. Total discount: ₦<%= (Number(bookings.discount_total || Number(bookings.discount_per_night || 0)*Number(bookings.night))/100).toLocaleString('en-NG') %>.</div>
 <% } %>
+<% if (bookings.is_backdated) { %><div class="alert alert-info">Recorded for past dates. Reason: <%= bookings.backdated_reason %></div><% } %>
 <!-- Tabs Navigation -->
 <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 20px;">
 	<li class="nav-item">

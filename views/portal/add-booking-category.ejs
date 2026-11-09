@@ -295,6 +295,11 @@ button:hover {
                     <input id="checkOut" name="end" class="form-control bg-white" type="date">
                 </div>
 
+<div class="col-12 mb-3">
+<label class="form-label" for="allowPastBooking"><input type="checkbox" id="allowPastBooking"> Record past dates</label>
+<small class="form-text text-muted">For stays that started before today. Use Cash mode to record money already received.</small>
+<label class="form-label mt-2" for="backdatedReason">Reason for past dates</label><input id="backdatedReason" class="form-control" type="text" maxlength="1000" placeholder="For example: entering a previous reception booking">
+</div>
                 <!-- Pricing Information Card -->
                 <div class="col-12 mb-3">
                     <div id="pricingInfoCard" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 20px; color: white; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
@@ -805,6 +810,8 @@ button:hover {
 
         // Use FormData to support file upload
         const formData = new FormData();
+        formData.append('allow_past_booking', document.getElementById('allowPastBooking').checked);
+        formData.append('backdated_reason', document.getElementById('backdatedReason').value);
         formData.append('start', checkInDate);
         formData.append('end', checkOutDate);
         formData.append('guest_name', guestName);

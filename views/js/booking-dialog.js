@@ -7,7 +7,7 @@
   const titles=['Stay','Guest','Payment'];
   const panels=titles.map((title,index)=>{const panel=document.createElement('div');panel.className='row booking-step-panel';panel.id='booking-step-'+index;panel.setAttribute('role','group');panel.setAttribute('aria-label',title);return panel;});
   Array.from(form.querySelector('.row').children).forEach(column=>{
-   const stay=column.querySelector('#checkIn,#checkOut,#pricingInfoCard');
+   const stay=column.querySelector('#checkIn,#checkOut,#pricingInfoCard,#allowPastBooking');
    const guest=column.querySelector('[name="guest_name"],[name="guest_phone"],[name="guest_email"],[name="guest_address"],#id_card');
    panels[stay?0:guest?1:2].appendChild(column);
   });

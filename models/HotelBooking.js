@@ -3,6 +3,8 @@ const connectDb = require("../config/connectDB");
 const sequelize = connectDb;
 
 const HotelBooking = sequelize.define('hotelbooking', {
+    is_backdated: { type: DataTypes.BOOLEAN, defaultValue: false },
+    backdated_reason: { type: DataTypes.TEXT },
     discount_scope: { type: DataTypes.STRING, defaultValue: 'night' },
     discount_type: { type: DataTypes.STRING, defaultValue: 'flat' },
     discount_value: { type: DataTypes.DOUBLE, defaultValue: 0 },

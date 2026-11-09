@@ -58,22 +58,18 @@ routes.post('/paystack/initialize/reception', checkAuthCookie, cloudinaryRepo._p
   console.log("🚀 ~ routes.post ~ req.body:", req.body)
   console.log("🚀 ~ routes.post ~ req.files:", req.files)
 
-  const currentDate = moment().format("YYYY-MM-DD");
-
-  // Parse the start date
-  let startDatee = moment(start, "DD-MM-YYYY").format("YYYY-MM-DD");
-  console.log("🚀 ~ routes.post ~ startDatee:", startDatee)
-
-  // Check if the start date is in the past
-  if (moment(start).isBefore(currentDate)) {
-      return res.json({
-          message: "Start date cannot be in the past. Please select a valid date.",
-          status: false
-      });
+  let dateState;
+  try {
+    dateState = require('../utils/staffBookingDates')({start,end,allowPast:req.body.allow_past_booking,reason:req.body.backdated_reason});
+  } catch (error) { return res.status(400).json({status:false,message:error.message}); }
+  if (dateState.is_backdated) {
+    const staff = await require('../models/User').findByPk(req.user._id);
+    if (!staff || !['ceo','hotelmanager','hotel receptionist'].includes(staff.roleName)) {
+      return res.status(403).json({status:false,message:'Hotel staff access is required to record past stays.'});
+    }
+    if (mode !== 'Cash') return res.status(400).json({status:false,message:'Use Cash mode to record payments already received for a backdated booking.'});
   }
-
-  // Parse the end date
-  const endDatee = moment(end, "DD-MM-YYYY").format("YYYY-MM-DD");
+  Object.assign(req.body,{is_backdated:dateState.is_backdated,backdated_reason:dateState.backdated_reason});
 
   const bookedRooms = await HotelBooking.findOne({
     where: {
@@ -228,10 +224,11 @@ console.log(bookedRooms);
         reference_id: referenceId,
         booked_from:'reception',
         booked_by:req.user.name,
-        status: bookingStatus,
+        status: dateState.ended && !isPartPayment ? 'completed' : bookingStatus,
         payment_mode:'cash',
         checked_in_by:req.user.name,
-        checked_in:true,
+        checked_in:dateState.active || dateState.ended,
+        checked_out:dateState.ended,
         id_card_url: idCardUrl,
         ...cautionFields,
       });
@@ -273,22 +270,8 @@ console.log(bookedRooms);
         });
       }
 
-      const startDate = new Date(start);
-      const currentDate = new Date();
-
-      // Reset time components of the dates for accurate comparison.
-      startDate.setHours(0, 0, 0, 0);
-      currentDate.setHours(0, 0, 0, 0);
-
-      // Check if start date is the current date
-      console.log("🚀 ~ routes.post ~ startDate.getTime() === currentDate.getTime():", startDate.getTime() === currentDate.getTime())
-      if (startDate.getTime() === currentDate.getTime()) {
-          // Update room status only if start date is the current date
-          const isUpdated = await RoomNumber.update(
-              { status: true },
-              { where: { room_number: req.body.room_number } }
-          );
-          console.log("🚀 ~ routes.post ~ isUpdated:", isUpdated)
+      if (dateState.active) {
+        await RoomNumber.update({status:true},{where:{room_number:req.body.room_number}});
       }
 
       res.status(200).json({
