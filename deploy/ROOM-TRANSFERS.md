@@ -21,8 +21,10 @@ The server reads actual destination room/category data, validates availability
 against overlapping bookings, locks the booking and destination room, and commits
 assignment, payment ledger, receipts and transfer history in one transaction.
 Further part-payment collections use the same transaction and lock order.
-Overpayments and transfers requiring a refund are rejected; refunds need to be
-resolved separately. No charge or automatic refund is sent to a payment provider.
+Overpayments are rejected. Downgrades preserve all prior payments; any amount
+above the new total is shown as guest credit owed in booking details and the
+transfer preview. The credit applies to future extensions or room changes. It is
+not silently discarded and is not automatically refunded. No charge or automatic refund is sent to a payment provider.
 The amount-paid field records money staff have already received.
 
 Deploy: restart Node after deploying the updated source. Startup automatically

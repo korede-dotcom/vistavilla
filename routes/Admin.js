@@ -37,6 +37,8 @@ const fs = require('fs');
 
 routes.use('/landing-settings', require('./Landing'));
 routes.use('/caution-fees', require('./CautionFees'));
+routes.use('/activity-logs', require('./ActivityLogs'));
+routes.use('/extend-stay', require('./StayExtension'));
 
 routes.get("/",async (req,res) => {
             res.render('login', {
@@ -1747,7 +1749,7 @@ routes.post('/transfer-room', checkAuthCookie, expressAsyncHandler(async (req, r
   }
   try {
     const data = await require('../services/transferRoom')(req.body, req.user);
-    return res.json({ status: true, message: `Room transferred from ${data.old_room} to ${data.new_room}. Balance: ₦${(data.balance / 100).toLocaleString('en-NG')}`, data });
+    return res.json({ status: true, message: `Room transferred from ${data.old_room} to ${data.new_room}. Balance: ₦${(data.balance / 100).toLocaleString('en-NG')}. Guest credit owed: ₦${(data.credit / 100).toLocaleString('en-NG')}`, data });
   } catch (error) {
     console.error('Room transfer failed:', error);
     return res.status(400).json({ status: false, message: error.message });

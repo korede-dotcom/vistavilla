@@ -344,7 +344,7 @@
 <label for="transferMethodCalendar">Payment method</label>
 <select class="form-control" id="transferMethodCalendar"><option value="cash">Cash</option><option value="transfer">Bank transfer</option><option value="card">Card</option></select>
 <p class="mt-2" data-transfer-quote role="status">Select a destination room to see the revised total and balance.</p>
-<small class="text-muted">The new room rate applies to all booked nights. Previous payments are retained; any unpaid balance goes to Part Payments, flagged with the room change.</small>
+<small class="text-muted">The new room rate applies to all booked nights for upgrades and downgrades. Any excess already paid is preserved as guest credit; no automatic refund is sent. Previous payments are retained; any unpaid balance goes to Part Payments, flagged with the room change.</small>
 </div>
 <div class="alert alert-warning" id="transferWarningCalendar" style="display: none;">
                     <i class="fas fa-exclamation-triangle"></i>
@@ -965,4 +965,4 @@ function showToast(message, type) {
 </body>
 
 </html>
-<script defer src="/js/transfer-payment.js?v=1"></script>
+<script defer src="/js/transfer-payment.js?v=2"></script>

@@ -1,0 +1,8 @@
+<%- include('partial/header',{title:'Activity Logs - Vistavilla Apartments',email,roleName}) %>
+<%- include('partial/sidebar',{name}) %>
+<div class="page-wrapper"><main class="content container-fluid"><h1 class="page-title">Activity Logs</h1><p>Activity recorded since logging was enabled. Database changes and page requests are separate entries; failed actions are included. Passwords and form contents are excluded.</p>
+<div class="card"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Time</th><th>Staff</th><th>Role</th><th>Action</th><th>Resource / record</th><th>Page</th><th>Outcome</th><th>Changed fields</th></tr></thead><tbody>
+<% logs.forEach(log=>{ %><tr><td><%= new Date(log.createdAt).toLocaleString('en-NG') %></td><td><%= log.actor_name %></td><td><%= log.actor_role %></td><td><%= log.action %></td><td><%= log.resource %> <%= log.record_id %></td><td><%= log.method %> <%= log.path %></td><td><%= log.outcome %></td><td><%= (log.fields||[]).join(', ') %></td></tr><% }); %>
+<% if(!logs.length){ %><tr><td colspan="8">No activity recorded yet.</td></tr><% } %></tbody></table></div></div></div>
+<p><%= count %> entries · Page <%= page %></p><% if(page>1){ %><a class="btn btn-secondary" href="?page=<%= page-1 %>">Previous</a><% } %> <% if(page*50<count){ %><a class="btn btn-secondary" href="?page=<%= page+1 %>">Next</a><% } %>
+</main></div><%- include('partial/footer') %>

@@ -9,6 +9,12 @@
                     </a>
                 </li>
                 <li class="list-divider"></li>
+<% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
+<li><a href="/portal/part-payments"><i class="fas fa-money-bill-wave"></i><span>Part Payments / Guests Owing</span></a></li>
+<% } %>
+                <% if (['ceo','hotelmanager'].includes(roleName)) { %>
+                <li><a href="/portal/activity-logs"><i class="fas fa-history"></i><span>Activity Logs</span></a></li>
+                <% } %>
                 <% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
                 <li><a href="/portal/caution-fees"><i class="fas fa-shield-alt"></i><span>Caution Fees</span></a></li>
                 <% } %>
@@ -27,7 +33,6 @@
                         <li><a href="/portal/all-booking"><i class="fas fa-list"></i> All Bookings</a></li>
                         <li><a href="/portal/add-booking"><i class="fas fa-plus-circle"></i> Add Booking</a></li>
                         <li><a href="/portal/check-booking"><i class="fas fa-search"></i> Check Booking</a></li>
-                        <li><a href="/portal/part-payments"><i class="fas fa-money-bill-wave" style="color: #FFA500;"></i> Part Payments</a></li>
                     </ul>
                 </li>
                 <% } %>
@@ -73,7 +78,7 @@
                 </li>
                 <% } %>
 
-                <% if (roleName === 'ceo' || roleName === "hotelmanager") { %>
+                <% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
                 <li class="submenu">
                     <a href="#">
                         <i class="fas fa-user-tie"></i>
@@ -108,7 +113,7 @@
 
                 <li class="list-divider"></li>
 
-                <% if (roleName === 'ceo') { %>
+                <% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
                 <li>
                     <a href="/portal/info-promotion">
                         <i class="fas fa-bullhorn"></i>
@@ -126,7 +131,7 @@
                 </li>
                 <% } %>
 
-                <% if (roleName === 'ceo' || roleName === 'hotelmanager') { %>
+                <% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
                 <li>
                     <a href="/portal/pricing-config">
                         <i class="fas fa-tags"></i>
@@ -135,7 +140,7 @@
                 </li>
                 <% } %>
 
-                <% if (roleName === 'ceo' || roleName === 'hotelmanager') { %>
+                <% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
                 <li class="submenu">
                     <a href="#">
                         <i class="fas fa-chart-line"></i>

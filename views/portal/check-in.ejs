@@ -10,6 +10,9 @@
 </div>
 <div class="col-sm-7 col-8 text-right m-b-30">
 <div class="btn-group btn-group-sm">
+<% if (!bookings.checked_out && ['success','confirmed','part-payment','completed'].includes(bookings.status)) { %>
+<button class="btn btn-primary" data-toggle="modal" data-target="#extendStayModal">Extend Stay</button>
+<% } %>
 <button class="btn btn-warning" data-toggle="modal" data-target="#transferRoomModal">
 	<i class="fas fa-exchange-alt"></i> Transfer Room
 </button>
@@ -20,6 +23,8 @@
 </div>
 </div>
 
+<% const guestCredit = Math.max(0, Number(bookings.amount_paid || 0) - Number(bookings.amount)); %>
+<% if (guestCredit > 0) { %><div class="alert alert-info">Guest credit owed: <strong>₦<%= (guestCredit/100).toLocaleString('en-NG') %></strong>. Preserved from the room downgrade; available against later charges. No refund has been sent automatically.</div><% } %>
 <!-- Tabs Navigation -->
 <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 20px;">
 	<li class="nav-item">
@@ -243,7 +248,7 @@ eight only.)</p> -->
 <label for="transferMethod">Payment method</label>
 <select class="form-control" id="transferMethod"><option value="cash">Cash</option><option value="transfer">Bank transfer</option><option value="card">Card</option></select>
 <p class="mt-2" data-transfer-quote role="status">Select a destination room to see the revised total and balance.</p>
-<small class="text-muted">The new room rate applies to all booked nights. Previous payments are retained; any unpaid balance goes to Part Payments, flagged with the room change.</small>
+<small class="text-muted">The new room rate applies to all booked nights for upgrades and downgrades. Any excess already paid is preserved as guest credit; no automatic refund is sent. Previous payments are retained; any unpaid balance goes to Part Payments, flagged with the room change.</small>
 </div>
 <div class="alert alert-warning" style="display: none;" id="transferWarning">
 						<i class="fas fa-exclamation-triangle"></i>
@@ -459,7 +464,7 @@ eight only.)</p> -->
 			const data = await response.json();
 
 			if (data.status) {
-				showToast('Room transferred successfully!', 'success');
+				showToast(data.message || 'Room transferred successfully!', 'success');
 				setTimeout(() => {
 					window.location.reload();
 				}, 1500);
@@ -555,4 +560,19 @@ eight only.)</p> -->
 </script>
 </body>
 </html>
-<script defer src="/js/transfer-payment.js?v=1"></script>
+<script defer src="/js/transfer-payment.js?v=2"></script>
+
+<div class="modal fade" id="extendStayModal" tabindex="-1" aria-labelledby="extendStayTitle" aria-hidden="true">
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="extendStayTitle">Extend stay</h2><button type="button" class="close" data-dismiss="modal" aria-label="Close">×</button></div>
+<div class="modal-body"><form id="extendStayForm" data-reference="<%= bookings.reference_id %>" data-end="<%= new Date(bookings.end).toISOString() %>">
+<p>Current checkout: <%= new Date(bookings.end).toLocaleString('en-NG') %></p>
+<label for="extraNights">Additional nights</label><input class="form-control" id="extraNights" type="number" min="1" max="365" step="1" value="1" required>
+<button class="btn btn-secondary mt-2" type="button" id="previewExtension">Calculate extension</button>
+<p class="mt-3" id="extensionQuote" role="status">Calculate to preview the new checkout, charges and balance.</p>
+<label for="extensionOption">Payment option</label><select class="form-control" id="extensionOption"><option value="full">Full payment of revised balance</option><option value="partial">Part payment (stays longer than one night)</option></select>
+<label for="extensionPaid">Amount paid now (₦)</label><input class="form-control" id="extensionPaid" type="number" min="0" step="0.01" value="0" required>
+<label for="extensionMethod">Payment method</label><select class="form-control" id="extensionMethod"><option value="cash">Cash</option><option value="transfer">Bank transfer</option><option value="card">Card</option></select>
+<small>Current rates and existing nightly discounts apply to added nights only. Earlier payments and any guest credit are retained. Caution fees stay unchanged.</small>
+<button class="btn btn-primary mt-3" type="submit" id="confirmExtension" disabled>Confirm extension</button>
+</form></div></div></div></div>
+<script defer src="/js/extend-stay.js?v=1"></script>

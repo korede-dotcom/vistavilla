@@ -10,10 +10,10 @@ document.querySelectorAll('.transfer-payment-panel').forEach(panel => {
   function display() {
     if (!quote) return;
     const amount = Math.round(Number(paid.value) * 100);
-    const due = quote.total - quote.previousPaid;
+    const due = Math.max(0, quote.total - quote.previousPaid);
     paid.max = (due / 100).toFixed(2);
     confirm.disabled = !paid.checkValidity() || !Number.isFinite(amount) || amount < 0 || amount > due;
-    output.textContent = `New rate: ${money(quote.rate * 100)} × ${quote.nights} night(s). Total: ${money(quote.total)}. Price adjustment: ${money(quote.adjustment)}. Already paid: ${money(quote.previousPaid)}. Balance after payment: ${money(due - (Number.isFinite(amount) ? amount : 0))}.`;
+    output.textContent = `New rate: ${money(quote.rate * 100)} × ${quote.nights} night(s). Total: ${money(quote.total)}. Price adjustment: ${money(quote.adjustment)}. Already paid: ${money(quote.previousPaid)}. Balance after payment: ${money(due - (Number.isFinite(amount) ? amount : 0))}. Guest credit owed: ${money(quote.credit || 0)}.`;
   }
   select.addEventListener('change', async () => {
     const request = ++revision;

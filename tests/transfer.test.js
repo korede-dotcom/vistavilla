@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const calculate = require('../utils/transferPricing');
 const base = { rate: 50000, nights: 2, oldTotal: 6000000, amountPaid: 0, bookingStatus: 'success', bookingBalance: 0 };
 test('fully paid legacy booking retains original receipts and charges new rate', () => {
-  assert.deepEqual(calculate(base), {total:10000000,previousPaid:6000000,paidNow:0,amountPaid:6000000,balance:4000000,adjustment:4000000});
+  assert.deepEqual(calculate(base), {total:10000000,previousPaid:6000000,paidNow:0,amountPaid:6000000,balance:4000000,credit:0,adjustment:4000000});
 });
 test('existing part payment preserves receipts, adds cash and balances correctly', () => {
   const result = calculate({...base, existingPartPayment:{amount_paid:'3000000'}, paidNow:'10000.50'});
@@ -12,9 +12,9 @@ test('existing part payment preserves receipts, adds cash and balances correctly
   assert.equal(result.balance,5999950);
   assert.equal(calculate({...base,paidNow:'40000'}).balance,0);
 });
-test('invalid, excess and refund-requiring transfers are rejected', () => {
+test('invalid and excess payments reject while downgrades retain credit', () => {
   for (const paidNow of [-1,'NaN','1.001',null,[],Infinity,'40000.01']) assert.throws(() => calculate({...base,paidNow}));
-  assert.throws(() => calculate({...base,rate:10000}));
+  assert.equal(calculate({...base,rate:10000}).credit,4000000);
   assert.throws(() => calculate({...base,nights:0}));
 });
 
@@ -80,4 +80,20 @@ test('subsequent collections update the transfer ledger and booking together and
  writes=[];
  await assert.rejects(repo.completePayment(9,'30000.01','Reception'),/exceeds/);
  assert.equal(writes.length,0);
+});
+
+test('downgrades retain the full amount paid and produce zero balance plus guest credit',()=>{
+ const result=calculate({...base,rate:10000,paidNow:'0'});
+ assert.equal(result.total,2000000);assert.equal(result.amountPaid,6000000);assert.equal(result.balance,0);assert.equal(result.credit,4000000);assert.equal(result.adjustment,-4000000);
+ assert.throws(()=>calculate({...base,rate:10000,paidNow:'1'}),/exceeds/);
+});
+
+test('server performs a downgrade and preserves excess payment in the persisted ledger',async()=>{
+ reset();booking.amount=14000000;
+ const result=await transfer({...input,amount_paid_now:'0'},{name:'Reception'});
+ assert.equal(result.total,10000000);assert.equal(result.credit,4000000);assert.equal(result.balance,0);
+ const ledgerData=writes.find(w=>w.name==='ledger').data;
+ assert.equal(ledgerData.amount_paid,14000000);assert.equal(ledgerData.total_amount,10000000);assert.equal(ledgerData.payment_status,'completed');
+ assert.equal(writes.find(w=>w.name==='booking').data.amount_paid,14000000);
+ assert.ok(!writes.some(w=>w.name==='payment'));
 });

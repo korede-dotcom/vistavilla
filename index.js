@@ -25,7 +25,8 @@ app.use(cors());
 const databaseReady = (async () => {
   await connectDB.authenticate().then(async () => {
     await require('./config/ensureStartupSchema')(connectDB);
-    console.log('DB connected; room-transfer payment schema ready.');
+    require('./middleware/activityAudit').install(connectDB);
+    console.log('DB connected; application schema ready.');
 
     // Seed payment modes if necessary
     const paymentModes = [
@@ -206,6 +207,7 @@ app.use(cookieParser());
 
 
 // Your routes here
+app.use(require('./middleware/activityAudit').middleware);
 app.use(routes);
 
 // Error handling middleware

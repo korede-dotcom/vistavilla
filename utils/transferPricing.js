@@ -8,13 +8,11 @@ function calculate({ rate, nights, oldTotal, amountPaid, existingPartPayment, bo
   const total = Math.round(rateValue * 100) * count;
   let previousPaid;
   if (existingPartPayment) previousPaid = Number(existingPartPayment.amount_paid);
-  else if (['success','completed'].includes(bookingStatus) && !Number(bookingBalance)) previousPaid = Number(oldTotal);
+  else if (['success','completed'].includes(bookingStatus) && !Number(bookingBalance)) previousPaid = Math.max(Number(oldTotal), Number(amountPaid || 0));
   else previousPaid = Number(amountPaid || 0);
   if (![total, previousPaid, Number(oldTotal)].every(Number.isSafeInteger) || previousPaid < 0) throw new Error('Invalid booking amounts.');
   const paid = Math.round(payment * 100);
-  // A downgrade needing a refund must not silently discard the guest's credit.
-  if (total < previousPaid) throw new Error('The new total is below the amount already paid. Resolve the refund before transferring.');
-  if (paid > total - previousPaid) throw new Error('Amount paid exceeds the balance due for the new room.');
-  return { total, previousPaid, paidNow: paid, amountPaid: previousPaid + paid, balance: total - previousPaid - paid, adjustment: total - Number(oldTotal) };
+  if (paid > Math.max(0, total - previousPaid)) throw new Error('Amount paid exceeds the balance due for the new room.');
+  return { total, previousPaid, paidNow: paid, amountPaid: previousPaid + paid, balance: Math.max(0, total - previousPaid - paid), credit: Math.max(0, previousPaid + paid - total), adjustment: total - Number(oldTotal) };
 }
 module.exports = calculate;
