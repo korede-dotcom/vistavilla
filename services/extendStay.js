@@ -27,18 +27,29 @@ module.exports=async(input,staff,quoteOnly=false)=>db.transaction(async transact
  if(overlap)throw Error('This room is reserved during the requested extension.');
  const category=await Room.findOne({where:{_id:booking.category_id},...options});
  if(!category)throw Error('Room category not found.');
- let additional=0;
+ let additional=0, addedSubtotal=0, addedDiscount=0;
  const rates=[];
  for(let day=0;day<nights;day++){
   const date=new Date(oldEnd.getTime()+day*86400000);
   const special=await Pricing.findOne({where:{category_id:booking.category_id,is_active:true,start_date:{[Op.lte]:date},end_date:{[Op.gte]:date}},order:[['created_at','DESC']],transaction});
-  const rate=Math.round(Number(special?special.special_price:category.price)*100)-Number(booking.discount_per_night||0);
+  const baseRate=Math.round(Number(special?special.special_price:category.price)*100);
+  const discount=booking.discount_scope==='booking' ? 0 : booking.discount_type==='percentage' ? require('../views/js/booking-pricing').discount(baseRate,'percentage',booking.discount_value||0) : Number(booking.discount_per_night||0);
+  const rate=baseRate-discount;
+  addedSubtotal+=baseRate;addedDiscount+=discount;
   if(!Number.isSafeInteger(rate)||rate<=0)throw Error('The nightly extension price is invalid.');
   rates.push(rate);additional+=rate;
  }
  const ledger=await Part.findOne({where:{reference_id:booking.reference_id},...options});
  const priorPaid=ledger?Number(ledger.amount_paid):['success','completed'].includes(booking.status)&&!Number(booking.balance)?Math.max(Number(booking.amount),Number(booking.amount_paid||0)):Number(booking.amount_paid||0);
- const total=Number(booking.amount)+additional;
+ let total=Number(booking.amount)+additional;
+ let subtotal=Number(booking.price_subtotal||Number(booking.amount)+Number(booking.discount_per_night||0)*Number(booking.night))+addedSubtotal;
+ let discountTotal=Number(booking.discount_total||Number(booking.discount_per_night||0)*Number(booking.night))+addedDiscount;
+ if(booking.discount_scope==='booking') {
+  discountTotal=require('../views/js/booking-pricing').discount(subtotal,booking.discount_type||'flat',booking.discount_value||0);
+  total=subtotal-discountTotal;
+  additional=total-Number(booking.amount);
+ }
+
  const due=Math.max(0,total-priorPaid);
  const paid=quoteOnly?0:amountInKobo(input.amount_paid_now===undefined?'0':input.amount_paid_now);
  if(!Number.isSafeInteger(total)||!Number.isSafeInteger(priorPaid)||priorPaid<0)throw Error('Invalid booking financial records.');
@@ -63,6 +74,6 @@ module.exports=async(input,staff,quoteOnly=false)=>db.transaction(async transact
   total_amount:total,guest_name:booking.guest_name,room_number:booking.room_number,recorded_by:staff.name,payment_date:new Date(),notes:`Stay extended by ${nights} night(s)`},{transaction});
  await Extension.create({booking_id:booking.id,reference_id:booking.reference_id,old_end:oldEnd,new_end:newEnd,added_nights:nights,
   additional_amount:additional,amount_paid_now:paid,balance_after:balance,credit_after:credit,extended_by:staff.name},{transaction});
- await Booking.update({end:newEnd,night:totalNights,amount:total,amount_paid:amountPaid,balance,is_part_payment:balance>0,status:balance?'part-payment':'success'},{where:{id:booking.id},transaction});
+ await Booking.update({end:newEnd,night:totalNights,amount:total,price_subtotal:subtotal,discount_total:discountTotal,amount_paid:amountPaid,balance,is_part_payment:balance>0,status:balance?'part-payment':'success'},{where:{id:booking.id},transaction});
  return result;
 });

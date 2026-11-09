@@ -45,3 +45,16 @@ test('existing ledger and downgrade credit are applied to extension charges with
  assert.equal(result.total,7000000);assert.equal(result.balance,0);assert.equal(result.credit,1000000);
  assert.ok(writes.some(w=>w.name==='updatedLedger'));assert.ok(!writes.some(w=>w.name==='ledger'));assert.ok(!writes.some(w=>w.name==='receipt'));
 });
+
+test('percentage discount carries onto extension special rates and records new totals',async()=>{
+ reset();booking.discount_type='percentage';booking.discount_value=10;booking.discount_per_night=300000;booking.price_subtotal=6600000;booking.discount_total=600000;
+ specials=[{special_price:'60000'}];
+ const result=await extend({...input,amount_paid_now:'54000',payment_option:'full'},{name:'Reception'});
+ assert.equal(result.additional,5400000);assert.equal(booking.price_subtotal,12600000);assert.equal(booking.discount_total,1200000);assert.equal(booking.amount,11400000);
+});
+
+test('one-time flat booking discount is not repeated for extended nights',async()=>{
+ reset();booking.discount_scope='booking';booking.discount_type='flat';booking.discount_value=5000;booking.price_subtotal=6500000;booking.discount_total=500000;
+ const result=await extend({...input,amount_paid_now:'50000',payment_option:'full'},{name:'Reception'});
+ assert.equal(result.additional,5000000);assert.equal(result.total,11000000);assert.equal(booking.price_subtotal,11500000);assert.equal(booking.discount_total,500000);
+});

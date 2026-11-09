@@ -150,7 +150,7 @@ console.log(bookedRooms);
 
     const findCategory = await Room.findOne({where: {_id: category_id }})
     if (!findCategory) {
-       res.status(400).json({message: 'Invalid category ID provided to initialize payment request ' + category_id,status:false});
+       return res.status(400).json({message: 'Invalid category ID provided to initialize payment request ' + category_id,status:false});
     }
 
 
@@ -169,25 +169,32 @@ console.log(bookedRooms);
     const pricingInfo = await pricingConfigRepo.getPriceForCategory(category_id, startDate);
     const pricePerNight = pricingInfo.price;
 
-    // Apply discount per night if provided
-    const discountPerNight = parseFloat(req.body.discount_per_night || 0) / 100; // Convert from kobo to naira
-    const effectivePricePerNight = pricePerNight - discountPerNight;
-
-    // Calculate the total cost
-    const totalCost = daysDifference * effectivePricePerNight;
-    console.log("🚀 ~ routes.post ~ totalCost:", totalCost)
-    console.log("🚀 ~ routes.post ~ discountPerNight:", discountPerNight)
-    console.log("🚀 ~ routes.post ~ effectivePricePerNight:", effectivePricePerNight)
+    let quote;
+    try {
+      quote = require('../views/js/booking-pricing').quote({
+        start, end, rate: pricePerNight,
+        discountType: req.body.discount_type || 'flat',
+        discountScope: req.body.discount_value === undefined ? 'night' : 'booking',
+        discountValue: req.body.discount_value !== undefined ? req.body.discount_value : Number(req.body.discount_per_night || 0) / 100
+      });
+    } catch (error) { return res.status(400).json({status:false,message:error.message}); }
+    // Normalize fields before booking creation and provider metadata serialization.
+    Object.assign(req.body, {discount_scope:quote.discountScope,discount_type:quote.discountType,discount_value:quote.discountValue,
+      discount_per_night:quote.discountPerNight,price_subtotal:quote.subtotal,discount_total:quote.discountTotal});
+    const totalCost = quote.total / 100;
 
     // Create a reference for the transaction
 
     if (req.body.mode === "Cash") {
       console.log("🚀 ~ routes.post ~ req.user:", req.user)
 
-      const isPartPayment = req.body.is_part_payment === 'true' || req.body.is_part_payment === true;
+      const isPartPayment = totalCost > 0 && (req.body.is_part_payment === 'true' || req.body.is_part_payment === true);
       const amountPaid = isPartPayment ? parseFloat(req.body.amount_paid || 0) : totalCost * 100;
       const minimumPayment = (totalCost * 100) * 0.5; // 50% minimum
 
+      if (isPartPayment && (!Number.isSafeInteger(amountPaid) || amountPaid < 0 || amountPaid > quote.total)) {
+        return res.status(400).json({status:false,message:'Enter a valid amount paid within the room total.'});
+      }
       // Validate part payment amount
       if (isPartPayment && amountPaid < minimumPayment) {
         return res.status(400).json({
@@ -303,6 +310,7 @@ console.log(bookedRooms);
    return;
     }
 
+      if (quote.total === 0) return res.status(400).json({status:false,message:'Use Cash mode to record a fully discounted booking.'});
       const response = await axios.post(
         `${process.env.paystackUrl}/transaction/initialize`,
         {

@@ -65,7 +65,7 @@ module.exports = async function transferRoom(input, staff, quoteOnly = false) {
       notes: `Room changed: ${fromRoom} → ${newRoom.room_number}`
     }, { transaction });
     await Booking.update({ ...roomData, amount: money.total, amount_paid: money.amountPaid, balance: money.balance,
-      is_part_payment: money.balance > 0, status: money.balance ? 'part-payment' : 'success', discount_per_night: 0
+      is_part_payment: money.balance > 0, status: money.balance ? 'part-payment' : 'success', discount_per_night: 0, discount_scope: 'booking', discount_type: 'flat', discount_value: 0, price_subtotal: money.total, discount_total: 0
     }, { where: { id: booking.id }, transaction });
     if (booking.checked_in) {
       await RoomNumber.update({ status: false }, { where: { _id: booking.room_id }, transaction });

@@ -15,7 +15,7 @@ async function ensureStartupSchema(db, models) {
     [models.PartPayment, ['is_room_transfer', 'previous_room_number']],
     [models.RoomTransfer, ['old_total', 'new_total', 'price_adjustment', 'amount_paid_now', 'balance_after']]
   ];
-  if (models.Booking) additions.push([models.Booking, ['caution_fee_amount','caution_fee_status','caution_fee_collected_at','caution_fee_collected_by','caution_fee_refunded_at','caution_fee_refunded_by','caution_fee_held_at','caution_fee_held_by']]);
+  if (models.Booking) additions.push([models.Booking, ['discount_scope','discount_type','discount_value','price_subtotal','discount_total','caution_fee_amount','caution_fee_status','caution_fee_collected_at','caution_fee_collected_by','caution_fee_refunded_at','caution_fee_refunded_by','caution_fee_held_at','caution_fee_held_by']]);
   await db.transaction(async transaction => {
     // Serialize this migration when multiple Node processes start together.
     if (db.getDialect() === 'postgres') {

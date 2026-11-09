@@ -360,11 +360,14 @@ button:hover {
 				</div>
 
 				<div class="col-md-6 mb-3">
-					<label class="form-label">Discount Per Night (₦) <span class="text-muted">(Optional)</span></label>
-					<input name="discount_per_night" id="discount_per_night" class="form-control bg-white" type="text" placeholder="Enter discount per night" value="0">
-					<small class="form-text text-muted">Discount will be applied to each night of the stay</small>
+					<label class="form-label" for="discount_type">Discount type</label>
+                    <select id="discount_type" class="form-control"><option value="flat">Flat amount off total (₦)</option><option value="percentage">Percentage of booking total (%)</option></select>
+                    <label class="form-label" for="discount_per_night">Discount value</label>
+					<input name="discount_per_night" id="discount_per_night" class="form-control bg-white" type="number" min="0" step="0.01" placeholder="Enter discount" value="0">
+					<small class="form-text text-muted">Discount applies once to the full room booking subtotal. Caution fees are excluded.</small>
 				</div>
 
+<div class="col-12"><section class="card"><div class="card-body"><h3>Booking price summary</h3><div id="bookingPriceSummary" aria-live="polite">Select dates to calculate.</div></div></section></div>
 <div class="col-md-6 mb-3">
 <label class="form-label" for="caution_fee">Caution fee collected (₦)</label>
 <input name="caution_fee" id="caution_fee" class="form-control" type="number" min="0" step="0.01" value="0">
@@ -416,6 +419,7 @@ button:hover {
 	<script src="assets/plugins/raphael/raphael.min.js"></script>
 	<script src="assets/js/script.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/booking-pricing.js?v=1"></script>
     <script>
         // Function to open the modal
         let room_id, room_name, room_number;
@@ -449,8 +453,9 @@ button:hover {
     modal.style.display = "none"; // Hide modal on page load
 
     const url = new URL(window.location.href);
-    let price = parseFloat(url.searchParams.get('price')); // Base price from URL
+    let price = 0; // Fetch the authoritative rate for the selected check-in date.
     const categoryId = url.searchParams.get('id');
+    let pricingReady = false, priceRequest = 0;
 
     // Display initial price
     document.querySelector('#price').innerText = `₦${price.toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -477,10 +482,16 @@ button:hover {
 
     // Fetch special pricing for selected dates
     async function fetchSpecialPricing(checkInDate) {
+        const revision = ++priceRequest; pricingReady = false;
+        document.getElementById('bookingPriceSummary').textContent = 'Fetching the room rate…';
         try {
             const response = await fetch(`/portal/api/pricing/category/${categoryId}?date=${checkInDate}`);
+            if (!response.ok) throw Error('Unable to fetch room pricing');
             if (response.ok) {
                 const data = await response.json();
+                if (revision !== priceRequest) return;
+                if (!data.status) throw Error(data.message || 'Unable to fetch room pricing');
+                pricingReady = true;
                 if (data.status && data.data.hasSpecialPrice) {
                     price = parseFloat(data.data.price);
                     const config = data.data.pricingConfig;
@@ -525,7 +536,7 @@ button:hover {
                     // Add animation
                     pricingCard.style.animation = 'fadeInDown 0.5s ease-out';
                 } else {
-                    price = parseFloat(url.searchParams.get('price'));
+                    price = Number(data.data.price);
                     document.querySelector('#price').innerText = `₦${price.toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                     console.log('✅ Using regular pricing:', price);
 
@@ -533,13 +544,17 @@ button:hover {
                     const pricingCard = document.getElementById('pricingInfoCard');
                     pricingCard.style.display = 'none';
                 }
+                renderPriceSummary();
                 // Update minimum payment if part payment is checked
                 if (isPartPaymentCheckbox.checked) {
                     updateMinimumPayment();
                 }
             }
         } catch (error) {
-            console.error('❌ Error fetching special pricing:', error);
+            if (revision !== priceRequest) return;
+            pricingReady = false;
+            document.getElementById('bookingPriceSummary').textContent = 'Unable to load room pricing. Change the date to retry.';
+            console.error('Room pricing unavailable:', error);
         }
     }
 
@@ -551,33 +566,34 @@ button:hover {
     const paymentModeSelect = document.getElementById('paymentmode');
 
     // Calculate total amount based on dates
-    function calculateTotalAmount() {
-        const checkIn = new Date(document.getElementById('checkIn').value);
-        const checkOut = new Date(document.getElementById('checkOut').value);
-        const pricePerNight = parseFloat(price); // Use current price (may be special price)
-        const discountPerNightInput = document.getElementById('discount_per_night').value || '0';
-        // Remove commas from discount value before parsing
-        const discountPerNight = parseFloat(discountPerNightInput.replace(/,/g, '')) || 0;
-
-        if (checkIn && checkOut && checkOut > checkIn) {
-            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-            const totalBeforeDiscount = nights * pricePerNight;
-            const totalDiscount = nights * discountPerNight;
-            const total = totalBeforeDiscount - totalDiscount;
-
-            console.log('💰 Calculate Total:', {
-                pricePerNight,
-                discountPerNight,
-                nights,
-                totalBeforeDiscount,
-                totalDiscount,
-                total
-            });
-
-            return total;
-        }
-        return 0;
+    function priceQuote() {
+        if (!pricingReady) throw Error('Wait for the current room rate to load.');
+        return BookingPricing.quote({start:document.getElementById('checkIn').value,end:document.getElementById('checkOut').value,
+          rate:price,discountType:document.getElementById('discount_type').value,discountValue:document.getElementById('discount_per_night').value || '0'});
     }
+    function calculateTotalAmount() { try { return priceQuote().total/100; } catch (_) { return 0; } }
+    function renderPriceSummary() {
+      const target=document.getElementById('bookingPriceSummary');
+      const money=value=>(value/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'});
+      try {
+        const q=priceQuote();
+        const caution=Math.round(Number(document.getElementById('caution_fee').value||0)*100);
+        const partial=document.getElementById('isPartPayment').checked;
+        const paid=partial?Math.round(Number(document.getElementById('amount_paid').value.replace(/,/g,'')||0)*100):q.total;
+        if(!Number.isFinite(caution)||caution<0)throw Error('Enter a valid caution fee.');
+        target.textContent=`${q.nights} night(s) × ${money(q.rate)}. Room subtotal: ${money(q.subtotal)}. Discount (${q.discountType==='percentage'?q.discountValue+'%':money(q.discountTotal)+' flat'}): −${money(q.discountTotal)}. Room total: ${money(q.total)}. Caution fee (separate): ${money(caution)}. Combined total: ${money(q.total+caution)}. Room amount ${partial?'paid now':'due now'}: ${money(paid)}. Room balance: ${money(q.total-paid)}. Total collected now including caution: ${money(paid+caution)}.`;
+        if(paid<0||paid>q.total)target.textContent+=' Enter a payment within the room total.';
+      } catch(error) {target.textContent=error.message;}
+    }
+    for(const id of ['checkIn','checkOut','discount_per_night','discount_type','amount_paid','caution_fee','isPartPayment','paymentmode']) {
+      document.getElementById(id).addEventListener('input',()=>queueMicrotask(renderPriceSummary));
+      document.getElementById(id).addEventListener('change',()=>queueMicrotask(renderPriceSummary));
+    }
+    document.getElementById('discount_type').addEventListener('change',()=>{
+      const input=document.getElementById('discount_per_night');
+      if(document.getElementById('discount_type').value==='percentage')input.max='100';else input.removeAttribute('max');
+      if(isPartPaymentCheckbox.checked)updateMinimumPayment();
+    });
 
     // Update minimum payment text
     function updateMinimumPayment() {
@@ -660,7 +676,7 @@ button:hover {
     // Add currency formatting to discount input as user types
     const discountInput = document.getElementById('discount_per_night');
     discountInput.addEventListener('input', function(e) {
-        formatCurrencyAsType(e);
+        renderPriceSummary();
 
         // Update minimum payment if part payment is checked
         if (isPartPaymentCheckbox.checked) {
@@ -694,6 +710,7 @@ button:hover {
     // Handle form submission
     document.getElementById('submit_button').addEventListener('click', async (event) => {
         event.preventDefault(); // Prevent default form submission
+        try { priceQuote(); } catch(error) { showToast(error.message, 'red'); return; }
 
         // Retrieve form values
         const checkInDate = document.getElementById('checkIn').value;
@@ -797,7 +814,10 @@ button:hover {
         formData.append('category_name', cateName);
         formData.append('is_part_payment', isPartPayment);
         formData.append('amount_paid', isPartPayment ? (amountPaid * 100) : null);
-        formData.append('discount_per_night', discountPerNight * 100);
+        const currentQuote = priceQuote();
+        formData.append('discount_type', currentQuote.discountType);
+        formData.append('discount_value', currentQuote.discountValue);
+        formData.append('discount_per_night', currentQuote.discountPerNight);
         if (!document.getElementById('caution_fee').reportValidity()) { resetLoader(loader, submitButton); return; }
         formData.append('caution_fee', document.getElementById('caution_fee').value || '0');
 
@@ -893,7 +913,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const response = await fetch('/portal/caution-fees/default', {cache:'no-store'});
     if (!response.ok) return;
     const data = await response.json();
-    if (!edited && typeof data.amount === 'number' && Number.isFinite(data.amount)) input.value = data.amount.toFixed(2);
+    if (!edited && typeof data.amount === 'number' && Number.isFinite(data.amount)) { input.value = data.amount.toFixed(2); input.dispatchEvent(new Event('input', {bubbles:true})); }
   } catch (_) {}
 });
 </script>

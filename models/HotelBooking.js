@@ -3,6 +3,11 @@ const connectDb = require("../config/connectDB");
 const sequelize = connectDb;
 
 const HotelBooking = sequelize.define('hotelbooking', {
+    discount_scope: { type: DataTypes.STRING, defaultValue: 'night' },
+    discount_type: { type: DataTypes.STRING, defaultValue: 'flat' },
+    discount_value: { type: DataTypes.DOUBLE, defaultValue: 0 },
+    price_subtotal: { type: DataTypes.DOUBLE, defaultValue: 0 },
+    discount_total: { type: DataTypes.DOUBLE, defaultValue: 0 },
     caution_fee_amount: { type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0 },
     caution_fee_status: { type: DataTypes.STRING, allowNull: false, defaultValue: 'none' },
     caution_fee_collected_at: { type: DataTypes.DATE },

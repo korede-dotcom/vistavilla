@@ -25,6 +25,9 @@
 
 <% const guestCredit = Math.max(0, Number(bookings.amount_paid || 0) - Number(bookings.amount)); %>
 <% if (guestCredit > 0) { %><div class="alert alert-info">Guest credit owed: <strong>₦<%= (guestCredit/100).toLocaleString('en-NG') %></strong>. Preserved from the room downgrade; available against later charges. No refund has been sent automatically.</div><% } %>
+<% if (Number(bookings.discount_total || 0) > 0 || Number(bookings.discount_per_night || 0) > 0) { %>
+<div class="alert alert-info">Recorded discount: <strong><%= bookings.discount_type === 'percentage' ? Number(bookings.discount_value) + '%' : bookings.discount_scope === 'booking' ? '₦' + Number(bookings.discount_value || 0).toLocaleString('en-NG') + ' flat off booking total' : '₦' + (Number(bookings.discount_per_night || 0)/100).toLocaleString('en-NG') + ' per night' %></strong>. Total discount: ₦<%= (Number(bookings.discount_total || Number(bookings.discount_per_night || 0)*Number(bookings.night))/100).toLocaleString('en-NG') %>.</div>
+<% } %>
 <!-- Tabs Navigation -->
 <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 20px;">
 	<li class="nav-item">
@@ -572,7 +575,7 @@ eight only.)</p> -->
 <label for="extensionOption">Payment option</label><select class="form-control" id="extensionOption"><option value="full">Full payment of revised balance</option><option value="partial">Part payment (stays longer than one night)</option></select>
 <label for="extensionPaid">Amount paid now (₦)</label><input class="form-control" id="extensionPaid" type="number" min="0" step="0.01" value="0" required>
 <label for="extensionMethod">Payment method</label><select class="form-control" id="extensionMethod"><option value="cash">Cash</option><option value="transfer">Bank transfer</option><option value="card">Card</option></select>
-<small>Current rates and existing nightly discounts apply to added nights only. Earlier payments and any guest credit are retained. Caution fees stay unchanged.</small>
+<small>Added nights use current rates. Percentage discounts apply to the revised booking subtotal; a flat booking discount is applied once. Legacy nightly discounts retain their original basis. Earlier payments and any guest credit are retained. Caution fees stay unchanged.</small>
 <button class="btn btn-primary mt-3" type="submit" id="confirmExtension" disabled>Confirm extension</button>
 </form></div></div></div></div>
 <script defer src="/js/extend-stay.js?v=1"></script>
