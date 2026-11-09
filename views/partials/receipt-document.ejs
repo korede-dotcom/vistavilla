@@ -1,0 +1,41 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vistavilla · Receipt <%= booking.reference_id %></title>
+<script src="/js/pwa.js?v=4"></script><script src="/js/theme.js?v=1"></script>
+<link rel="manifest" href="/manifest.webmanifest?v=3"><link rel="apple-touch-icon" href="/images/vistavilla-app-180.png?v=3"><link rel="icon" type="image/png" href="/images/vistavilla-app-192.png?v=3">
+<link rel="stylesheet" href="/css/theme.css?v=5"><link rel="stylesheet" href="/css/pwa.css?v=2"><link rel="stylesheet" href="/css/receipt.css?v=1">
+<script defer src="/js/html2canvas.min.js"></script><script defer src="/js/receipt-download.js?v=1"></script>
+</head><body class="receipt-page">
+<%
+const currency=value=>(Number(value||0)/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'});
+const total=Number(booking.amount||0);
+const settled=['success','completed'].includes(booking.status);
+const paid=settled&&!Number(booking.balance)?Math.max(total,Number(booking.amount_paid||0)):Number(booking.amount_paid||0);
+const due=Math.max(0,total-paid),credit=Math.max(0,paid-total);
+const discount=Number(booking.discount_total||Number(booking.discount_per_night||0)*Number(booking.night));
+const subtotal=Number(booking.price_subtotal||total+discount);
+const caution=Number(booking.caution_fee_amount||0);
+const date=value=>new Date(value).toLocaleDateString('en-NG',{day:'2-digit',month:'short',year:'numeric'});
+const statusLabel=verificationPending?'Verification pending':due>0?'Part paid':settled?'Paid in full':'Booking statement';
+%>
+<div class="receipt-toolbar"><a href="/">VISTAVILLA</a><div><button type="button" id="downloadReceipt">Download receipt</button><button type="button" id="printReceipt">Print / Save PDF</button></div></div>
+<p id="receiptDownloadStatus" role="status" class="receipt-download-status"></p>
+<% if(verificationPending){ %><p class="verification-notice">Payment verification is unavailable or unsuccessful. This document shows recorded booking amounts and does not confirm a new payment.</p><% } %>
+<div class="receipt-stage"><article id="receiptDocument" class="receipt-document" data-reference="<%= booking.reference_id %>">
+<header class="receipt-masthead"><div class="receipt-brand"><img src="/images/logo-2.png" alt="Vistavilla Apartments" width="100" height="80"><div><span class="receipt-brand-name">VISTAVILLA</span><span class="receipt-brand-subtitle">APARTMENTS · LAGOS</span></div></div><div class="receipt-heading"><span class="receipt-kicker">YOUR STAY, BEAUTIFULLY RECORDED</span><h1>Receipt.</h1><span class="receipt-status"><%= statusLabel %></span></div></header>
+<div class="receipt-content">
+<div class="receipt-reference"><div><span class="receipt-label">BOOKING REFERENCE</span><strong><%= booking.reference_id %></strong></div><div><span class="receipt-label">ISSUED</span><strong><%= date(new Date()) %></strong></div></div>
+<div class="receipt-rule"></div>
+<div class="receipt-guest"><div><span class="receipt-label">PREPARED FOR</span><h2><%= booking.guest_name %></h2><p><%= booking.guest_email==='-'?'':booking.guest_email %></p><p><%= booking.guest_phone==='-'?'':booking.guest_phone %></p></div><div class="receipt-property"><span class="receipt-label">YOUR HOME IN LAGOS</span><p>66 Campbell Street, Onikan<br>Lagos, Nigeria</p><p>contact@vistavillaapartments.org</p></div></div>
+<section class="receipt-stay"><div><span class="receipt-label">CHECK IN</span><strong><%= date(booking.start) %></strong></div><div><span class="receipt-label">CHECK OUT</span><strong><%= date(booking.end) %></strong></div><div><span class="receipt-label">DURATION</span><strong><%= booking.night %> night<%= Number(booking.night)===1?'':'s' %></strong></div></section>
+<table class="receipt-items"><thead><tr><th>ACCOMMODATION</th><th>AMOUNT</th></tr></thead><tbody><tr><td><h3><%= booking.room_name || booking.category_name || 'Apartment stay' %></h3><p>Room <%= booking.room_number %> · <%= booking.guest_count || 1 %> guest(s)</p></td><td><%= currency(subtotal) %></td></tr><% if(discount>0){ %><tr><td>Booking discount<% if(booking.discount_type==='percentage'){ %> (<%= booking.discount_value %>%)<% } %></td><td>−<%= currency(discount) %></td></tr><% } %></tbody></table>
+<div class="receipt-total"><span>Room booking total</span><strong><%= currency(total) %></strong></div>
+<div class="receipt-payments"><div><span class="receipt-label">ROOM PAYMENTS RECEIVED</span><strong><%= currency(paid) %></strong></div><div><span class="receipt-label">ROOM BALANCE DUE</span><strong><%= currency(due) %></strong></div></div>
+<% if(credit>0){ %><div class="receipt-deposit"><span>Guest credit owed</span><strong><%= currency(credit) %></strong><small>Preserved against future charges. No automatic refund has been sent.</small></div><% } %>
+<% if(caution>0){ %><div class="receipt-deposit"><span>Refundable caution deposit</span><strong><%= currency(caution) %></strong><small>Separate from the room charge · <%= booking.caution_fee_status==='refunded'?'Refunded':booking.caution_fee_status==='hold'?'On hold':'Collected' %></small></div><% } %>
+<div class="receipt-note"><span class="receipt-label">A NOTE FROM VISTAVILLA</span><p>Thank you for choosing to stay with us.<br>Where every view feels like home.</p></div>
+</div>
+<footer class="receipt-footer"><span>VISTAVILLA APARTMENTS</span><span>BOOKING & PAYMENT SUMMARY · NGN</span></footer>
+</article></div>
+<p class="receipt-footnote">Keep this receipt for your records. Amounts reflect payments recorded for this booking at the time of issue.</p>
+</body></html>

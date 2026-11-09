@@ -1,0 +1,31 @@
+'use strict';
+(function(){
+ const form=document.getElementById('editBookingForm');if(!form)return;
+ const summary=document.getElementById('bookingEditSummary'),save=document.getElementById('saveBookingEdit'),preview=document.getElementById('previewBookingEdit');
+ let revision=0,previewed=null;
+ const payload=()=>Object.fromEntries(new FormData(form).entries());
+ const money=value=>(value/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'});
+ form.addEventListener('input',()=>{revision++;previewed=null;save.disabled=true;summary.textContent='Recalculate to review the latest changes.';});
+ form.addEventListener('change',()=>{revision++;previewed=null;save.disabled=true;});
+ async function request(action,body){
+  const response=await fetch('/portal/edit-booking/'+encodeURIComponent(form.dataset.reference)+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const result=await response.json();if(!response.ok||!result.status)throw Error(result.message||'Unable to edit this booking.');return result;
+ }
+ preview.addEventListener('click',async()=>{
+  if(!form.reportValidity())return;const current=++revision;previewed=null;save.disabled=true;summary.textContent='Calculating totals and checking room availability…';
+  const body=payload();
+  try{
+   const result=await request('/quote',body);if(current!==revision)return;
+   const q=result.data;previewed=JSON.stringify(body);
+   summary.textContent=`${q.nights} night(s). Subtotal: ${money(q.subtotal)}. Discount: ${money(q.discountTotal)}. New total: ${money(q.total)}. Previously paid: ${money(q.previousPaid)}. Additional payment: ${money(q.paidNow)}. Balance: ${money(q.balance)}. Guest credit owed: ${money(q.credit)}. Existing caution fees are unchanged.`;
+   save.disabled=false;
+  }catch(error){if(current===revision)summary.textContent=error.message;}
+ });
+ form.addEventListener('submit',async event=>{
+  event.preventDefault();if(!form.reportValidity())return;const body=payload();
+  if(!previewed||previewed!==JSON.stringify(body)){save.disabled=true;summary.textContent='Calculate changes before saving.';return;}
+  save.disabled=true;preview.disabled=true;
+  try{await request('',body);window.location.href='/portal/check-in?key='+encodeURIComponent(form.dataset.reference);}
+  catch(error){summary.textContent=error.message;preview.disabled=false;previewed=null;}
+ });
+})();

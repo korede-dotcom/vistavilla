@@ -39,6 +39,7 @@ routes.use('/landing-settings', require('./Landing'));
 routes.use('/caution-fees', require('./CautionFees'));
 routes.use('/activity-logs', require('./ActivityLogs'));
 routes.use('/extend-stay', require('./StayExtension'));
+routes.use('/edit-booking', require('./EditBooking'));
 
 routes.get("/",async (req,res) => {
             res.render('login', {

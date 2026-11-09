@@ -1,0 +1,31 @@
+<%- include('partial/header',{title:'Edit Booking - Vistavilla Apartments',email,roleName}) %>
+<%- include('partial/sidebar',{name}) %>
+<div class="page-wrapper"><main class="content container-fluid">
+<h1 class="page-title">Edit Booking</h1><p><strong><%= booking.reference_id %></strong> · Room <%= booking.room_number %> · <%= booking.room_name %></p>
+<p><a href="/portal/check-in?key=<%= encodeURIComponent(booking.reference_id) %>">← Booking details</a> · Use Transfer Room to move to a different room. Caution fees stay unchanged.</p>
+<div class="card"><div class="card-body"><form id="editBookingForm" data-reference="<%= booking.reference_id %>">
+<input type="hidden" name="csrf" value="<%= csrf %>"><input type="hidden" name="expected_version" value="<%= defaults.expected_version %>">
+<div class="row">
+<% for(const [key,label] of [['guest_name','Guest name'],['guest_email','Guest email'],['guest_phone','Guest phone'],['guest_address','Guest address']]){ %>
+<div class="col-md-6 form-group"><label for="<%= key %>"><%= label %></label><input class="form-control" id="<%= key %>" name="<%= key %>" value="<%= booking[key] %>" maxlength="255" required></div>
+<% } %>
+<div class="col-md-4 form-group"><label for="guest_count">Guest count</label><input class="form-control" type="number" id="guest_count" name="guest_count" min="1" max="100" step="1" value="<%= booking.guest_count %>" required></div>
+<div class="col-md-4 form-group"><label for="edit_start">Check-in date</label><input class="form-control" type="date" id="edit_start" name="start" value="<%= defaults.start %>" required></div>
+<div class="col-md-4 form-group"><label for="edit_end">Checkout date</label><input class="form-control" type="date" id="edit_end" name="end" value="<%= defaults.end %>" required></div>
+<div class="col-md-4 form-group"><label for="rate">Nightly rate (₦)</label><input class="form-control" type="number" id="rate" name="rate" step="0.01" min="0.01" value="<%= defaults.rate %>" required><small>Changing dates, rate or discount reprices the stay at this rate.</small></div>
+<div class="col-md-4 form-group"><label for="discount_type">Discount type</label><select class="form-control" id="discount_type" name="discount_type"><option value="flat" <%= defaults.discount_type==='flat'?'selected':'' %>>Flat off booking total (₦)</option><option value="percentage" <%= defaults.discount_type==='percentage'?'selected':'' %>>Percentage of booking subtotal (%)</option></select></div>
+<div class="col-md-4 form-group"><label for="discount_value">Discount value</label><input class="form-control" type="number" id="discount_value" name="discount_value" min="0" step="0.01" value="<%= defaults.discount_value %>" required></div>
+<div class="col-md-6 form-group"><label for="amount_paid_now">Additional amount paid now (₦)</label><input class="form-control" type="number" id="amount_paid_now" name="amount_paid_now" step="0.01" min="0" value="0" required><small>Records only new money received. Existing receipts cannot be overwritten.</small></div>
+<div class="col-md-6 form-group"><label for="payment_method">Additional payment method</label><select class="form-control" name="payment_method" id="payment_method"><option value="cash">Cash</option><option value="transfer">Bank transfer</option><option value="card">Card</option></select></div>
+<div class="col-12 form-group"><label for="reason">Reason for editing</label><textarea class="form-control" id="reason" name="reason" rows="3" maxlength="1000" required></textarea></div>
+</div>
+<button class="btn btn-secondary" type="button" id="previewBookingEdit">Calculate changes</button>
+<p class="mt-3" id="bookingEditSummary" role="status">Calculate to review totals before saving.</p>
+<button class="btn btn-primary" type="submit" id="saveBookingEdit" disabled>Save booking changes</button>
+</form></div></div>
+<h2>Booking edit history</h2><div class="card"><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>When / staff</th><th>Reason</th><th>Dates before → after</th><th>Room total before → after</th><th>Paid now</th><th>New balance / credit</th></tr></thead><tbody>
+<% revisions.forEach(revision=>{ %><tr><td><%= new Date(revision.createdAt).toLocaleString('en-NG') %><br><%= revision.edited_by %></td><td><%= revision.reason %></td><td><%= new Date(revision.before.start).toLocaleDateString('en-NG') %>–<%= new Date(revision.before.end).toLocaleDateString('en-NG') %><br>→ <%= new Date(revision.after.start).toLocaleDateString('en-NG') %>–<%= new Date(revision.after.end).toLocaleDateString('en-NG') %></td><td>₦<%= (revision.before.total/100).toLocaleString('en-NG') %> → ₦<%= (revision.after.total/100).toLocaleString('en-NG') %></td><td>₦<%= (revision.amount_paid_now/100).toLocaleString('en-NG') %></td><td>Balance: ₦<%= (revision.after.balance/100).toLocaleString('en-NG') %><br>Credit: ₦<%= (Math.max(0,revision.after.amount_paid-revision.after.total)/100).toLocaleString('en-NG') %></td></tr><% }); %>
+<% if(!revisions.length){ %><tr><td colspan="6">No booking edits recorded yet.</td></tr><% } %></tbody></table></div></div></div>
+</main></div>
+<script defer src="/js/edit-booking.js?v=1"></script>
+<%- include('partial/footer') %>

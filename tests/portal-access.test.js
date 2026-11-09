@@ -5,7 +5,7 @@ function stub(name,exports){const filename=require.resolve(name);require.cache[f
 stub('../middleware/checkAuthCookie',(req,res,next)=>{req.user={_id:'staff',name:'Staff',email:'staff@example.com',roleName:role};next();});
 stub('../models/User',{findByPk:async()=>({roleName:role})});
 stub('../models/ActivityLog',{findAndCountAll:async()=>({rows:[],count:0})});
-stub('../models/HotelBooking',{findAll:async()=>[]});
+stub('../models/HotelBooking',{findAll:async()=>[],findOne:async()=>({id:7,reference_id:'BOOK',status:'success',checked_out:false,start:new Date('2099-01-01'),end:new Date('2099-01-03'),updatedAt:new Date('2098-12-31'),night:2,amount:6000000})});
 stub('../models/HotelSettings',{findByPk:async()=>({caution_fee_default:1250000,update:async data=>{saved=data;}})});
 stub('../services/cautionFees',{summary:async()=>0});
 process.env.JWT_SECRET='test-only';
@@ -28,4 +28,20 @@ test('manager and receptionist may set default fee, without changing historical 
   assert.equal((await request(fees,'POST','/default',{csrf:'forged',amount:'100'})).status,403);
  }
  role='bar manager';assert.equal((await request(fees,'GET','/default')).status,403);
+});
+
+let editCalls=0;
+stub('../models/BookingRevision',{findAll:async()=>[]});
+stub('../services/editBooking',async()=>{editCalls++;return {total:6000000};});
+const editor=require('../routes/EditBooking');
+test('receptionist, manager and CEO can edit bookings; other roles and forged saves are denied',async()=>{
+ for(const allowed of ['hotel receptionist','hotelmanager','ceo']){
+  role=allowed;const page=await request(editor,'GET','/BOOK');assert.equal(page.status,200);
+  const before=editCalls;
+  assert.equal((await request(editor,'POST','/BOOK',{csrf:'forged'})).status,403);assert.equal(editCalls,before);
+  assert.equal((await request(editor,'POST','/BOOK/quote',{csrf:page.data.csrf})).status,200);
+  assert.equal((await request(editor,'POST','/BOOK',{csrf:page.data.csrf})).status,200);
+ }
+ role='bar manager';assert.equal((await request(editor,'GET','/BOOK')).status,403);
+ assert.equal((await request(editor,'POST','/BOOK',{})).status,403);
 });

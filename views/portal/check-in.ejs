@@ -11,6 +11,9 @@
 <div class="col-sm-7 col-8 text-right m-b-30">
 <div class="btn-group btn-group-sm">
 <% if (!bookings.checked_out && ['success','confirmed','part-payment','completed'].includes(bookings.status)) { %>
+<% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
+<a class="btn btn-secondary" href="/portal/edit-booking/<%= encodeURIComponent(bookings.reference_id) %>">Edit Booking</a>
+<% } %>
 <button class="btn btn-primary" data-toggle="modal" data-target="#extendStayModal">Extend Stay</button>
 <% } %>
 <button class="btn btn-warning" data-toggle="modal" data-target="#transferRoomModal">

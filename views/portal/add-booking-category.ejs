@@ -244,6 +244,7 @@ button:hover {
 
 
 </style>
+<link rel="stylesheet" href="/css/booking-dialog.css?v=1">
 		<div class="page-wrapper">
 			<div class="content container-fluid">
 				<div class="page-header">
@@ -274,12 +275,14 @@ button:hover {
 <% }) %>
 
 <!-- Modal Structure -->
-<div id="roomModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2 id="modalRoomNumber">Room</h2>
-        <p id="modalRoomName"></p>
-        <p id="modalRoomStatus"></p>
+<div id="roomModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalRoomNumber" tabindex="-1">
+    <div class="modal-content booking-dialog-shell">
+      <header class="booking-dialog-header">
+        <div><span class="booking-eyebrow">VISTAVILLA · NEW RESERVATION</span><h2 id="modalRoomNumber">Room</h2><p id="modalRoomName"></p></div>
+        <div class="booking-header-actions"><span id="modalRoomStatus"></span><button type="button" class="booking-close" onclick="closeModal()" aria-label="Close booking">×</button></div>
+      </header>
+      <nav class="booking-step-nav" aria-label="Booking steps"></nav>
+      <div class="booking-dialog-body">
 		
 		<form id="payment_form" name="contact_form" class="show">
             <div class="row">
@@ -390,13 +393,15 @@ button:hover {
 
 			<!-- <button id="submit_button" type="submit" class="theme-btn btn-style-one w-100" data-loading-text="Please wait..." >Submit</button> -->
         </form>
-		
+        <div id="paymentContainer"></div>
+      </div>
+      <footer class="booking-dialog-footer">
+        <button type="button" class="booking-back">Back</button>
+        <span class="booking-step-caption">Step 1 of 3</span>
+        <button type="button" class="booking-next">Continue <span aria-hidden="true">→</span></button>
+        <button id="submit_button" class="btn btn-primary" type="button" hidden><span class="loader"></span>Confirm booking</button>
+      </footer>
     </div>
-	<button id="submit_button" class="btn btn-danger mt-3" type="submit">
-		<span class="loader"></span>
-		Submit
-	</button>
-    <div id="paymentContainer"></div>
 </div>
 
 
@@ -917,3 +922,5 @@ document.addEventListener('DOMContentLoaded', async function () {
   } catch (_) {}
 });
 </script>
+
+<script defer src="/js/booking-dialog.js?v=1"></script>
