@@ -1561,8 +1561,8 @@ routes.get('/expenses-csv', checkAuthCookie, async (req, res) => {
 
 // Damage Routes
 routes.get("/damages", checkAuthCookie, DamageController.renderDamagesPage);
-routes.post("/damages/create", checkAuthCookie, cloudinaryRepo._parser, DamageController.createDamage);
-routes.put("/damages/update/:id", checkAuthCookie, cloudinaryRepo._parser, DamageController.updateDamage);
+routes.post("/damages/create", checkAuthCookie, cloudinaryRepo.damagesParser, DamageController.createDamage);
+routes.put("/damages/update/:id", checkAuthCookie, cloudinaryRepo.damagesParser, DamageController.updateDamage);
 routes.put("/damages/status/:id", checkAuthCookie, DamageController.updateDamageStatus);
 routes.delete("/damages/delete/:id", checkAuthCookie, DamageController.deleteDamage);
 routes.get("/damages/api/:id", checkAuthCookie, DamageController.getDamageById);

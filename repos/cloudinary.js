@@ -11,21 +11,22 @@ class CloudinaryRepo {
       timeout: 120000 // 2 minutes timeout
     });
 
+    this._parser = this.createParser(process.env.folder_name);
+    this.idsParser = this.createParser('ids', 1);
+    this.damagesParser = this.createParser('damages', 5);
+  }
+
+  createParser(folder, files) {
     const storage = new CloudinaryStorage({
-      cloudinary: cloudinary,
+      cloudinary,
       params: {
-        folder: process.env.folder_name,
+        folder,
         allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-        transformation: [{ width: 1200, height: 1200, crop: 'limit', quality: 'auto:good' }],
-        timeout: 120000 // 2 minutes timeout
+        transformation: [{ width: 1600, height: 1600, crop: 'limit', quality: 'auto:good' }],
+        timeout: 120000
       }
     });
-
-    // this._parser = multer({ storage: storage, }).any('image');
-    this._parser = multer({
-      storage: storage,
-      limits: { fileSize: 10 * 1024 * 1024 } // 10MB
-    }).any(); // Accept files from any field
+    return multer({ storage, limits: { fileSize: 10 * 1024 * 1024, ...(files ? {files} : {}) } }).any();
   }
 
   upload(files) {

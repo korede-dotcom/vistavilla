@@ -1,7 +1,15 @@
 <%- include('partial/header',{title:'Activity Logs - Vistavilla Apartments',email,roleName}) %>
 <%- include('partial/sidebar',{name}) %>
 <div class="page-wrapper"><main class="content container-fluid"><div class="page-header"><h1 class="page-title">Activity Logs</h1><p>See what staff did, which customer or room was involved, and the outcome.</p></div>
-<form class="mb-3" method="get"><label><input type="checkbox" name="views" value="1" <%= includeViews?'checked':'' %>> Include page visits and background requests</label> <button class="btn btn-secondary btn-sm ml-2" type="submit">Apply</button></form>
+<form class="card mb-3" method="get"><div class="card-body"><div class="row">
+<div class="col-md-6 form-group"><label for="activity-search">Search activities</label><input class="form-control" id="activity-search" name="q" value="<%= filters.q %>" placeholder="Customer, room, booking reference or activity…"></div>
+<div class="col-md-3 form-group"><label for="activity-staff">Staff name</label><input class="form-control" id="activity-staff" name="actor" value="<%= filters.actor %>"></div>
+<div class="col-md-3 form-group"><label for="activity-action">Action</label><select class="form-control" id="activity-action" name="action"><option value="">All actions</option><% actions.forEach(action=>{ %><option value="<%= action %>" <%= filters.action===action?'selected':'' %>><%= action.replace(/_/g,' ') %></option><% }); %></select></div>
+<div class="col-md-3 form-group"><label for="activity-type">Record type</label><select class="form-control" id="activity-type" name="resource"><option value="">All records</option><% resources.forEach(resource=>{ %><option value="<%= resource %>" <%= filters.resource===resource?'selected':'' %>><%= resource.replace(/_/g,' ') %></option><% }); %></select></div>
+<div class="col-md-3 form-group"><label for="activity-outcome">Outcome</label><select class="form-control" id="activity-outcome" name="outcome"><option value="">All outcomes</option><option value="success" <%= filters.outcome==='success'?'selected':'' %>>Completed</option><option value="failed" <%= filters.outcome==='failed'?'selected':'' %>>Failed</option></select></div>
+<div class="col-md-2 form-group"><label for="activity-start">From</label><input class="form-control" type="date" id="activity-start" name="start" value="<%= filters.start %>"></div><div class="col-md-2 form-group"><label for="activity-end">Through</label><input class="form-control" type="date" id="activity-end" name="end" value="<%= filters.end %>"></div>
+<div class="col-md-2 form-group"><label for="activity-size">Per page</label><select class="form-control" id="activity-size" name="size"><% [25,50,100].forEach(size=>{ %><option value="<%= size %>" <%= filters.size===size?'selected':'' %>><%= size %></option><% }); %></select></div>
+</div><label><input type="checkbox" name="views" value="1" <%= includeViews?'checked':'' %>> Include page visits</label><div class="mt-2"><button class="btn btn-primary" type="submit">Search / Filter</button> <a class="btn btn-secondary" href="/portal/activity-logs">Reset</a></div></div></form>
 <div class="card"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Time</th><th>Staff</th><th>Activity</th><th>Outcome</th></tr></thead><tbody>
 <% logs.forEach(log=>{ %><tr>
 <td style="white-space:nowrap"><%= new Date(log.createdAt).toLocaleString('en-NG',{timeZone:'Africa/Lagos'}) %></td>
@@ -11,5 +19,8 @@
 <td><span class="badge badge-<%= log.outcome==='failed'?'danger':'success' %>"><%= log.outcome==='failed'?'Failed':'Completed' %></span></td>
 </tr><% }); %>
 <% if(!logs.length){ %><tr><td colspan="4">No matching activity recorded yet.</td></tr><% } %></tbody></table></div></div></div>
-<p><%= count %> entries · Page <%= page %></p><% if(page>1){ %><a class="btn btn-secondary" href="?page=<%= page-1 %><%= includeViews?'&views=1':'' %>">Previous</a><% } %> <% if(page*50<count){ %><a class="btn btn-secondary" href="?page=<%= page+1 %><%= includeViews?'&views=1':'' %>">Next</a><% } %>
+<nav aria-label="Activity pages" class="d-flex align-items-center justify-content-between flex-wrap mb-4" style="gap:12px"><span><%= count %> result(s) · Page <%= page %> of <%= pages %></span><div>
+<% if(page>1){ %><a class="btn btn-secondary" rel="prev" href="<%= pageUrl(page-1) %>">← Previous</a><% }else{ %><button class="btn btn-secondary" disabled>← Previous</button><% } %>
+<% if(page<pages){ %><a class="btn btn-primary" rel="next" href="<%= pageUrl(page+1) %>">Next →</a><% }else{ %><button class="btn btn-secondary" disabled>Next →</button><% } %>
+</div></nav>
 </main></div><%- include('partial/footer') %>

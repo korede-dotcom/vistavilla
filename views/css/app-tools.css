@@ -1,0 +1,9 @@
+/* One compact launcher replaces the two fixed buttons over the navigation. */
+body>.theme-toggle,body>.pwa-install-button{visibility:hidden!important}
+#app-tools{position:fixed;right:20px;bottom:max(20px,env(safe-area-inset-bottom));z-index:11010;font:13px/1.5 Arial,sans-serif}
+.app-tools-launcher{display:grid;place-items:center;width:50px;height:50px;border:1px solid #8885;border-radius:50%;background:#222;color:white;font-size:26px;box-shadow:0 6px 25px #0003;cursor:pointer;margin-left:auto}
+.app-tools-panel{position:absolute;right:0;bottom:64px;width:min(280px,calc(100vw - 32px));padding:16px;background:#fff;color:#222;border:1px solid #8884;border-radius:18px;box-shadow:0 14px 45px #0003}
+.app-tools-panel[hidden]{display:none!important}.app-tools-panel header{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid #8883;margin-bottom:12px}.app-tools-close{width:30px;height:30px;border:0;border-radius:50%;background:#eee;color:inherit;font-size:22px;cursor:pointer}.app-tools-actions{display:grid;gap:10px}
+#app-tools .theme-toggle,#app-tools .pwa-install-button{position:static!important;left:auto!important;right:auto!important;bottom:auto!important;visibility:visible!important;width:100%;margin:0;box-shadow:none!important;border-radius:10px!important;padding:12px 16px!important;text-align:left;min-height:44px}
+#app-tools button[hidden]{display:none!important}html[data-theme="dark"] .app-tools-panel{background:#1b1b1b;color:#eee}html[data-theme="dark"] .app-tools-close{background:#333}html[data-theme="dark"] .app-tools-launcher{background:#eee;color:#222}.app-tools-launcher:focus-visible,.app-tools-close:focus-visible{outline:3px solid #999;outline-offset:3px}
+@media(max-width:640px){#app-tools{right:14px;bottom:max(14px,env(safe-area-inset-bottom))}.app-tools-launcher{width:46px;height:46px}}@media print{#app-tools{display:none!important}}

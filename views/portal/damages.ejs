@@ -185,6 +185,11 @@
                                                 </td>
                                                 <td>
                                                     <% if (damage.images && damage.images.length > 0) { %>
+                                                    <div class="mb-2" style="display:flex;gap:6px;flex-wrap:wrap">
+                                                    <% damage.images.slice(0,2).forEach(image=>{ const photo=image.url||image; if(/^https:\/\//i.test(photo)){ %>
+                                                    <a href="<%= photo %>" target="_blank" rel="noopener noreferrer"><img src="<%= photo %>" alt="Recorded damage" loading="lazy" style="width:58px;height:58px;object-fit:cover;border-radius:8px"></a>
+                                                    <% } }); %></div>
+
                                                         <button class="btn btn-sm btn-info" onclick="viewImages(<%= damage._id %>, '<%= JSON.stringify(damage.images).replace(/'/g, '&apos;') %>')">
                                                             <i class="fas fa-images"></i> <%= damage.images.length %>
                                                         </button>

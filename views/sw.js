@@ -1,7 +1,7 @@
 'use strict';
-const CACHE = 'vistavilla-public-v12';
+const CACHE = 'vistavilla-public-v13';
 // Only static, public files belong in offline storage.
-const FILES = ['/offline.html', '/css/theme.css?v=5', '/css/pwa.css?v=2', '/js/theme.js?v=1', '/js/pwa.js?v=4', '/images/vistavilla-app-180.png', '/images/vistavilla-app-192.png', '/images/vistavilla-app-512.png'];
+const FILES = ['/css/app-tools.css?v=1', '/js/app-tools.js?v=1', '/offline.html', '/css/theme.css?v=5', '/css/pwa.css?v=2', '/js/theme.js?v=1', '/js/pwa.js?v=4', '/images/vistavilla-app-180.png', '/images/vistavilla-app-192.png', '/images/vistavilla-app-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)));
 });

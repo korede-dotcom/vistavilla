@@ -37,7 +37,7 @@ function generateRandomString(length) {
 
 // console.log(randomString); // Example output: 'aB3dEfGh'
 
-routes.post('/paystack/initialize/reception', checkAuthCookie, cloudinaryRepo._parser, expressAsyncHandler( async (req, res) => {
+routes.post('/paystack/initialize/reception', checkAuthCookie, cloudinaryRepo.idsParser, expressAsyncHandler( async (req, res) => {
   req.body = require('../utils/cautionFee').withoutBookingFee(req.body);
   const { category_id, start, end, mode,room_number } = req.body;
   console.log("🚀 ~ routes.post ~ req.body:", req.body)

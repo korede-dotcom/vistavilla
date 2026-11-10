@@ -33,6 +33,9 @@
 <div class="alert alert-info">Recorded discount: <strong><%= bookings.discount_type === 'percentage' ? Number(bookings.discount_value) + '%' : bookings.discount_scope === 'booking' ? '₦' + Number(bookings.discount_value || 0).toLocaleString('en-NG') + ' flat off booking total' : '₦' + (Number(bookings.discount_per_night || 0)/100).toLocaleString('en-NG') + ' per night' %></strong>. Total discount: ₦<%= (Number(bookings.discount_total || Number(bookings.discount_per_night || 0)*Number(bookings.night))/100).toLocaleString('en-NG') %>.</div>
 <% } %>
 <% if (bookings.is_backdated) { %><div class="alert alert-info">Recorded for past dates. Reason: <%= bookings.backdated_reason %></div><% } %>
+<% if (bookings.id_card_url && /^https:\/\//i.test(bookings.id_card_url)) { %>
+<section class="card mb-3"><div class="card-body"><h2 class="card-title">Customer ID card</h2><a href="<%= bookings.id_card_url %>" target="_blank" rel="noopener noreferrer"><img src="<%= bookings.id_card_url %>" alt="Customer ID card" style="display:block;width:100%;max-width:360px;max-height:240px;object-fit:contain;border-radius:10px" loading="lazy"><small>Open full-size ID photo ↗</small></a></div></section>
+<% } %>
 <!-- Tabs Navigation -->
 <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 20px;">
 	<li class="nav-item">

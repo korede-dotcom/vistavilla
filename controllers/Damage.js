@@ -3,7 +3,6 @@ const damageRepo = require("../repos/Damage-repo");
 const RoomRepo = require("../repos/Room-repo");
 const RoomNumber = require("../models/RoomNumbers");
 const Room = require("../models/Room");
-const cloudinaryRepo = require("../repos/cloudinary");
 
 const renderDamagesPage = asynchandler(async (req, res) => {
   let damages;
@@ -53,7 +52,7 @@ const createDamage = asynchandler(async (req, res) => {
   // Handle image uploads if files are present
   let imageUrls = [];
   if (req.files && req.files.length > 0) {
-    const uploadedImages = await cloudinaryRepo.uploadMany(req.files);
+    const uploadedImages = req.files.map(file => ({url:file.path,public_id:file.filename}));
     imageUrls = uploadedImages.map(img => ({
       url: img.url,
       public_id: img.public_id
@@ -97,7 +96,7 @@ const updateDamage = asynchandler(async (req, res) => {
 
   // Handle image uploads if files are present
   if (req.files && req.files.length > 0) {
-    const uploadedImages = await cloudinaryRepo.uploadMany(req.files);
+    const uploadedImages = req.files.map(file => ({url:file.path,public_id:file.filename}));
     const imageUrls = uploadedImages.map(img => ({
       url: img.url,
       public_id: img.public_id
