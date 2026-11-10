@@ -5,7 +5,7 @@ const resources=['hotelbooking','booking_revision','roomtransfer','stay_extensio
 function date(value){if(!value)return null;if(!/^\d{4}-\d{2}-\d{2}$/.test(value)||new Date(value+'T00:00:00Z').toISOString().slice(0,10)!==value)throw Error('Enter valid filter dates.');return new Date(value+'T00:00:00+01:00');}
 module.exports=function activityFilters(query){
  const text=value=>typeof value==='string'?value.trim():'';
- const filters={q:text(query.q).slice(0,150),actor:text(query.actor).slice(0,100),action:actions.includes(query.action)?query.action:'',resource:resources.includes(query.resource)?query.resource:'',outcome:['success','failed'].includes(query.outcome)?query.outcome:'',start:text(query.start),end:text(query.end),views:query.views==='1',size:[25,50,100].includes(Number(query.size))?Number(query.size):25};
+ const filters={q:text(query.q).slice(0,150),actor:text(query.actor).slice(0,100),action:actions.includes(query.action)?query.action:'',resource:resources.includes(query.resource)?query.resource:'',outcome:['success','failed'].includes(query.outcome)?query.outcome:'',start:text(query.start),end:text(query.end),views:query.views==='1',size:[10,25,50,100].includes(Number(query.size))?Number(query.size):25};
  const terms=[];
  if(!filters.views)terms.push({[Op.or]:[{resource:{[Op.ne]:'HTTP'}},{outcome:'failed'}]});
  const like=value=>'%'+value.replace(/[\\%_]/g,'\\$&')+'%';

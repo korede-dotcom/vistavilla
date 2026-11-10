@@ -8,7 +8,7 @@
 <div class="col-md-3 form-group"><label for="activity-type">Record type</label><select class="form-control" id="activity-type" name="resource"><option value="">All records</option><% resources.forEach(resource=>{ %><option value="<%= resource %>" <%= filters.resource===resource?'selected':'' %>><%= resource.replace(/_/g,' ') %></option><% }); %></select></div>
 <div class="col-md-3 form-group"><label for="activity-outcome">Outcome</label><select class="form-control" id="activity-outcome" name="outcome"><option value="">All outcomes</option><option value="success" <%= filters.outcome==='success'?'selected':'' %>>Completed</option><option value="failed" <%= filters.outcome==='failed'?'selected':'' %>>Failed</option></select></div>
 <div class="col-md-2 form-group"><label for="activity-start">From</label><input class="form-control" type="date" id="activity-start" name="start" value="<%= filters.start %>"></div><div class="col-md-2 form-group"><label for="activity-end">Through</label><input class="form-control" type="date" id="activity-end" name="end" value="<%= filters.end %>"></div>
-<div class="col-md-2 form-group"><label for="activity-size">Per page</label><select class="form-control" id="activity-size" name="size"><% [25,50,100].forEach(size=>{ %><option value="<%= size %>" <%= filters.size===size?'selected':'' %>><%= size %></option><% }); %></select></div>
+<div class="col-md-2 form-group"><label for="activity-size">Per page</label><select class="form-control" id="activity-size" name="size" onchange="this.form.requestSubmit()"><% [10,25,50,100].forEach(size=>{ %><option value="<%= size %>" <%= filters.size===size?'selected':'' %>><%= size %></option><% }); %></select></div>
 </div><label><input type="checkbox" name="views" value="1" <%= includeViews?'checked':'' %>> Include page visits</label><div class="mt-2"><button class="btn btn-primary" type="submit">Search / Filter</button> <a class="btn btn-secondary" href="/portal/activity-logs">Reset</a></div></div></form>
 <div class="card"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Time</th><th>Staff</th><th>Activity</th><th>Outcome</th></tr></thead><tbody>
 <% logs.forEach(log=>{ %><tr>
@@ -19,8 +19,26 @@
 <td><span class="badge badge-<%= log.outcome==='failed'?'danger':'success' %>"><%= log.outcome==='failed'?'Failed':'Completed' %></span></td>
 </tr><% }); %>
 <% if(!logs.length){ %><tr><td colspan="4">No matching activity recorded yet.</td></tr><% } %></tbody></table></div></div></div>
-<nav aria-label="Activity pages" class="d-flex align-items-center justify-content-between flex-wrap mb-4" style="gap:12px"><span><%= count %> result(s) · Page <%= page %> of <%= pages %></span><div>
-<% if(page>1){ %><a class="btn btn-secondary" rel="prev" href="<%= pageUrl(page-1) %>">← Previous</a><% }else{ %><button class="btn btn-secondary" disabled>← Previous</button><% } %>
-<% if(page<pages){ %><a class="btn btn-primary" rel="next" href="<%= pageUrl(page+1) %>">Next →</a><% }else{ %><button class="btn btn-secondary" disabled>Next →</button><% } %>
+<%
+ const firstRecord = count ? (page-1)*limit+1 : 0;
+ const lastRecord = Math.min(page*limit,count);
+ const startPage = Math.max(1, Math.min(page-2,pages-4));
+ const endPage = Math.min(pages,startPage+4);
+%>
+<nav aria-label="Activity pages" class="card mb-4"><div class="card-body d-flex align-items-center justify-content-between flex-wrap" style="gap:16px">
+ <div role="status">Showing <strong><%= firstRecord %>–<%= lastRecord %></strong> of <strong><%= count %></strong> activities<br><small class="text-muted">Page <%= page %> of <%= pages %></small></div>
+ <ul class="pagination flex-wrap mb-0" style="gap:4px">
+  <% [{label:'First',target:1,disabled:page===1},{label:'Previous',target:page-1,disabled:page===1}].forEach(item=>{ %>
+   <li class="page-item <%= item.disabled?'disabled':'' %>"><% if(item.disabled){ %><span class="page-link" aria-disabled="true"><%= item.label %></span><% }else{ %><a class="page-link" href="<%= pageUrl(item.target) %>" <%- item.label==='Previous'?'rel="prev"':'' %>><%= item.label %></a><% } %></li>
+  <% }); %>
+  <% if(startPage>1){ %><li class="page-item disabled"><span class="page-link">…</span></li><% } %>
+  <% for(let number=startPage;number<=endPage;number++){ %>
+   <li class="page-item <%= number===page?'active':'' %>"><% if(number===page){ %><span class="page-link" aria-current="page"><%= number %></span><% }else{ %><a class="page-link" aria-label="Page <%= number %>" href="<%= pageUrl(number) %>"><%= number %></a><% } %></li>
+  <% } %>
+  <% if(endPage<pages){ %><li class="page-item disabled"><span class="page-link">…</span></li><% } %>
+  <% [{label:'Next',target:page+1,disabled:page===pages},{label:'Last',target:pages,disabled:page===pages}].forEach(item=>{ %>
+   <li class="page-item <%= item.disabled?'disabled':'' %>"><% if(item.disabled){ %><span class="page-link" aria-disabled="true"><%= item.label %></span><% }else{ %><a class="page-link" href="<%= pageUrl(item.target) %>" <%- item.label==='Next'?'rel="next"':'' %>><%= item.label %></a><% } %></li>
+  <% }); %>
+ </ul>
 </div></nav>
 </main></div><%- include('partial/footer') %>
