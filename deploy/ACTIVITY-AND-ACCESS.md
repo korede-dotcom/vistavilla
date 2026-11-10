@@ -26,3 +26,20 @@ possible when no deposit was received.
 Restart Node after deploying. Activity log and hotel setting tables are created
 by the awaited startup schema step before requests are accepted. Database
 CREATE/ALTER permissions are required. No manual SQL is necessary.
+
+## Readable activity descriptions
+
+Activity logs now persist action descriptions, including selected customer names,
+room numbers, booking references and financial amounts. Examples: Created booking
+for Jane in Room 1; Validated booking for Jane; Edited booking for Jane with new
+total/balance; Added expense Generator fuel. Transfers, extensions, payments,
+caution fee actions and room/staff/pricing changes also have readable wording.
+Bulk updates capture a limited allowlist of record context before updating, so
+customer identity is available afterward without copying entire request forms.
+Credentials, email/phone fields and raw form values are excluded from descriptions.
+
+The main view focuses on business changes and failed requests. Include page visits
+using the filter. Technical metadata remains expandable. Existing historical rows
+use a readable fallback based on what they already contain; missing historical
+customer names are not reconstructed. Restart Node after deploying so startup
+adds the nullable description column automatically before logging new events.

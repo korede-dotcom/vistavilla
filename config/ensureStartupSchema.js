@@ -17,6 +17,7 @@ async function ensureStartupSchema(db, models) {
     [models.RoomTransfer, ['old_total', 'new_total', 'price_adjustment', 'amount_paid_now', 'balance_after']]
   ];
   if (models.Booking) additions.push([models.Booking, ['is_backdated','backdated_reason','discount_scope','discount_type','discount_value','price_subtotal','discount_total','caution_fee_amount','caution_fee_status','caution_fee_collected_at','caution_fee_collected_by','caution_fee_refunded_at','caution_fee_refunded_by','caution_fee_held_at','caution_fee_held_by']]);
+  if (models.ActivityLog) additions.push([models.ActivityLog, ['description']]);
   await db.transaction(async transaction => {
     // Serialize this migration when multiple Node processes start together.
     if (db.getDialect() === 'postgres') {
@@ -24,7 +25,6 @@ async function ensureStartupSchema(db, models) {
     }
     if (models.BookingRevision) await models.BookingRevision.sync({transaction});
     if (models.StayExtension) await models.StayExtension.sync({transaction});
-    if (models.ActivityLog) await models.ActivityLog.sync({transaction});
     if (models.HotelSettings) await models.HotelSettings.sync({transaction});
     const query = db.getQueryInterface();
     for (const [model, fields] of additions) {

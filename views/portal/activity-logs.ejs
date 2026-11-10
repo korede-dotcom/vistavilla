@@ -1,8 +1,15 @@
 <%- include('partial/header',{title:'Activity Logs - Vistavilla Apartments',email,roleName}) %>
 <%- include('partial/sidebar',{name}) %>
-<div class="page-wrapper"><main class="content container-fluid"><h1 class="page-title">Activity Logs</h1><p>Activity recorded since logging was enabled. Database changes and page requests are separate entries; failed actions are included. Passwords and form contents are excluded.</p>
-<div class="card"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Time</th><th>Staff</th><th>Role</th><th>Action</th><th>Resource / record</th><th>Page</th><th>Outcome</th><th>Changed fields</th></tr></thead><tbody>
-<% logs.forEach(log=>{ %><tr><td><%= new Date(log.createdAt).toLocaleString('en-NG') %></td><td><%= log.actor_name %></td><td><%= log.actor_role %></td><td><%= log.action %></td><td><%= log.resource %> <%= log.record_id %></td><td><%= log.method %> <%= log.path %></td><td><%= log.outcome %></td><td><%= (log.fields||[]).join(', ') %></td></tr><% }); %>
-<% if(!logs.length){ %><tr><td colspan="8">No activity recorded yet.</td></tr><% } %></tbody></table></div></div></div>
-<p><%= count %> entries · Page <%= page %></p><% if(page>1){ %><a class="btn btn-secondary" href="?page=<%= page-1 %>">Previous</a><% } %> <% if(page*50<count){ %><a class="btn btn-secondary" href="?page=<%= page+1 %>">Next</a><% } %>
+<div class="page-wrapper"><main class="content container-fluid"><div class="page-header"><h1 class="page-title">Activity Logs</h1><p>See what staff did, which customer or room was involved, and the outcome.</p></div>
+<form class="mb-3" method="get"><label><input type="checkbox" name="views" value="1" <%= includeViews?'checked':'' %>> Include page visits and background requests</label> <button class="btn btn-secondary btn-sm ml-2" type="submit">Apply</button></form>
+<div class="card"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Time</th><th>Staff</th><th>Activity</th><th>Outcome</th></tr></thead><tbody>
+<% logs.forEach(log=>{ %><tr>
+<td style="white-space:nowrap"><%= new Date(log.createdAt).toLocaleString('en-NG',{timeZone:'Africa/Lagos'}) %></td>
+<td><strong><%= log.actor_name %></strong><br><small class="text-muted"><%= log.actor_role || 'System' %></small></td>
+<td style="min-width:280px;max-width:600px;white-space:normal"><%= describe(log) %>
+<details class="mt-2"><summary class="text-muted" style="font-size:11px;cursor:pointer">Technical details</summary><small><%= log.resource %> <%= log.record_id %><br><%= log.method %> <%= log.path %><br><%= (log.fields||[]).map(field=>String(field).replace(/_/g,' ')).join(', ') %><% if(log.request_id){ %><br>Request: <%= log.request_id %><% } %></small></details></td>
+<td><span class="badge badge-<%= log.outcome==='failed'?'danger':'success' %>"><%= log.outcome==='failed'?'Failed':'Completed' %></span></td>
+</tr><% }); %>
+<% if(!logs.length){ %><tr><td colspan="4">No matching activity recorded yet.</td></tr><% } %></tbody></table></div></div></div>
+<p><%= count %> entries · Page <%= page %></p><% if(page>1){ %><a class="btn btn-secondary" href="?page=<%= page-1 %><%= includeViews?'&views=1':'' %>">Previous</a><% } %> <% if(page*50<count){ %><a class="btn btn-secondary" href="?page=<%= page+1 %><%= includeViews?'&views=1':'' %>">Next</a><% } %>
 </main></div><%- include('partial/footer') %>

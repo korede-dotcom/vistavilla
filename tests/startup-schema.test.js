@@ -61,3 +61,10 @@ test('startup adds caution-fee columns to existing booking tables',async()=>{
  assert.equal(f.tables.hotelbookings.caution_fee_amount.defaultValue,0);
  assert.ok(f.tables.hotelbookings.amount);
 });
+
+test('startup adds a description column to existing activity logs without clearing history',async()=>{
+ const f=fixture();f.tables.activity_logs={id:{},actor_name:{}};
+ f.models.ActivityLog={getTableName:()=> 'activity_logs',rawAttributes:{description:{type:'TEXT'}},sync:async()=>{}};
+ await ensureSchema(f.db,f.models);
+ assert.ok(f.tables.activity_logs.description);assert.ok(f.tables.activity_logs.actor_name);
+});
