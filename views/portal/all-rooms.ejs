@@ -47,7 +47,7 @@
 												<th>Time</th>
 												<th>Status</th>
 												<th>Retention</th>
-												<% if (roleName === 'ceo' || roleName === "hotelmanager") { %>
+												<% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
 												<th class="text-right">Actions</th>
 												<% } %>
 											</tr>
@@ -89,7 +89,7 @@
 														</button>
 													<% } %>
 												</td>
-												<td class="text-right">
+												<td class="text-right"><% if (roleName === 'hotel receptionist') { %><button class="btn btn-sm btn-primary" onclick="openImageModal(<%= result.id %>, 'Room', '<%= result.room_number %>')">Room Photos</button><% } %>
 													<% if (roleName === 'ceo' || roleName === "hotelmanager") { %>
 													<div class="dropdown dropdown-action">
 														<a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -159,7 +159,7 @@
 								<div class="card-body">
 									<div class="form-group">
 										<input type="file" class="form-control" id="roomImageInput" accept="image/*" multiple>
-										<small class="form-text text-muted">You can select multiple images at once</small>
+										<small class="form-text text-muted">Photos are published for this room and the website gallery. Select up to 10 images.</small>
 									</div>
 									<button type="button" class="btn btn-primary" onclick="uploadRoomImages()">
 										<i class="fas fa-cloud-upload-alt"></i> Upload Images
@@ -170,7 +170,7 @@
 							<!-- Gallery Section -->
 							<div class="card">
 								<div class="card-header bg-light">
-									<h6 class="mb-0"><i class="fas fa-images"></i> Current Images</h6>
+									<h6 class="mb-0"><i class="fas fa-images"></i> Published Room Photos</h6>
 								</div>
 								<div class="card-body">
 									<div class="row" id="imageGallery">
@@ -356,7 +356,7 @@ function openImageModal(roomId, roomName, roomNumber) {
 
 async function loadRoomImages(roomId) {
 	try {
-		const response = await fetch(`/images?for=hotelroom&room_id=${roomId}`);
+		const response = await fetch(`/portal/room-images?room_id=${roomId}`);
 		const result = await response.json();
 
 		const gallery = document.getElementById('imageGallery');
@@ -367,7 +367,7 @@ async function loadRoomImages(roomId) {
 					<div class="card">
 						<img src="${img.url}" class="card-img-top" alt="Room Image" style="height: 150px; object-fit: cover;">
 						<div class="card-body p-2 text-center">
-							<button class="btn btn-sm btn-danger" onclick="deleteRoomImage('${img.url}', ${roomId})">
+							<button class="btn btn-sm btn-danger" onclick="deleteRoomImage(${img._id}, ${roomId})">
 								<i class="fas fa-trash"></i> Delete
 							</button>
 						</div>
@@ -405,7 +405,7 @@ async function uploadRoomImages() {
 	}
 
 	try {
-		const response = await fetch(`/images?for=hotelroom&room_id=${roomId}`, {
+		const response = await fetch(`/portal/room-images?room_id=${roomId}`, {
 			method: 'POST',
 			body: formData
 		});
@@ -440,18 +440,18 @@ async function uploadRoomImages() {
 	}
 }
 
-async function deleteRoomImage(imageUrl, roomId) {
+async function deleteRoomImage(imageId, roomId) {
 	if (!confirm('Are you sure you want to delete this image?')) {
 		return;
 	}
 
 	try {
-		const response = await fetch('/images', {
+		const response = await fetch('/portal/room-images?room_id='+encodeURIComponent(roomId), {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ url: imageUrl })
+			body: JSON.stringify({ image_id: imageId, room_id: roomId })
 		});
 
 		const result = await response.json();

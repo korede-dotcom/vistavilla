@@ -40,6 +40,7 @@ routes.use('/caution-fees', require('./CautionFees'));
 routes.use('/activity-logs', require('./ActivityLogs'));
 routes.use('/extend-stay', require('./StayExtension'));
 routes.use('/edit-booking', require('./EditBooking'));
+routes.use('/room-images', require('./RoomImages'));
 
 routes.get("/",async (req,res) => {
             res.render('login', {

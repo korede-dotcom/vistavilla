@@ -1,3 +1,4 @@
+<% const publicGallery = typeof galleryPhotos !== 'undefined' ? galleryPhotos : []; %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -355,15 +356,9 @@ line-height: 1;
   <section class="modern-hero-carousel">
     <!-- Carousel Slides -->
     <div class="hero-carousel-slides">
-      <% if (pkgs && pkgs.length > 0) { %>
-        <% pkgs.slice(0, 5).forEach((category, index) => { %>
-          <% if (category.picture && category.picture.length > 0) { %>
-            <div class="hero-slide <%= index === 0 ? 'active' : '' %>" style="background-image: url('<%= content.heroImage !== landingDefaults.heroImage ? content.heroImage : category.picture[0] %>');">
-              <div class="hero-slide-overlay"></div>
-            </div>
-          <% } %>
-        <% }); %>
-      <% } %>
+      <% publicGallery.slice(0,5).forEach((photo,index) => { %>
+        <div class="hero-slide <%= index === 0 ? 'active' : '' %>" style="background-image: url('<%= photo.url %>');"><div class="hero-slide-overlay"></div></div>
+      <% }); %>
     </div>
 
     <!-- Hero Content (Centered) -->
@@ -522,13 +517,13 @@ line-height: 1;
 
       <div class="modern-about-images">
         <div class="modern-about-image hover-lift">
-          <img loading="lazy" decoding="async" src="https://res.cloudinary.com/bada/image/upload/v1732986602/wishmewell/IMG_5260_Large_nvybtq.png" alt="Vistavilla Apartment">
+          <img loading="lazy" decoding="async" src="<%= publicGallery[0] ? publicGallery[0].url : '/images/logo.png' %>" alt="Vistavilla Apartment">
         </div>
         <div class="modern-about-image hover-lift">
-          <img loading="lazy" decoding="async" src="https://res.cloudinary.com/bada/image/upload/v1732986711/wishmewell/IMG_5437_Large_h7ibuq.png" alt="Vistavilla Apartment Room">
+          <img loading="lazy" decoding="async" src="<%= publicGallery[0] ? publicGallery[0].url : '/images/logo.png' %>" alt="Vistavilla Apartment Room">
         </div>
         <div class="modern-about-image hover-lift">
-          <img loading="lazy" decoding="async" src="https://res.cloudinary.com/bada/image/upload/v1732987151/wishmewell/IMG_5735_Large_hlnzyr.png" alt="Vistavilla Apartment Interior">
+          <img loading="lazy" decoding="async" src="<%= publicGallery[0] ? publicGallery[0].url : '/images/logo.png' %>" alt="Vistavilla Apartment Interior">
         </div>
       </div>
     </div>
@@ -552,7 +547,7 @@ line-height: 1;
                 <% if (category.picture && category.picture.length > 0) { %>
                   <img loading="lazy" decoding="async" src="<%= category.picture[0] %>" alt="<%= category.category_name %>">
                 <% } else { %>
-                  <img loading="lazy" decoding="async" src="https://res.cloudinary.com/bada/image/upload/v1732986602/wishmewell/IMG_5260_Large_nvybtq.png" alt="<%= category.category_name %>">
+                  <img loading="lazy" decoding="async" src="<%= publicGallery[0] ? publicGallery[0].url : '/images/logo.png' %>" alt="<%= category.category_name %>">
                 <% } %>
                 <div class="luxury-category-overlay">
                   <a href="/rooms#room-<%= category._id %>" class="luxury-view-details">
@@ -747,8 +742,8 @@ line-height: 1;
         <!-- Image Column -->
         <div class="image-column col-xl-6 col-lg-6">
           <div class="inner-column wow fadeInLeft" data-wow-delay="400ms">
-            <figure class="image-1 overlay-anim wow fadeInUp"><img loading="lazy" decoding="async" style="" src="https://res.cloudinary.com/bada/image/upload/v1732986602/wishmewell/IMG_5260_Large_nvybtq.png" alt=""></figure>
-            <figure class="image-2 overlay-anim wow fadeInLeft"><img loading="lazy" decoding="async" src="https://res.cloudinary.com/bada/image/upload/v1732986711/wishmewell/IMG_5437_Large_h7ibuq.png" alt=""></figure>
+            <figure class="image-1 overlay-anim wow fadeInUp"><img loading="lazy" decoding="async" style="" src="<%= publicGallery[0] ? publicGallery[0].url : '/images/logo.png' %>" alt=""></figure>
+            <figure class="image-2 overlay-anim wow fadeInLeft"><img loading="lazy" decoding="async" src="<%= publicGallery[0] ? publicGallery[0].url : '/images/logo.png' %>" alt=""></figure>
             <!-- <div class="btn-box">
               <a href="https://www.youtube.com/watch?v=Fvae8nxzVz4" class="play-now-two" data-fancybox="gallery" data-caption="">
                 <i class="icon fa fa-play" aria-hidden="true"></i>
@@ -995,55 +990,7 @@ line-height: 1;
       </div>
 
       <div class="luxury-gallery-grid-clean">
-        <% if (pkgs && pkgs.length > 0) { %>
-          <%
-            // Collect exactly 12 images from different categories
-            let galleryImages = [];
-            let categoryImageMap = new Map();
-
-            // First, collect images grouped by category
-            pkgs.forEach(pkg => {
-              if (pkg.picture && pkg.picture.length > 0) {
-                if (!categoryImageMap.has(pkg.category_name)) {
-                  categoryImageMap.set(pkg.category_name, []);
-                }
-                pkg.picture.forEach(img => {
-                  if (img) {
-                    categoryImageMap.get(pkg.category_name).push({
-                      url: img,
-                      title: pkg.category_name,
-                      type: pkg.room_type
-                    });
-                  }
-                });
-              }
-            });
-
-            // Now distribute 12 images across categories
-            let categories = Array.from(categoryImageMap.keys());
-            let currentCategoryIndex = 0;
-            let imageIndexPerCategory = new Map();
-            categories.forEach(cat => imageIndexPerCategory.set(cat, 0));
-
-            while (galleryImages.length < 12 && categories.length > 0) {
-              let category = categories[currentCategoryIndex % categories.length];
-              let images = categoryImageMap.get(category);
-              let imageIndex = imageIndexPerCategory.get(category);
-
-              if (imageIndex < images.length) {
-                galleryImages.push(images[imageIndex]);
-                imageIndexPerCategory.set(category, imageIndex + 1);
-              }
-
-              currentCategoryIndex++;
-
-              // Remove category if all images used
-              if (imageIndexPerCategory.get(category) >= images.length) {
-                categories = categories.filter(c => c !== category);
-              }
-            }
-          %>
-
+        <% if (publicGallery.length > 0) { const galleryImages = publicGallery.slice(0,12); %>
           <% galleryImages.forEach((img, index) => { %>
             <div class="luxury-gallery-item-clean" data-index="<%= index %>">
               <div class="luxury-gallery-card-clean">
@@ -1795,7 +1742,7 @@ function showSuccessModal(data, formData) {
   const roomsList = data.data.availableRoomDetails.map(room => `
     <div class="search-result-item">
       <div class="search-result-icon">
-        <i class="fas fa-door-open"></i>
+        ${room.roomImages && room.roomImages[0] ? `<img src="${encodeURI(room.roomImages[0]).replace(/"/g, '%22')}" alt="Room photo" style="width:72px;height:60px;object-fit:cover;border-radius:10px" loading="lazy">` : '<i class="fas fa-door-open"></i>'}
       </div>
       <div class="search-result-info">
         <p class="search-result-label">Room Number</p>
@@ -2139,25 +2086,8 @@ document.querySelector('.checkout-form').addEventListener('submit', async functi
     // Store all images for each gallery item
     const galleryImageData = [];
 
-    <% if (pkgs && pkgs.length > 0) { %>
-      <%
-        let allCategoryImages = [];
-        pkgs.forEach(pkg => {
-          if (pkg.picture && pkg.picture.length > 0) {
-            pkg.picture.forEach(img => {
-              if (img) {
-                allCategoryImages.push({
-                  url: img,
-                  title: pkg.category_name,
-                  type: pkg.room_type
-                });
-              }
-            });
-          }
-        });
-      %>
-
-      const allImages = <%= JSON.stringify(allCategoryImages) %>;
+    <% if (publicGallery.length > 0) { %>
+      const allImages = <%- JSON.stringify(publicGallery).replace(/</g, '\\u003c') %>;
 
       // Initialize each gallery item with its image rotation
       galleryItems.forEach((item, index) => {

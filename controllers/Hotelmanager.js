@@ -1,3 +1,4 @@
+const publicPhotos = require('../services/publicPhotos');
 const hotelConfigRepository = require("../repos/Room-repo")
 const asynchandler = require("express-async-handler")
 const cloudinaryRepo = require("../repos/cloudinary");
@@ -89,33 +90,9 @@ const getBookings = asynchandler( async (req,res) => {
 
 
 
-const showRoom = asynchandler(async (req,res) => {
-
-    cloudinary.config({
-        cloud_name: process.env.cloud_name,
-        api_key: process.env.api_key,
-        api_secret: process.env.api_secret,
-      });
-    
-        try {
-          const result = await cloudinary.search
-            .expression(`folder:${process.env.folder_name}`) // Specify the folder
-            .sort_by('created_at', 'desc') // Optional: sort by creation date
-            .max_results(100) // Adjust the limit as needed
-            .execute();
-      
-          const images = result.resources.map((img) => img.secure_url); // Get image URLs
-          console.log("🚀 ~ showRoom ~ images:", images.length)
-          res.render('show', { images });
-        } catch (error) {
-          console.error('Error fetching images from Cloudinary:', error);
-          res.status(500).send('Error fetching images');
-        }
-    
-
-})
+const showRoom = asynchandler(async (req,res) => { res.render('show', {images:(await publicPhotos.gallery()).map(photo=>photo.url)}); });
 const clientHotelRoom = asynchandler(async (req,res) => {
-    const pkgs = await hotelConfigRepository.roomCategorys()
+    const pkgs = await publicPhotos.attachCategories(await hotelConfigRepository.roomCategorys())
     const currentTime = moment().format('YYYY-MM-DD HH:mm:ss'); // Ensure correct format
 
     const activeMarquees = await Marque.findOne({
@@ -184,6 +161,7 @@ const clientHotelRoom = asynchandler(async (req,res) => {
         landingDefaults: require('../utils/landingContent').defaults,
         content: await require('../models/LandingSettings').get(),
         pkgs: pkgsWithPricing,
+        galleryPhotos: await publicPhotos.gallery(),
         activeMarquees:activeMarquees
       });
 })
@@ -222,42 +200,7 @@ const gallery = asynchandler(async (req,res) => {
       }
     });
 
-    // Configure Cloudinary
-    cloudinary.config({
-        cloud_name: process.env.cloud_name,
-        api_key: process.env.api_key,
-        api_secret: process.env.api_secret,
-    });
-
-    try {
-        // Fetch all images from Cloudinary folder
-        const result = await cloudinary.search
-            .expression(`folder:${process.env.folder_name}`)
-            .sort_by('created_at', 'desc')
-            .max_results(500) // Get up to 500 images
-            .execute();
-
-        const images = result.resources.map((img) => ({
-            url: img.secure_url,
-            public_id: img.public_id,
-            width: img.width,
-            height: img.height,
-            created_at: img.created_at
-        }));
-
-        console.log("🚀 ~ gallery ~ Total images fetched:", images.length);
-
-        return res.render('page-gallery', {
-            images: images,
-            activeMarquees: activeMarquees
-        });
-    } catch (error) {
-        console.error('Error fetching images from Cloudinary:', error);
-        return res.render('page-gallery', {
-            images: [],
-            activeMarquees: activeMarquees
-        });
-    }
+    return res.render('page-gallery', {images:await publicPhotos.gallery(), activeMarquees});
 })
 
 const paymentResult = asynchandler(async (req, res) => {
@@ -362,26 +305,7 @@ const clientRoomAvailable = asynchandler(async (req, res) => {
       }
     });
 
-    // Fetch room-specific images (if room_id column exists)
-    const Images = require('../models/Images');
-    let roomImages = [];
-    if (selectedRoomNumber && selectedRoomNumber._id) {
-      try {
-        roomImages = await Images.findAll({
-          where: {
-            for: 'hotelroom',
-            room_id: selectedRoomNumber._id,
-            status: true
-          },
-          order: [['_id', 'DESC']]
-        });
-      } catch (error) {
-        // If room_id column doesn't exist, just use empty array
-        console.log('Room-specific images not available:', error.message);
-        roomImages = [];
-      }
-    }
-
+    const roomImages = selectedRoomNumber ? await publicPhotos.roomPhotos([selectedRoomNumber._id]) : [];
     // Apply special pricing to the room if available
     let roomWithPricing = selectedRoomNumber;
     if (selectedRoomNumber && selectedRoomNumber.Room) {
@@ -390,7 +314,7 @@ const clientRoomAvailable = asynchandler(async (req, res) => {
         return configCategoryId === parseInt(id);
       });
 
-      const roomData = selectedRoomNumber.Room.dataValues || selectedRoomNumber.Room;
+      const [roomData] = await publicPhotos.attachCategories([selectedRoomNumber.Room]);
 
       if (specialPricing) {
         const pricingData = specialPricing.dataValues || specialPricing;
@@ -473,7 +397,7 @@ const clientRoom = asynchandler(async (req, res) => {
         console.log("🚀 ~ clientRoom ~ category_id:", id);
         console.log("🚀 ~ clientRoom ~ specialPricing:", specialPricing ? (specialPricing.dataValues || specialPricing) : null);
 
-        let categoryData = category.dataValues || category;
+        let [categoryData] = await publicPhotos.attachCategories([category]);
 
         if (specialPricing) {
           const pricingData = specialPricing.dataValues || specialPricing;
@@ -500,7 +424,7 @@ const clientRoom = asynchandler(async (req, res) => {
         });
     }
 
-    const categories = await Room.findAll({});
+    const categories = await publicPhotos.attachCategories(await Room.findAll({}));
 
     // Apply special pricing to all categories
     const categoriesWithPricing = categories.map(cat => {
@@ -682,7 +606,7 @@ const GetAvailability = asynchandler(async (req, res) => {
 
     // Fetch details of available rooms that are not booked in the given date range
     // Also exclude retained rooms for the given date range
-    const availableRoomDetails = await RoomNumber.findAll({
+    let availableRoomDetails = await RoomNumber.findAll({
         where: {
             category_id,
             _id: {
@@ -707,6 +631,7 @@ const GetAvailability = asynchandler(async (req, res) => {
     });
 
 
+    availableRoomDetails = await publicPhotos.attachRooms(availableRoomDetails);
     if (availableRoomDetails.length) {
         return res.json({
             message: "Yay! We found you a room",
