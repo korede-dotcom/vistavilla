@@ -93,26 +93,7 @@
                 </li>
                 <% } %>
 
-                <% if (roleName === 'ceo' || roleName === 'bar manager' || roleName === "hotelmanager") { %>
-                <li class="submenu">
-                    <a href="#">
-                        <i class="fas fa-wine-glass-alt"></i>
-                        <span>Bar</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="submenu_class" style="display: none;">
-						<% if (roleName === 'ceo' || roleName === 'bar manager') { %>
-							<li><a href="/portal/bar"><i class="fas fa-cash-register"></i> Bar POS</a></li>
-						<% } %>
-                        <li><a href="/portal/bar-records"><i class="fas fa-receipt"></i> All Sales</a></li>
-						<% if (roleName === 'ceo' || roleName === 'hotelmanager') { %>
-							<li><a href="/portal/bar-all-drinks"><i class="fas fa-wine-bottle"></i> All Drinks</a></li>
-						<% } %>
-                    </ul>
-                </li>
-                <% } %>
-
-                <li class="list-divider"></li>
+<li class="list-divider"></li>
 
                 <% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
                 <li>

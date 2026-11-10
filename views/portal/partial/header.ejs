@@ -202,8 +202,8 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/images/vistavilla-app-192.png?v=3">
 <link rel="stylesheet" href="/css/camera-upload.css?v=1">
 <script defer src="/js/camera-upload.js?v=1"></script>
-<link rel="stylesheet" href="/css/app-tools.css?v=1">
-<script defer src="/js/app-tools.js?v=1"></script>
+<link rel="stylesheet" href="/css/app-tools.css?v=2">
+<script defer src="/js/app-tools.js?v=2"></script>
 </head>
 <body>
 	<div class="main-wrapper">
@@ -300,4 +300,11 @@
 			<button class="btn" type="submit"><i class="fas fa-search"></i></button>
 		</form>
 	</div> -->
+</div>
+<div id="app-tools">
+<section class="app-tools-panel" id="app-tools-panel" aria-label="App options" hidden>
+<header><strong>App options</strong><button type="button" class="app-tools-close" aria-label="Close app options">×</button></header>
+<div class="app-tools-actions"></div>
+</section>
+<button type="button" class="app-tools-launcher" aria-label="Open app options" aria-expanded="false" aria-controls="app-tools-panel"><span aria-hidden="true">⚙</span></button>
 </div>

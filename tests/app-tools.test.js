@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('fs'),vm=require('vm');
 test('one round launcher contains existing install/theme controls and supports open, close and Escape',()=>{
  const events={},nodes={};
- function node(name){return {name,children:[],attrs:{},hidden:false,listeners:{},setAttribute(k,v){this.attrs[k]=v;},addEventListener(k,fn){this.listeners[k]=fn;},appendChild(child){if(child.parentElement)child.parentElement.children=child.parentElement.children.filter(x=>x!==child);this.children.push(child);child.parentElement=this;nodes[child.id||child.name]=child;},querySelector(selector){return mapping[selector];},contains(target){return target===this||this.children.some(child=>child.contains(target));},focus(){this.focused=true;}};}
+ function node(name){return {name,dataset:{},children:[],attrs:{},hidden:false,listeners:{},setAttribute(k,v){this.attrs[k]=v;},addEventListener(k,fn){this.listeners[k]=fn;},appendChild(child){if(child.parentElement)child.parentElement.children=child.parentElement.children.filter(x=>x!==child);this.children.push(child);child.parentElement=this;nodes[child.id||child.name]=child;},querySelector(selector){return mapping[selector];},contains(target){return target===this||this.children.some(child=>child.contains(target));},focus(){this.focused=true;}};}
  const mapping={};const root=node('root'),panel=node('panel'),launcher=node('launcher'),actions=node('actions'),close=node('close');root.id='app-tools';panel.hidden=true;
  root.appendChild(panel);root.appendChild(launcher);panel.appendChild(actions);panel.appendChild(close);
  Object.assign(mapping,{'.app-tools-panel':panel,'.app-tools-launcher':launcher,'.app-tools-actions':actions,'.app-tools-close':close});
