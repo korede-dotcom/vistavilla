@@ -31,10 +31,11 @@ module.exports = async function transferRoom(input, staff, quoteOnly = false) {
     const special = await Pricing.findOne({ where: { category_id: newRoom.category_id, is_active: true,
       start_date: { [Op.lte]: date }, end_date: { [Op.gte]: date } }, order: [['created_at','DESC']], transaction });
     const part = await PartPayment.findOne({ where: { reference_id: booking.reference_id }, ...options });
-    const money = calculate({ rate: special ? special.special_price : category.price, nights: booking.night,
+    const sameCategory = String(booking.category_id) === String(newRoom.category_id);
+    const money = calculate({ preserveTotal: sameCategory, rate: special ? special.special_price : category.price, nights: booking.night,
       oldTotal: booking.amount, amountPaid: booking.amount_paid, existingPartPayment: part,
-      bookingStatus: booking.status, bookingBalance: booking.balance, paidNow: input.amount_paid_now === undefined ? 0 : input.amount_paid_now });
-    if (quoteOnly) return { ...money, nights: booking.night, rate: special ? Number(special.special_price) : Number(category.price) };
+      bookingStatus: booking.status, bookingBalance: booking.balance, paidNow: input.amount_paid_now === undefined || input.amount_paid_now === '' ? 0 : input.amount_paid_now });
+    if (quoteOnly) return { ...money, sameCategory, nights: booking.night, rate: sameCategory ? money.total / 100 / booking.night : special ? Number(special.special_price) : Number(category.price) };
     const fromRoom = booking.room_number;
     const roomData = { room_id: newRoom._id, room_number: newRoom.room_number, room_name: newRoom.room_name,
       category_id: newRoom.category_id, category_name: category.category_name };
@@ -65,7 +66,7 @@ module.exports = async function transferRoom(input, staff, quoteOnly = false) {
       notes: `Room changed: ${fromRoom} → ${newRoom.room_number}`
     }, { transaction });
     await Booking.update({ ...roomData, amount: money.total, amount_paid: money.amountPaid, balance: money.balance,
-      is_part_payment: money.balance > 0, status: money.balance ? 'part-payment' : 'success', discount_per_night: 0, discount_scope: 'booking', discount_type: 'flat', discount_value: 0, price_subtotal: money.total, discount_total: 0
+      is_part_payment: money.balance > 0, status: money.balance ? 'part-payment' : 'success', ...(sameCategory ? {} : {discount_per_night: 0, discount_scope: 'booking', discount_type: 'flat', discount_value: 0, price_subtotal: money.total, discount_total: 0})
     }, { where: { id: booking.id }, transaction });
     if (booking.checked_in) {
       await RoomNumber.update({ status: false }, { where: { _id: booking.room_id }, transaction });

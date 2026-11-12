@@ -97,3 +97,23 @@ test('server performs a downgrade and preserves excess payment in the persisted 
  assert.equal(writes.find(w=>w.name==='booking').data.amount_paid,14000000);
  assert.ok(!writes.some(w=>w.name==='payment'));
 });
+
+test('same-category move keeps the agreed discounted price and needs no new payment',async()=>{
+ reset();booking.category_id=20;booking.discount_total=1000000;
+ const quote=await transfer({...input,amount_paid_now:''},{name:'Reception'},true);
+ assert.equal(quote.sameCategory,true);assert.equal(quote.total,6000000);assert.equal(quote.adjustment,0);assert.equal(quote.balance,0);
+ const result=await transfer({...input,amount_paid_now:''},{name:'Reception'});
+ assert.equal(result.paidNow,0);assert.equal(result.total,6000000);
+ assert.ok(!writes.some(w=>w.name==='payment'));
+ const saved=writes.find(w=>w.name==='booking').data;
+ assert.equal(saved.room_id,2);assert.equal(saved.status,'success');
+ assert.equal(saved.discount_total,undefined);assert.equal(saved.discount_value,undefined);
+ assert.equal(writes.find(w=>w.name==='transfer').data.price_adjustment,0);
+});
+test('same-category move with an outstanding balance proceeds without payment and retains the debt',async()=>{
+ reset();booking.category_id=20;booking.status='part-payment';booking.amount_paid=2000000;booking.balance=4000000;
+ const result=await transfer({...input,amount_paid_now:'0'},{name:'Reception'});
+ assert.equal(result.total,6000000);assert.equal(result.balance,4000000);assert.equal(result.amountPaid,2000000);
+ assert.equal(writes.find(w=>w.name==='booking').data.status,'part-payment');
+ assert.ok(!writes.some(w=>w.name==='payment'));
+});

@@ -41,3 +41,5 @@ this does not create a separate database server or database account.
 Verification: `npm run test:transfer`. Tests use mocked storage, so also verify a
 real upgrade and subsequent balance collection in a staging database. No live
 database was accessed or migrated during implementation.
+
+Same-category transfers (such as one-bedroom to another one-bedroom in the same category) retain the agreed booking total and discount. No new payment is required: leave Amount paid now at 0 or blank. Existing outstanding balances remain payable and tracked in Part Payments. Transfers into a different category still recalculate using the destination category rate. Both the calendar and booking-details transfer dialogs support this behavior.

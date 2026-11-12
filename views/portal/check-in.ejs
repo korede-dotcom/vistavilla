@@ -254,16 +254,16 @@ eight only.)</p> -->
 					</div>
 
 					<div class="transfer-payment-panel" id="transferPaymentPanel" data-room-select="newRoomNumber" data-confirm="confirmTransferBtn">
-<label for="transferPaid">Amount paid now (₦)</label>
+<label for="transferPaid">Amount paid now (₦, optional)</label>
 <input class="form-control" type="number" min="0" step="0.01" value="0" id="transferPaid">
 <label for="transferMethod">Payment method</label>
 <select class="form-control" id="transferMethod"><option value="cash">Cash</option><option value="transfer">Bank transfer</option><option value="card">Card</option></select>
 <p class="mt-2" data-transfer-quote role="status">Select a destination room to see the revised total and balance.</p>
-<small class="text-muted">The new room rate applies to all booked nights for upgrades and downgrades. Any excess already paid is preserved as guest credit; no automatic refund is sent. Previous payments are retained; any unpaid balance goes to Part Payments, flagged with the room change.</small>
+<small class="text-muted">Same-category room changes keep the agreed booking price and require no new payment. Leave the amount at 0. Upgrades and downgrades to a different category use the new room rate for all booked nights. Any excess already paid is preserved as guest credit; no automatic refund is sent. Previous payments are retained; any unpaid balance goes to Part Payments, flagged with the room change.</small>
 </div>
 <div class="alert alert-warning" style="display: none;" id="transferWarning">
 						<i class="fas fa-exclamation-triangle"></i>
-						<strong>Note:</strong> The booking dates and guest information will remain the same. The destination room rate will update the booking total and outstanding balance.
+						<strong>Note:</strong> The booking dates and guest information will remain the same. Same-category moves keep the booking price; a different category updates the total and balance.
 					</div>
 				</form>
 			</div>
@@ -581,7 +581,7 @@ eight only.)</p> -->
 <button class="btn btn-secondary mt-2" type="button" id="previewExtension">Calculate extension</button>
 <p class="mt-3" id="extensionQuote" role="status">Calculate to preview the new checkout, charges and balance.</p>
 <label for="extensionOption">Payment option</label><select class="form-control" id="extensionOption"><option value="full">Full payment of revised balance</option><option value="partial">Part payment (stays longer than one night)</option></select>
-<label for="extensionPaid">Amount paid now (₦)</label><input class="form-control" id="extensionPaid" type="number" min="0" step="0.01" value="0" required>
+<label for="extensionPaid">Amount paid now (₦, optional)</label><input class="form-control" id="extensionPaid" type="number" min="0" step="0.01" value="0" required>
 <label for="extensionMethod">Payment method</label><select class="form-control" id="extensionMethod"><option value="cash">Cash</option><option value="transfer">Bank transfer</option><option value="card">Card</option></select>
 <small>Added nights use current rates. Percentage discounts apply to the revised booking subtotal; a flat booking discount is applied once. Legacy nightly discounts retain their original basis. Earlier payments and any guest credit are retained. Caution fees stay unchanged.</small>
 <button class="btn btn-primary mt-3" type="submit" id="confirmExtension" disabled>Confirm extension</button>
