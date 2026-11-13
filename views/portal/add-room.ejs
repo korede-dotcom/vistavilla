@@ -84,7 +84,7 @@
 				},
 				body: JSON.stringify(data)
 			})
-			.then(response => response.json())
+			.then(response => window.portalResponseJSON(response))
 			.then(data => {
 				// Handle the response here
 				if (data.data) {

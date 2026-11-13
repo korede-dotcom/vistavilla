@@ -117,3 +117,17 @@ test('same-category move with an outstanding balance proceeds without payment an
  assert.equal(writes.find(w=>w.name==='booking').data.status,'part-payment');
  assert.ok(!writes.some(w=>w.name==='payment'));
 });
+
+
+stub('../models/ActivityLog',{create:async(data,options)=>record('exchangeLog',data,options)});
+test('manager free-room exchange retains the agreed price even across categories, with no payment and an audit entry',async()=>{
+ reset();
+ const result=await transfer({...input,amount_paid_now:0},{_id:'manager',name:'Manager',roleName:'hotelmanager'},false,{exchange:true});
+ assert.equal(result.total,6000000);assert.equal(result.adjustment,0);assert.equal(result.balance,0);
+ const saved=writes.find(row=>row.name==='booking').data;
+ assert.equal(saved.room_id,2);assert.equal(saved.discount_total,undefined);
+ assert.ok(!writes.some(row=>row.name==='payment'));
+ assert.match(writes.find(row=>row.name==='exchangeLog').data.description,/available Room 202/);
+ reset();conflict={id:99};await assert.rejects(transfer({...input,amount_paid_now:0},{name:'Manager'},false,{exchange:true}),/overlapping/);assert.equal(writes.length,0);
+ reset();booking.checked_in=false;await assert.rejects(transfer({...input,amount_paid_now:0},{name:'Manager'},false,{exchange:true}),/checked in/);
+});

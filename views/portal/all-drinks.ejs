@@ -388,7 +388,7 @@ function saveEdits(productId) {
       ...payload
     })
   })
-  .then(response => response.json())
+  .then(response => window.portalResponseJSON(response))
   .then(data => {
     if (data.status) {
 		nameElement.dataset.originalName = name;
@@ -549,7 +549,7 @@ initializeOriginalValues(products);
 										// 		},
 										// 		body: JSON.stringify(payload)
 										// 	})
-										// 	.then(response => response.json())
+										// 	.then(response => window.portalResponseJSON(response))
 										// 	.then(data => {
 										// 		alert('Cart saved successfully!');
 										// 		clearCart(); // Clear the cart after saving

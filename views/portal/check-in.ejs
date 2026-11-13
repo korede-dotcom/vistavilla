@@ -20,6 +20,7 @@
 <button class="btn btn-warning" data-toggle="modal" data-target="#transferRoomModal">
 	<i class="fas fa-exchange-alt"></i> Transfer Room
 </button>
+<% if(['ceo','hotelmanager'].includes(roleName) && bookings.checked_in && !bookings.checked_out){ %><button type="button" class="btn btn-secondary" id="openRoomExchange" data-reference="<%= bookings.reference_id %>" data-room="<%= bookings.room_id %>">Exchange Rooms</button><% } %>
 <!-- <button class="btn btn-primary">CSV</button>
 <button class="btn btn-primary">PDF</button>
 <button class="btn btn-primary"><i class="fas fa-print fa-lg"></i> Print</button> -->
@@ -297,7 +298,7 @@ eight only.)</p> -->
 			const url = new URL(window.location.href);
 			const id = url.searchParams.get('key');
 			const response = await fetch(`/portal/check-in?key=${id.trim()}`,{method:"POST",headers:{"Content-Type": "application"}});
-			const data = await response.json();
+			const data = await window.portalResponseJSON(response);
 			if (data.status) {
 				window.location.reload();
 			}
@@ -337,7 +338,7 @@ eight only.)</p> -->
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 
-			const data = await response.json();
+			const data = await window.portalResponseJSON(response);
 			console.log('✅ Categories loaded:', data);
 
 			const categorySelect = document.getElementById('newRoomCategory');
@@ -376,7 +377,7 @@ eight only.)</p> -->
 		try {
 			// Fetch available rooms for this category
 			console.log(`🔄 Loading rooms for category ${categoryId} from: /portal/api/hotel/rooms/category/${categoryId}`);
-			const response = await fetch(`/portal/api/hotel/rooms/category/${categoryId}`, {
+			const response = await fetch(`/portal/api/hotel/rooms/category/${categoryId}?reference_id=${encodeURIComponent(currentBooking.reference_id)}`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
@@ -387,7 +388,7 @@ eight only.)</p> -->
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
-			const data = await response.json();
+			const data = await window.portalResponseJSON(response);
 			console.log('✅ Rooms loaded:', data);
 
 			const roomSelect = document.getElementById('newRoomNumber');
@@ -395,7 +396,7 @@ eight only.)</p> -->
 
 			// Filter out the current room and booked rooms
 			availableRooms = data.data.rooms.filter(room =>
-				!room.status && room.room_number !== currentBooking.room_number
+				String(room._id) !== String(currentBooking.room_id)
 			);
 
 			console.log(`✅ Found ${availableRooms.length} available rooms`);
@@ -472,7 +473,7 @@ eight only.)</p> -->
 				})
 			});
 
-			const data = await response.json();
+			const data = await window.portalResponseJSON(response);
 
 			if (data.status) {
 				showToast(data.message || 'Room transferred successfully!', 'success');
@@ -519,7 +520,7 @@ eight only.)</p> -->
 		try {
 			console.log('Fetching transfer history for:', currentBooking.reference_id);
 			const response = await fetch(`/portal/room-transfer-history?reference_id=${currentBooking.reference_id}`);
-			const data = await response.json();
+			const data = await window.portalResponseJSON(response);
 
 			console.log('Transfer history response:', data);
 
@@ -569,6 +570,14 @@ eight only.)</p> -->
 		}
 	});
 </script>
+<% if(['ceo','hotelmanager'].includes(roleName) && bookings.checked_in && !bookings.checked_out){ %>
+<div id="roomExchangeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="roomExchangeTitle"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+<div class="modal-header"><h5 class="modal-title" id="roomExchangeTitle">Exchange customer rooms</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button></div>
+<form id="roomExchangeForm"><div class="modal-body"><p>Move this customer to a free room, or swap rooms with another checked-in customer. Booking dates, prices, payments and balances stay unchanged.</p><label for="exchangeMode">Exchange type</label><select id="exchangeMode" class="form-control mb-3"><option value="free">Move to a free room</option><option value="swap">Swap with another customer</option></select><label for="exchangeOtherBooking" id="exchangeTargetLabel">Available room</label><select id="exchangeOtherBooking" class="form-control" required></select><label class="mt-3" for="exchangeReason">Reason (optional)</label><textarea id="exchangeReason" class="form-control" maxlength="500"></textarea><p id="exchangeMessage" role="status" class="mt-3"></p></div>
+<div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button><button id="confirmRoomExchange" type="submit" class="btn btn-primary" disabled>Exchange Rooms</button></div></form>
+</div></div></div><script src="/js/room-exchange.js" defer></script>
+<% } %>
+
 </body>
 </html>
 <script defer src="/js/transfer-payment.js?v=2"></script>

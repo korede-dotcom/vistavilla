@@ -107,7 +107,7 @@ Pricing</a> -->
 <script>
     function togglePaymentMode(id, status) {
     fetch(`/portal/payment-mode?id=${id}&status=${status}`)
-    .then(response => response.json())
+    .then(response => window.portalResponseJSON(response))
     .then(data => {
         if (data.success) {
             console.log('Status updated successfully.');

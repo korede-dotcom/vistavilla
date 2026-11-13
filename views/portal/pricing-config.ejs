@@ -349,7 +349,7 @@
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            const result = await window.portalResponseJSON(response);
 
             Toastify({
                 text: result.message,
@@ -384,7 +384,7 @@
                 method: 'PUT'
             });
             
-            const result = await response.json();
+            const result = await window.portalResponseJSON(response);
             
             Toastify({
                 text: result.message,
@@ -416,7 +416,7 @@
                 method: 'DELETE'
             });
             
-            const result = await response.json();
+            const result = await window.portalResponseJSON(response);
             
             Toastify({
                 text: result.message,

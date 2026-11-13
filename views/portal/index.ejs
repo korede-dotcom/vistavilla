@@ -415,7 +415,7 @@
 async function fetchMonthlyData() {
             try {
                 const response = await fetch('/portal/dashboard/monthly-bookings');
-                const data = await response.json();
+                const data = await window.portalResponseJSON(response);
                 console.log("🚀 ~ fetchMonthlyData ~ data:", data.monthlyData)
 
 				const categories = data.monthlyData.map(item => new Date(item.month).toLocaleString('default', { month: 'long', year: 'numeric' }));

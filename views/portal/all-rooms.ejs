@@ -89,7 +89,7 @@
 														</button>
 													<% } %>
 												</td>
-												<td class="text-right"><% if (roleName === 'hotel receptionist') { %><button class="btn btn-sm btn-primary" onclick="openImageModal(<%= result.id %>, 'Room', '<%= result.room_number %>')">Room Photos</button><% } %>
+												<td class="text-right"><% if (roleName === 'hotel receptionist') { %><button class="btn btn-sm btn-primary" onclick="openImageModal(<%= result.id %>, 'Room', '<%= result.room_number %>')">Edit Room & Photos</button><% } %>
 													<% if (roleName === 'ceo' || roleName === "hotelmanager") { %>
 													<div class="dropdown dropdown-action">
 														<a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -97,9 +97,9 @@
 														</a>
 														<div class="dropdown-menu dropdown-menu-right">
 															<a class="dropdown-item" href="#" onclick="openImageModal(<%=result.id%>, '<%=result.room_name%>', '<%=result.room_number%>')">
-																<i class="fas fa-images m-r-5"></i> Manage Images
+																<i class="fas fa-images m-r-5"></i> Edit Room & Photos
 															</a>
-															<a class="dropdown-item" href="edit-room.html">
+															<a class="dropdown-item" href="#" onclick="openImageModal(<%=result.id%>, 'Room', ''); return false;">
 																<i class="fas fa-pencil-alt m-r-5"></i> Edit
 															</a>
 															<% if (result.is_retained) { %>
@@ -140,7 +140,7 @@
 
 			<!-- Image Management Modal -->
 			<div id="imageManagementModal" class="modal fade" role="dialog">
-				<div class="modal-dialog modal-lg">
+				<div class="modal-dialog modal-lg modal-dialog-scrollable">
 					<div class="modal-content">
 						<div class="modal-header" style="background: linear-gradient(135deg, #1c2830 0%, #2a3a45 100%); color: white;">
 							<h5 class="modal-title" id="imageModalTitle"><i class="fas fa-images"></i> Manage Room Images</h5>
@@ -150,6 +150,18 @@
 						</div>
 						<div class="modal-body">
 							<input type="hidden" id="imageModalRoomId">
+                            <form id="roomDetailsForm" class="card mb-3">
+                              <div class="card-body"><h6>Room details</h6>
+                                <div class="row">
+                                  <div class="col-md-6 form-group"><label for="editRoomName">Room name</label><input id="editRoomName" class="form-control" required maxlength="255"></div>
+                                  <div class="col-md-6 form-group"><label for="editRoomNumber">Room number</label><input id="editRoomNumber" class="form-control" required maxlength="255"></div>
+                                  <div class="col-12 form-group"><label for="editRoomCategory">Category</label><select id="editRoomCategory" class="form-control" required></select><small class="text-muted">Beds, guest capacity and pricing come from the selected category. Occupancy and retention are managed separately.</small></div>
+                                </div>
+                                <p id="roomEditorMessage" role="status" class="text-muted"></p>
+                                <button id="saveRoomDetails" type="submit" class="btn btn-primary" disabled>Save room details</button>
+                              </div>
+                            </form>
+
 
 							<!-- Upload Section -->
 							<div class="card mb-3">
@@ -274,7 +286,7 @@ document.getElementById('retainRoomForm').addEventListener('submit', async funct
 			})
 		});
 
-		const result = await response.json();
+		const result = await window.portalResponseJSON(response);
 
 		if (result.status) {
 			Toastify({
@@ -317,7 +329,7 @@ async function releaseRoom(roomId, roomName) {
 			})
 		});
 
-		const result = await response.json();
+		const result = await window.portalResponseJSON(response);
 
 		if (result.status) {
 			Toastify({
@@ -343,21 +355,47 @@ async function releaseRoom(roomId, roomName) {
 	}
 }
 
-function openImageModal(roomId, roomName, roomNumber) {
+async function openImageModal(roomId, roomName, roomNumber) {
 	document.getElementById('imageModalRoomId').value = roomId;
-	document.getElementById('imageModalTitle').innerText = `Manage Images - ${roomName} (${roomNumber})`;
+	document.getElementById('imageModalTitle').innerText = `Edit Room & Photos`;
 	document.getElementById('imageGallery').innerHTML = '<p class="text-center">Loading images...</p>';
 
 	// Load existing images
 	loadRoomImages(roomId);
 
 	$('#imageManagementModal').modal('show');
+    const form=document.getElementById('roomDetailsForm'), button=document.getElementById('saveRoomDetails'), message=document.getElementById('roomEditorMessage');
+    form.reset();form.dataset.csrf='';button.disabled=true;message.textContent='Loading room details…';
+    try {
+      const response=await fetch('/portal/room-editor/'+encodeURIComponent(roomId),{cache:'no-store'});
+      const result=await window.portalResponseJSON(response);
+      if(String(document.getElementById('imageModalRoomId').value)!==String(roomId))return;
+      if(!response.ok||!result.status)throw Error(result.message||'Unable to load room.');
+      const {room,categories,csrf}=result.data;
+      document.getElementById('editRoomName').value=room.room_name;
+      document.getElementById('editRoomNumber').value=room.room_number;
+      document.getElementById('editRoomCategory').replaceChildren(...categories.map(category=>new Option(category.category_name,category._id,false,String(category._id)===String(room.category_id))));
+      form.dataset.csrf=csrf;button.disabled=false;message.textContent='Photo uploads and deletions below are saved immediately.';
+    }catch(error){message.textContent=error.message;}
+
 }
+
+document.getElementById('roomDetailsForm').addEventListener('submit',async function(event){
+ event.preventDefault();const button=document.getElementById('saveRoomDetails'),message=document.getElementById('roomEditorMessage');
+ button.disabled=true;message.textContent='Saving…';
+ try {
+  const response=await fetch('/portal/room-editor/'+encodeURIComponent(document.getElementById('imageModalRoomId').value),{
+   method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({csrf:this.dataset.csrf,room_name:document.getElementById('editRoomName').value,room_number:document.getElementById('editRoomNumber').value,category_id:document.getElementById('editRoomCategory').value})
+  });
+  const result=await window.portalResponseJSON(response);if(!response.ok||!result.status)throw Error(result.message||'Unable to save room.');
+  message.textContent='Room details saved.';window.location.reload();
+ }catch(error){message.textContent=error.message;button.disabled=false;}
+});
 
 async function loadRoomImages(roomId) {
 	try {
 		const response = await fetch(`/portal/room-images?room_id=${roomId}`);
-		const result = await response.json();
+		const result = await window.portalResponseJSON(response);
 
 		const gallery = document.getElementById('imageGallery');
 
@@ -410,7 +448,7 @@ async function uploadRoomImages() {
 			body: formData
 		});
 
-		const result = await response.json();
+		const result = await window.portalResponseJSON(response);
 
 		if (result.status) {
 			Toastify({
@@ -454,7 +492,7 @@ async function deleteRoomImage(imageId, roomId) {
 			body: JSON.stringify({ image_id: imageId, room_id: roomId })
 		});
 
-		const result = await response.json();
+		const result = await window.portalResponseJSON(response);
 
 		if (result.status) {
 			Toastify({

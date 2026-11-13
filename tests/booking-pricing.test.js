@@ -28,8 +28,8 @@ test('booking form initializes and updates live totals using the server rate, no
  let fetchedRate=50000;
  const context={document,URL,Date,console:{log(){},error(){}},BookingPricing:pricing,queueMicrotask,
   window:{location:{href:'https://example.com/portal/add-booking-category?id=1&price=1'}},
-  fetch:async()=>({ok:true,json:async()=>({status:true,data:{price:fetchedRate,hasSpecialPrice:false}})})};
- vm.createContext(context);vm.runInContext(script,context);ready.forEach(fn=>fn());await new Promise(resolve=>setImmediate(resolve));
+  fetch:async()=>({ok:true,status:200,text:async()=>JSON.stringify({status:true,data:{price:fetchedRate,hasSpecialPrice:false}})})};
+ vm.createContext(context);vm.runInContext(fs.readFileSync('views/js/portal-response.js','utf8'),context);vm.runInContext(script,context);ready.forEach(fn=>fn());await new Promise(resolve=>setImmediate(resolve));
  element('checkIn').value='2026-11-10';element('checkOut').value='2026-11-13';element('discount_type').value='percentage';element('discount_per_night').value='10';
  element('discount_per_night').listeners.input.forEach(fn=>fn({target:element('discount_per_night')}));await new Promise(resolve=>setImmediate(resolve));
  assert.ok(element('bookingPriceSummary').textContent.includes('3 night(s)'));

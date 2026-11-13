@@ -51,6 +51,7 @@
 <script defer src="/js/camera-upload.js?v=1"></script>
 <link rel="stylesheet" href="/css/app-tools.css?v=2">
 <script defer src="/js/app-tools.js?v=2"></script>
+<script src="/js/portal-response.js?v=1"></script>
 </head>
 
 <body>
@@ -124,7 +125,7 @@
 									  headers: { 'Content-Type': 'application/json' },
 									  body: JSON.stringify({ password,token:id })
 									});
-									const data = await response.json();
+									const data = await window.portalResponseJSON(response);
 							  
 									// Handle the response
 									if (data.status === true) {
@@ -220,7 +221,7 @@
 					},
 					body: JSON.stringify(data)
 				});
-				const data = await response.json();
+				const data = await window.portalResponseJSON(response);
 				// Handle the response
 				if (response.status) {
 					Toastify({
@@ -238,7 +239,7 @@
 				onClick: function(){} // Callback after click
 				}).showToast();
 				} else {
-					const errorData = await response.json();
+					const errorData = await window.portalResponseJSON(response);
 					Toastify({
 				text: errorData.message,
 				duration: 3000,

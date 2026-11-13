@@ -31,7 +31,7 @@ function description(action,model,data={},fields=[],id){
  if(model==='paymenthistory')return 'Recorded payment'+booking+(data.payment_amount!==undefined?' — '+money(data.payment_amount):'')+(data.balance_after!==undefined?', balance '+money(data.balance_after):'');
  if(model==='partpayment')return 'Updated outstanding payment'+booking+(data.balance!==undefined?' — balance '+money(data.balance):'');
  if(model==='roomnumber')return verb+' room'+(data.room_number?' '+data.room_number:'')+(data.room_name?' — '+data.room_name:'');
- if(model==='roomcategory')return verb+' room category'+(data.category_name?' “'+data.category_name+'”':'');
+ if(model==='roomcategory')return verb+' room category'+(data.category_name?' “'+data.category_name+'”':'')+(fields.length?' — changed '+fields.filter(field=>field!=='updatedAt').map(field=>field==='picture'?'photos':field.replace(/_/g,' ')).join(', '):'');
  if(model==='hotel_setting')return 'Changed suggested caution fee'+(data.caution_fee_default!==undefined?' to '+money(data.caution_fee_default):'');
  const names={user:'user account',staff:'staff record',pricingconfig:'pricing configuration',marque:'promotion',landing_setting:'website content',Drink:'drink',DrinkLog:'bar sale',resetpassword:'password reset',booking_revision:'booking edit'};
  return verb+' '+(names[model]||String(model||'record').replace(/_/g,' '))+(data.name?' for '+data.name:'')+reference;

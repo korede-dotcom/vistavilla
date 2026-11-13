@@ -780,7 +780,7 @@ $('#transferRoomModalCalendar').on('show.bs.modal', async function () {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data = await window.portalResponseJSON(response);
     console.log('✅ Categories loaded:', data);
 
     const categorySelect = document.getElementById('newRoomCategoryCalendar');
@@ -818,7 +818,7 @@ document.getElementById('newRoomCategoryCalendar').addEventListener('change', as
 
   try {
     console.log(`🔄 Loading rooms for category ${categoryId} from: /portal/api/hotel/rooms/category/${categoryId}`);
-    const response = await fetch(`/portal/api/hotel/rooms/category/${categoryId}`, {
+    const response = await fetch(`/portal/api/hotel/rooms/category/${categoryId}?reference_id=${encodeURIComponent(currentBookingCalendar.reference_id)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -830,7 +830,7 @@ document.getElementById('newRoomCategoryCalendar').addEventListener('change', as
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data = await window.portalResponseJSON(response);
     console.log('✅ Rooms loaded:', data);
 
     const roomSelect = document.getElementById('newRoomNumberCalendar');
@@ -838,7 +838,7 @@ document.getElementById('newRoomCategoryCalendar').addEventListener('change', as
 
     // Filter out the current room and booked rooms
     availableRoomsCalendar = data.data.rooms.filter(room =>
-      !room.status && room.room_number !== currentBookingCalendar.room_number
+      String(room._id) !== String(currentBookingCalendar.room_id)
     );
 
     console.log(`✅ Found ${availableRoomsCalendar.length} available rooms`);
@@ -917,7 +917,7 @@ document.getElementById('confirmTransferBtnCalendar').addEventListener('click', 
       })
     });
 
-    const data = await response.json();
+    const data = await window.portalResponseJSON(response);
 
     if (data.status) {
       showToast(data.message, 'success');

@@ -24,7 +24,7 @@ document.querySelectorAll('.transfer-payment-panel').forEach(panel => {
     try {
       const params = new URLSearchParams({ reference_id: panel.dataset.reference, old_room_id: panel.dataset.oldRoom, new_room_id: select.value });
       const response = await fetch('/portal/transfer-room-quote?' + params, { cache: 'no-store' });
-      const result = await response.json();
+      const result = await window.portalResponseJSON(response);
       if (request !== revision) return;
       if (!response.ok || !result.status) throw Error(result.message || 'Unable to calculate price.');
       quote = result.data;

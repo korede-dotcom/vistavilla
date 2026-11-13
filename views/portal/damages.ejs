@@ -450,7 +450,7 @@
                 body: formData
             });
 
-            const result = await response.json();
+            const result = await window.portalResponseJSON(response);
 
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnText;
@@ -499,7 +499,7 @@
                 body: JSON.stringify({ status })
             });
 
-            const result = await response.json();
+            const result = await window.portalResponseJSON(response);
 
             if (result.status) {
                 Toastify({
@@ -539,7 +539,7 @@
                 method: 'DELETE',
             });
 
-            const result = await response.json();
+            const result = await window.portalResponseJSON(response);
 
             if (result.status) {
                 Toastify({

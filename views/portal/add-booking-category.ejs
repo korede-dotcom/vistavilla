@@ -494,7 +494,7 @@ button:hover {
             const response = await fetch(`/portal/api/pricing/category/${categoryId}?date=${checkInDate}`);
             if (!response.ok) throw Error('Unable to fetch room pricing');
             if (response.ok) {
-                const data = await response.json();
+                const data = await window.portalResponseJSON(response);
                 if (revision !== priceRequest) return;
                 if (!data.status) throw Error(data.message || 'Unable to fetch room pricing');
                 pricingReady = true;
@@ -842,7 +842,7 @@ button:hover {
             body: formData, // Send FormData instead of JSON
         });
         
-        const data = await response.json();
+        const data = await window.portalResponseJSON(response);
         resetLoader(loader, submitButton);
 
         if (!data.status) {

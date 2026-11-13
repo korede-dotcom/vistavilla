@@ -162,7 +162,7 @@
                 // pictures: Array.from(formData.get('pictures')).map(file => file.name) // If using image upload feature
 			}),
         })
-            .then(response => response.json())
+            .then(response => window.portalResponseJSON(response))
             .then(data => {
                 if (data.status) {
                     showToast('Promotion created successfully!', 'success');

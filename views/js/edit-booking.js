@@ -10,7 +10,7 @@
  form.addEventListener('change',invalidate);
  async function request(action,body){
   const response=await fetch('/portal/edit-booking/'+encodeURIComponent(form.dataset.reference)+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  const result=await response.json();if(!response.ok||!result.status)throw Error(result.message||'Unable to edit this booking.');return result;
+  const result=await window.portalResponseJSON(response);if(!response.ok||!result.status)throw Error(result.message||'Unable to edit this booking.');return result;
  }
  preview.addEventListener('click',async()=>{
   if(!form.reportValidity())return;const current=++revision;previewed=null;save.disabled=true;summary.textContent='Calculating totals and checking room availability…';

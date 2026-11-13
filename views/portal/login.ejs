@@ -352,6 +352,7 @@
 <script defer src="/js/camera-upload.js?v=1"></script>
 <link rel="stylesheet" href="/css/app-tools.css?v=2">
 <script defer src="/js/app-tools.js?v=2"></script>
+<script src="/js/portal-response.js?v=1"></script>
 </head>
 
 <body>
@@ -458,7 +459,7 @@
 				},
 				body: JSON.stringify(data)
 			})
-			.then(response => response.json())
+			.then(response => window.portalResponseJSON(response))
 			.then(data => {
 				loginBtn.innerHTML = 'Sign In';
 				loginBtn.disabled = false;

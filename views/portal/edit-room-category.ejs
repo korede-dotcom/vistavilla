@@ -538,7 +538,7 @@ async function deleteImage(url, button) {
                 credentials: 'include' // Include cookies for authentication
             });
 
-            const result = await response.json();
+            const result = await window.portalResponseJSON(response);
 
             if (response.ok && result.status) {
                 // Mark for deletion from room category database
@@ -588,7 +588,7 @@ async function updateCategoryImages() {
             credentials: 'include' // Include cookies for authentication
         });
 
-        const result = await response.json();
+        const result = await window.portalResponseJSON(response);
 
         if (response.ok && result.status) {
             // Clear deleted images array after successful update
@@ -735,7 +735,7 @@ document.getElementById('roomCategoryForm').addEventListener('submit', async fun
                         throw new Error(`Upload failed: ${uploadResponse.statusText}`);
                     }
 
-                    const uploadData = await uploadResponse.json();
+                    const uploadData = await window.portalResponseJSON(uploadResponse);
 
                     if (uploadData.status && uploadData.data.createdImages && uploadData.data.createdImages.length > 0) {
                         const imageUrl = uploadData.data.createdImages[0].url;
@@ -782,7 +782,7 @@ document.getElementById('roomCategoryForm').addEventListener('submit', async fun
                 credentials: 'include' // Include cookies for authentication
             });
 
-            const result = await response.json();
+            const result = await window.portalResponseJSON(response);
             console.log('📥 Server response:', result);
 
             if (response.ok && result.status) {

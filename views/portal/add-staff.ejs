@@ -149,7 +149,7 @@
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
+        .then(response => window.portalResponseJSON(response))
         .then(result => {
             console.log('Success:', result);
 			if (!result.status) {

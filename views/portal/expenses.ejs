@@ -296,7 +296,7 @@
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            const result = await window.portalResponseJSON(response);
 
             if (result.status) {
                 Toastify({
@@ -336,7 +336,7 @@
                 method: 'DELETE',
             });
 
-            const result = await response.json();
+            const result = await window.portalResponseJSON(response);
 
             if (result.status) {
                 Toastify({

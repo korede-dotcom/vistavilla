@@ -160,7 +160,7 @@
 
       try {
         const response = await fetch(`/portal/check-booking/?key=${keyValue}`,{method: 'POST',headers: {'Content-Type': 'application/json'}});
-		const data = await response.json();
+		const data = await window.portalResponseJSON(response);
 		console.log("🚀 ~ document.getElementById ~ data:", data.message)
 
         if (!data.status) {

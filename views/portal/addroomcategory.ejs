@@ -240,7 +240,7 @@
 					method: 'POST',
 					body: imageData
 				});
-				const cloudinaryData = await cloudinaryResponse.json();
+				const cloudinaryData = await window.portalResponseJSON(cloudinaryResponse);
 				uploadedImageUrls.push(cloudinaryData.secure_url); // Collect uploaded image URL
 			} catch (error) {
 				console.error('Error uploading to Cloudinary:', error);
@@ -289,7 +289,7 @@
 				form.reset(); // Reset the form after successful submission
 				document.getElementById('imagePreview').innerHTML = ''; // Clear image previews
 			} else {
-				const errorData = await response.json();
+				const errorData = await window.portalResponseJSON(response);
 				Toastify({
 					text: `Failed to add category: ${errorData.message}`,
 					duration: 3000,

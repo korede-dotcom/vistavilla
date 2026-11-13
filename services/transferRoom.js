@@ -9,20 +9,22 @@ const History = require('../models/PaymentHistory');
 const Transfer = require('../models/RoomTransfer');
 const { Op } = require('sequelize');
 const calculate = require('../utils/transferPricing');
-module.exports = async function transferRoom(input, staff, quoteOnly = false) {
+const availability = require('../utils/transferAvailability');
+module.exports = async function transferRoom(input, staff, quoteOnly = false, optionsOverride = {}) {
   if (input.payment_method && !['cash','transfer','card'].includes(input.payment_method)) throw new Error('Invalid payment method.');
   return db.transaction(async transaction => {
     const options = { transaction, lock: transaction.LOCK.UPDATE };
     const booking = await Booking.findOne({ where: { reference_id: input.reference_id }, ...options });
     if (!booking) throw new Error('Booking not found.');
     if (['cancelled','initiated','pending'].includes(booking.status) || booking.checked_out) throw new Error('Only active bookings can be transferred.');
+    if(optionsOverride.exchange && !booking.checked_in)throw Error('The customer must be checked in to exchange rooms.');
+    const window = availability.windowFor(booking);
     if (String(booking.room_id) !== String(input.old_room_id)) throw new Error('This booking has already moved. Refresh before trying again.');
     if (String(input.new_room_id) === String(booking.room_id)) throw new Error('Choose a different room.');
     const newRoom = await RoomNumber.findOne({ where: { _id: input.new_room_id }, ...options });
-    if (!newRoom || newRoom.status || newRoom.is_retained) throw new Error('The selected room is unavailable.');
+    if (!newRoom || availability.retained(newRoom,window)) throw new Error('The selected room is unavailable.');
     const conflict = await Booking.findOne({ where: {
-      room_id: newRoom._id, status: { [Op.in]: ['success','confirmed','part-payment','completed'] },
-      checked_out: false, start: { [Op.lt]: booking.end }, end: { [Op.gt]: booking.start }
+      ...availability.overlap(booking,window), room_id: newRoom._id
     }, transaction });
     if (conflict) throw new Error('The selected room has an overlapping booking.');
     const category = await Room.findOne({ where: { _id: newRoom.category_id }, ...options });
@@ -32,7 +34,7 @@ module.exports = async function transferRoom(input, staff, quoteOnly = false) {
       start_date: { [Op.lte]: date }, end_date: { [Op.gte]: date } }, order: [['created_at','DESC']], transaction });
     const part = await PartPayment.findOne({ where: { reference_id: booking.reference_id }, ...options });
     const sameCategory = String(booking.category_id) === String(newRoom.category_id);
-    const money = calculate({ preserveTotal: sameCategory, rate: special ? special.special_price : category.price, nights: booking.night,
+    const money = calculate({ preserveTotal: sameCategory || optionsOverride.exchange === true, rate: special ? special.special_price : category.price, nights: booking.night,
       oldTotal: booking.amount, amountPaid: booking.amount_paid, existingPartPayment: part,
       bookingStatus: booking.status, bookingBalance: booking.balance, paidNow: input.amount_paid_now === undefined || input.amount_paid_now === '' ? 0 : input.amount_paid_now });
     if (quoteOnly) return { ...money, sameCategory, nights: booking.night, rate: sameCategory ? money.total / 100 / booking.night : special ? Number(special.special_price) : Number(category.price) };
@@ -53,7 +55,7 @@ module.exports = async function transferRoom(input, staff, quoteOnly = false) {
       old_category_id: booking.category_id, old_category_name: booking.category_name,
       new_room_id: newRoom._id, new_room_number: newRoom.room_number, new_room_name: newRoom.room_name,
       new_category_id: newRoom.category_id, new_category_name: category.category_name,
-      transferred_by: staff.name, transfer_reason: input.transfer_reason || null,
+      transferred_by: staff.name, transfer_reason: optionsOverride.exchange ? 'Exchange to a free room. '+String(input.transfer_reason||'').slice(0,500) : input.transfer_reason || null,
       booking_start: booking.start, booking_end: booking.end,
       old_total: booking.amount, new_total: money.total, price_adjustment: money.adjustment,
       amount_paid_now: money.paidNow, balance_after: money.balance
@@ -66,12 +68,13 @@ module.exports = async function transferRoom(input, staff, quoteOnly = false) {
       notes: `Room changed: ${fromRoom} → ${newRoom.room_number}`
     }, { transaction });
     await Booking.update({ ...roomData, amount: money.total, amount_paid: money.amountPaid, balance: money.balance,
-      is_part_payment: money.balance > 0, status: money.balance ? 'part-payment' : 'success', ...(sameCategory ? {} : {discount_per_night: 0, discount_scope: 'booking', discount_type: 'flat', discount_value: 0, price_subtotal: money.total, discount_total: 0})
+      is_part_payment: money.balance > 0, status: money.balance ? 'part-payment' : 'success', ...(sameCategory || optionsOverride.exchange === true ? {} : {discount_per_night: 0, discount_scope: 'booking', discount_type: 'flat', discount_value: 0, price_subtotal: money.total, discount_total: 0})
     }, { where: { id: booking.id }, transaction });
     if (booking.checked_in) {
       await RoomNumber.update({ status: false }, { where: { _id: booking.room_id }, transaction });
       await newRoom.update({ status: true }, { transaction });
     }
+    if(optionsOverride.exchange)await require('../models/ActivityLog').create({actor_id:String(staff._id),actor_name:staff.name,actor_role:staff.roleName,action:'update',resource:'room_exchange',record_id:booking.reference_id,description:`Exchanged ${booking.guest_name} (${booking.reference_id}) from Room ${fromRoom} to available Room ${newRoom.room_number}; booking price and payments unchanged.`,outcome:'success',fields:['room_id','room_number','category_id']},{transaction});
     return { old_room: fromRoom, new_room: newRoom.room_number, ...money };
   });
 };

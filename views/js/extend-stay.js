@@ -18,7 +18,7 @@
   if(!nights.reportValidity())return;const revision=++generation;confirm.disabled=true;quote=null;output.textContent='Checking availability and prices…';
   try{
    const params=new URLSearchParams({reference_id:form.dataset.reference,extra_nights:nights.value,expected_end:form.dataset.end});
-   const response=await fetch('/portal/extend-stay/quote?'+params,{cache:'no-store'});const result=await response.json();
+   const response=await fetch('/portal/extend-stay/quote?'+params,{cache:'no-store'});const result=await window.portalResponseJSON(response);
    if(revision!==generation)return;if(!response.ok||!result.status)throw Error(result.message||'Unable to preview extension.');
    quote=result.data;csrf=result.csrf;display();
   }catch(error){if(revision===generation)output.textContent=error.message;}
@@ -27,7 +27,7 @@
   event.preventDefault();if(!quote||!form.reportValidity())return;confirm.disabled=true;
   try{
    const response=await fetch('/portal/extend-stay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reference_id:form.dataset.reference,expected_end:form.dataset.end,extra_nights:nights.value,amount_paid_now:paid.value,payment_option:option.value,payment_method:document.getElementById('extensionMethod').value,csrf})});
-   const result=await response.json();if(!response.ok||!result.status)throw Error(result.message||'Extension failed.');window.location.reload();
+   const result=await window.portalResponseJSON(response);if(!response.ok||!result.status)throw Error(result.message||'Extension failed.');window.location.reload();
   }catch(error){output.textContent=error.message;confirm.disabled=false;}
  });
 })();

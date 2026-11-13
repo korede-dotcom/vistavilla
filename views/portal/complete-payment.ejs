@@ -226,7 +226,7 @@
     async function loadPaymentHistory() {
         try {
             const response = await fetch('/portal/api/payment-history/<%= partPayment._id %>');
-            const data = await response.json();
+            const data = await window.portalResponseJSON(response);
 
             const container = document.getElementById('paymentHistoryContainer');
 
@@ -342,7 +342,7 @@
                 })
             });
 
-            const data = await response.json();
+            const data = await window.portalResponseJSON(response);
 
             if (data.message) {
                 Toastify({

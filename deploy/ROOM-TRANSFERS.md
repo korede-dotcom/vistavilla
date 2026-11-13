@@ -43,3 +43,9 @@ real upgrade and subsequent balance collection in a staging database. No live
 database was accessed or migrated during implementation.
 
 Same-category transfers (such as one-bedroom to another one-bedroom in the same category) retain the agreed booking total and discount. No new payment is required: leave Amount paid now at 0 or blank. Existing outstanding balances remain payable and tracked in Part Payments. Transfers into a different category still recalculate using the destination category rate. Both the calendar and booking-details transfer dialogs support this behavior.
+
+## Exchange two occupied rooms
+
+Hotel managers and CEO can open a checked-in customer's Booking Details and choose **Exchange Rooms**. Select another checked-in customer to swap the two room assignments. Both bookings keep their dates, prices, discounts, receipts and outstanding balances; no payment is collected. Both remaining stays are checked for overlapping third-party reservations and retained rooms. The exchange updates existing part-payment room labels and records both room transfers plus a named exchange activity log in one transaction. Receptionists do not have access to exchanges.
+
+The Exchange Rooms dialog also offers **Move to a free room**. Managers/CEO can select a room available for the customer's remaining stay, including another category, while retaining the agreed booking price and discounts. This exchange collects no payment; existing balances remain recorded. Availability is checked again when saving, occupancy flags and payment-ledger room details are updated, and a named activity entry records the move. Use the regular Transfer Room option when a different-category move should recalculate pricing.

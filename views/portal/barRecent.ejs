@@ -411,6 +411,7 @@
 <script defer src="/js/camera-upload.js?v=1"></script>
 <link rel="stylesheet" href="/css/app-tools.css?v=2">
 <script defer src="/js/app-tools.js?v=2"></script>
+<script src="/js/portal-response.js?v=1"></script>
 </head>
 
 <body>
@@ -616,7 +617,7 @@ showPage(currentPage);
         //         },
         //         body: JSON.stringify(payload)
         //     })
-        //     .then(response => response.json())
+        //     .then(response => window.portalResponseJSON(response))
         //     .then(data => {
         //         Toastify({
 		// 			text: data.message,
@@ -677,7 +678,7 @@ showPage(currentPage);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        return response.json();
+        return window.portalResponseJSON(response);
     })
     .then(data => {
         // Alert for successful response

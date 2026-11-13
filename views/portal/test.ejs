@@ -107,7 +107,7 @@
       }),
     });
 
-    const data = await response.json();
+    const data = await window.portalResponseJSON(response);
 
     // Handle success response
     if (data.status) {

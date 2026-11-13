@@ -40,6 +40,9 @@ routes.use('/caution-fees', require('./CautionFees'));
 routes.use('/activity-logs', require('./ActivityLogs'));
 routes.use('/extend-stay', require('./StayExtension'));
 routes.use('/edit-booking', require('./EditBooking'));
+routes.use('/exchange-rooms', require('./RoomExchange'));
+routes.use('/category-editor', require('./CategoryEditor'));
+routes.use('/room-editor', require('./RoomEditor'));
 routes.use('/room-images', require('./RoomImages'));
 
 routes.get("/",async (req,res) => {
@@ -1724,10 +1727,14 @@ routes.get("/api/pricing/category/:categoryId", checkAuthCookie, expressAsyncHan
 routes.get("/api/hotel/rooms/category/:categoryId", checkAuthCookie, expressAsyncHandler(async (req, res) => {
   const { categoryId } = req.params;
 
-  const rooms = await RoomNumber.findAll({
-    where: { category_id: categoryId },
-    order: [['room_number', 'ASC']]
-  });
+  let rooms;
+  if(req.query.reference_id) {
+    try { rooms=await require('../services/availableTransferRooms')(req.query.reference_id,categoryId); }
+    catch(error) { return res.status(400).json({status:false,message:error.message}); }
+    res.set('Cache-Control','no-store');
+  } else {
+    rooms=await RoomNumber.findAll({where:{category_id:categoryId},order:[['room_number','ASC']]});
+  }
 
   return res.status(200).json({
     status: true,
