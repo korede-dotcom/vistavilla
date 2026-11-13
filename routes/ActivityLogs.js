@@ -8,7 +8,7 @@ const {Op}=require('sequelize');
 const words=require('../utils/activityDescription');
 router.get('/',auth,asyncHandler(async(req,res)=>{
  const user=await User.findByPk(req.user._id);
- if(!user||!['ceo','hotelmanager'].includes(user.roleName))return res.status(403).send('CEO or hotel manager access required.');
+ if(!user||!['ceo','hotelmanager'].includes(require('../utils/userRole')(user)))return res.status(403).send('CEO or hotel manager access required.');
  res.set('Cache-Control','no-store');
  let options;
  try { options=require('../utils/activityFilters')(req.query); } catch(error) { return res.status(400).send(error.message); }

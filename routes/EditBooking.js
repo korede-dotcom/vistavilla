@@ -5,7 +5,7 @@ const edit=require('../services/editBooking'),{initial}=require('../utils/bookin
 const token=req=>crypto.createHmac('sha256',process.env.JWT_SECRET).update('edit-booking:'+req.cookies.jwtToken).digest('hex');
 router.use(auth,asyncHandler(async(req,res,next)=>{
  const user=await User.findByPk(req.user._id);
- if(!user||!['ceo','hotelmanager','hotel receptionist'].includes(user.roleName))return res.status(403).send('Hotel staff access required.');
+ if(!user||!['ceo','hotelmanager','hotel receptionist'].includes(require('../utils/userRole')(user)))return res.status(403).send('Hotel staff access required.');
  res.set('Cache-Control','no-store');next();
 }));
 router.get('/:reference',asyncHandler(async(req,res)=>{

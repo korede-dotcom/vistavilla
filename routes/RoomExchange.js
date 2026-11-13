@@ -4,8 +4,8 @@ const auth=require('../middleware/checkAuthCookie'),User=require('../models/User
 const token=req=>crypto.createHmac('sha256',process.env.JWT_SECRET).update('room-exchange:'+req.cookies.jwtToken).digest('hex');
 router.use(auth,handler(async(req,res,next)=>{
  const user=await User.findByPk(req.user._id);
- if(!user||!['ceo','hotelmanager'].includes(user.roleName))return res.status(403).json({status:false,message:'Hotel manager or CEO access required.'});
- req.user.roleName=user.roleName;res.set('Cache-Control','no-store');next();
+ if(!user||!['ceo','hotelmanager'].includes(require('../utils/userRole')(user)))return res.status(403).json({status:false,message:'Hotel manager or CEO access required.'});
+ req.user.roleName=require('../utils/userRole')(user);res.set('Cache-Control','no-store');next();
 }));
 router.get('/',handler(async(req,res)=>{
  const bookings=await Booking.findAll({where:{checked_in:true,checked_out:false,status:{[Op.in]:['success','confirmed','part-payment','completed']},end:{[Op.gt]:new Date()}},attributes:['reference_id','room_id','room_number','guest_name'],order:[['room_number','ASC']]});

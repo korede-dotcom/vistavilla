@@ -3,7 +3,7 @@ const router=require('express').Router(),handler=require('express-async-handler'
 const auth=require('../middleware/checkAuthCookie'),User=require('../models/User'),Room=require('../models/RoomNumbers'),Images=require('../models/Images'),cloudinary=require('../repos/cloudinary');
 const photos=require('../services/publicPhotos'),policy=require('../utils/publicPhoto');
 router.use(auth,handler(async(req,res,next)=>{
- const user=await User.findByPk(req.user._id);if(!user||!['ceo','hotelmanager','hotel receptionist'].includes(user.roleName))return res.status(403).json({status:false,message:'Hotel staff access required.'});
+ const user=await User.findByPk(req.user._id);if(!user||!['ceo','hotelmanager','hotel receptionist'].includes(require('../utils/userRole')(user)))return res.status(403).json({status:false,message:'Hotel staff access required.'});
  const id=req.query.room_id||(req.body||{}).room_id;if(!/^\d+$/.test(String(id)))return res.status(400).json({status:false,message:'Select a room.'});
  req.photoRoom=await Room.findByPk(id);if(!req.photoRoom)return res.status(404).json({status:false,message:'Room not found.'});next();
 }));

@@ -5,7 +5,7 @@ const {Op}=require('sequelize');
 const csrf=req=>crypto.createHmac('sha256',process.env.JWT_SECRET).update('room-editor:'+req.cookies.jwtToken).digest('hex');
 router.use(auth,handler(async(req,res,next)=>{
  const user=await User.findByPk(req.user._id);
- if(!user||!['ceo','hotelmanager','hotel receptionist'].includes(user.roleName))return res.status(403).json({status:false,message:'Hotel staff access required.'});
+ if(!user||!['ceo','hotelmanager','hotel receptionist'].includes(require('../utils/userRole')(user)))return res.status(403).json({status:false,message:'Hotel staff access required.'});
  res.set('Cache-Control','no-store');next();
 }));
 router.get('/:id',handler(async(req,res)=>{

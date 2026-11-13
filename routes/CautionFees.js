@@ -11,7 +11,7 @@ const { amountInKobo } = require('../utils/cautionFee');
 const { Op } = require('sequelize');
 router.use(auth, asyncHandler(async (req,res,next) => {
   const user = await User.findByPk(req.user._id);
-  if (!user || !['ceo','hotelmanager','hotel receptionist'].includes(user.roleName)) return res.status(403).send('Hotel staff access required.');
+  if (!user || !['ceo','hotelmanager','hotel receptionist'].includes(require('../utils/userRole')(user))) return res.status(403).send('Hotel staff access required.');
   res.set('Cache-Control','no-store');
   next();
 }));

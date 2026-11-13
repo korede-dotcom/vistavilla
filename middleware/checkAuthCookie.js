@@ -23,10 +23,12 @@ async function checkAuthCookie(req, res, next) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded; // Attach the decoded user data to the request object
         const findOne = await User.findOne({where:{_id:req.user._id}})
-        console.log("🚀 ~ checkAuthCookie ~ findOne:", findOne)
-        if (!findOne.status) {
+
+        if (!findOne || !findOne.status) {
             return res.redirect('/portal');
         }
+        req.user = {...decoded, _id:findOne._id, name:findOne.name, email:findOne.email,
+            role_id:Number(findOne.role_id), roleName:require('../utils/userRole')(findOne)};
         next(); // Proceed to the next middleware/route handler
     } catch (err) {
         // Token verification failed, redirect to login
