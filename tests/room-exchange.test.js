@@ -44,8 +44,8 @@ function request(method,body={}){return new Promise((resolve,reject)=>{
  const res={statusCode:200,set(){},status(code){this.statusCode=code;return this;},json(data){resolve({http:this.statusCode,data});}};
  router.handle(req,res,error=>reject(error||Error('No response')));
 });}
-test('exchange requires manager or CEO and rejects forged writes',async()=>{
- for(const allowed of ['hotelmanager','ceo']){role=allowed;assert.equal((await request('GET')).http,200);assert.equal((await request('POST',input)).http,403);}
- role='hotel receptionist';assert.equal((await request('GET')).http,403);assert.equal((await request('POST',input)).http,403);
+test('exchange allows hotel staff and rejects other roles and forged writes',async()=>{
+ for(const allowed of ['hotelmanager','ceo','hotel receptionist']){role=allowed;assert.equal((await request('GET')).http,200);assert.equal((await request('POST',input)).http,403);}
+ role='bar manager';assert.equal((await request('GET')).http,403);assert.equal((await request('POST',input)).http,403);
  ejs.compile(fs.readFileSync('views/portal/check-in.ejs','utf8'));
 });
