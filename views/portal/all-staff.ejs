@@ -1,4 +1,4 @@
-﻿<%- include('partial/header', { title: 'Vistavilla Apartment',email:email,roleName:roleName }) %>
+<%- include('partial/header', { title: 'Vistavilla Apartment',email:email,roleName:roleName }) %>
 <%- include('partial/sidebar', { name: name}) %>
 		<div class="page-wrapper">
 			<div class="content container-fluid">
@@ -46,6 +46,9 @@
     </thead>
 	<tbody>
 		<% staffs.forEach(element => { %>
+        <% if(!element.user){ %>
+        <tr><td><span class="badge badge-warning">Missing linked user account</span></td><td><%= element.user_id %></td><td>—</td><td><%= element.phonenumber %></td><td><%= element.createdAt ? new Date(element.createdAt).toLocaleString() : '—' %></td><td>—</td><td>Account unavailable</td><td class="text-right"><small>Requires account review</small></td></tr>
+        <% }else{ %>
 			<tr>
 				<td>
 					<h2 class="table-avatar">
@@ -93,7 +96,7 @@
 					</div>
 				</td>
 			</tr>
-		<% }) %>
+		<% } }) %>
 	</tbody>
 	
 </table>

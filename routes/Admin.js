@@ -889,9 +889,9 @@ routes.post("/check-in", checkAuthCookie, expressAsyncHandler( async (req, res) 
   }))
 
   routes.get("/all-staff",checkAuthCookie,expressAsyncHandler(async (req, res) => {
-      Staff.belongsTo(User,{foreignKey:"user_id"})
+      if(!Staff.associations.user)Staff.belongsTo(User,{foreignKey:"user_id",targetKey:"_id",as:"user"})
       const staffs = await Staff.findAll({
-            include: { model: User },
+            include: { model: User, as: "user", required: false, attributes: ["_id","name","email","createdAt","roleName","status"] },
             order: [
                 ['createdAt', 'ASC'], // Primary sort column
                 ['user', 'name', 'ASC'] // Secondary sort column
@@ -998,36 +998,8 @@ routes.get("/add-staff",checkAuthCookie,expressAsyncHandler(async (req, res) => 
 }))
 
 routes.post("/add-staff",checkAuthCookie,expressAsyncHandler(async (req, res) => {
-      let transaction
-      transaction = await connectDB.transaction()
-      console.log("🚀 ~ routes.post ~ req.body:", req.body)
-      function generateRandomString(length) {
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-              result += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            return result;
-          }
-      const randPass = generateRandomString(6)
-      console.log("🚀 ~ routes.post ~ randPass:", randPass)
-      const saveUser = await User.create({
-            name: req.body.first + " " + req.body.last,
-            email: req.body.email,
-            password: randPass,
-            role_id: parseInt(req.body.role),
-            
-
-      },{transaction})
-      console.log("🚀 ~ routes.post ~ saveUser:", saveUser)
-      const saveStaff = await Staff.create({
-            user_id: saveUser._id,
-            phonenumber: req.body.phonenumber,
-            address: req.body.address,
-            // designation: req.body.designation,
-      },{transaction})
-      await transaction.commit()
-     
+      const randPass = require('crypto').randomBytes(12).toString('base64url');
+      const {user:saveUser,staff:saveStaff}=await require('../services/createStaff')(req.body,randPass);
 
           const sendEmail = await SendEmail(
             "Welcome On Board",
