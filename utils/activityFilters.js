@@ -1,7 +1,7 @@
 'use strict';
 const {Op}=require('sequelize');
 const actions=['create','create_many','update','update_many','delete','delete_many','view','request'];
-const resources=['hotelbooking','booking_revision','roomtransfer','room_exchange','stay_extension','expense','damage','paymenthistory','partpayment','roomnumber','roomcategory','user','staff','pricingconfig','marque','hotel_setting','HTTP'];
+const resources=['hotelbooking','booking_revision','roomtransfer','room_exchange','balance_clearance','stay_extension','expense','damage','paymenthistory','partpayment','roomnumber','roomcategory','user','staff','pricingconfig','marque','hotel_setting','HTTP'];
 function date(value){if(!value)return null;if(!/^\d{4}-\d{2}-\d{2}$/.test(value)||new Date(value+'T00:00:00Z').toISOString().slice(0,10)!==value)throw Error('Enter valid filter dates.');return new Date(value+'T00:00:00+01:00');}
 module.exports=function activityFilters(query){
  const text=value=>typeof value==='string'?value.trim():'';

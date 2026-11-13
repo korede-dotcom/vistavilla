@@ -92,7 +92,8 @@ const renderPartPaymentsPage = asynchandler(async (req, res) => {
     name: req.user.name,
     email: req.user.email,
     roleName: req.user.roleName,
-    partPayments: partPayments
+    partPayments: partPayments,
+    clearances: ['ceo','hotelmanager'].includes(req.user.roleName) ? await require('../models/BalanceClearance').findAll({order:[['createdAt','DESC']],limit:100}) : []
   });
 });
 

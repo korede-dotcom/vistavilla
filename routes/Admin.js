@@ -40,6 +40,7 @@ routes.use('/caution-fees', require('./CautionFees'));
 routes.use('/activity-logs', require('./ActivityLogs'));
 routes.use('/extend-stay', require('./StayExtension'));
 routes.use('/edit-booking', require('./EditBooking'));
+routes.use('/clear-balance', require('./BalanceClearance'));
 routes.use('/exchange-rooms', require('./RoomExchange'));
 routes.use('/category-editor', require('./CategoryEditor'));
 routes.use('/room-editor', require('./RoomEditor'));

@@ -237,6 +237,7 @@
                                                            style="background-color: #6b6b6b; border-color: #6b6b6b;">
                                                             <i class="fas fa-money-bill-wave"></i> Complete Payment
                                                         </a>
+                                                        <% if(['ceo','hotelmanager','hotel receptionist'].includes(roleName)){ %><button type="button" class="btn btn-sm btn-outline-danger clear-balance-button" data-id="<%= payment._id %>" data-guest="<%= payment.guest_name %>" data-balance="<%= payment.balance %>">Clear Balance</button><% } %>
                                                     <% } else { %>
                                                         <span class="badge badge-success">
                                                             <i class="fas fa-check"></i> Paid in Full
@@ -289,6 +290,13 @@
         link.click();
     });
 </script>
+
+<% if(['ceo','hotelmanager'].includes(roleName)){ %>
+<section class="page-wrapper" style="min-height:0"><div class="content container-fluid"><div class="card"><div class="card-body"><h4>Cleared balances — latest 100</h4><p>Amounts waived without receiving payment. Full history is also available in Activity Logs.</p><div class="table-responsive"><table class="table table-striped"><thead><tr><th>Date</th><th>Customer / booking</th><th>Room</th><th>Amount cleared</th><th>Cleared by</th><th>Reason</th></tr></thead><tbody>
+<% (typeof clearances!=='undefined'?clearances:[]).forEach(item=>{ %><tr><td><%= new Date(item.createdAt).toLocaleString('en-NG',{timeZone:'Africa/Lagos'}) %></td><td><%= item.guest_name %><br><%= item.reference_id %></td><td><%= item.room_number %></td><td>₦<%= (item.amount/100).toLocaleString('en-NG') %></td><td><%= item.cleared_by_name %></td><td style="white-space:normal"><%= item.reason %></td></tr><% }); %>
+</tbody></table></div></div></div></div></section><% } %>
+<div id="clearBalanceModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="clearBalanceTitle"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 id="clearBalanceTitle">Clear unpaid balance</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button></div><form id="clearBalanceForm"><div class="modal-body"><p id="clearBalanceSummary"></p><p>This waives the balance. No money will be recorded as received. The CEO and manager can review the reason and your name.</p><label for="clearBalanceReason">Reason (required)</label><textarea id="clearBalanceReason" class="form-control" required minlength="5" maxlength="1000" rows="3"></textarea><p id="clearBalanceMessage" role="status" class="mt-3"></p></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button><button type="submit" id="confirmClearBalance" class="btn btn-danger" disabled>Clear Balance</button></div></form></div></div></div>
+<script src="/js/clear-balance.js" defer></script>
 </body>
 </html>
 

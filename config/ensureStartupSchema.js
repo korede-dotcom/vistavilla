@@ -4,6 +4,7 @@
 // and records are left intact; running this on every restart is safe.
 async function ensureStartupSchema(db, models) {
   if (!models) models = {
+    BalanceClearance: require('../models/BalanceClearance'),
     PartPayment: require('../models/PartPayment'),
     RoomTransfer: require('../models/RoomTransfer'),
     Booking: require('../models/HotelBooking'),
@@ -23,6 +24,7 @@ async function ensureStartupSchema(db, models) {
     if (db.getDialect() === 'postgres') {
       await db.query('SELECT pg_advisory_xact_lock(791204631)', { transaction });
     }
+    if (models.BalanceClearance) await models.BalanceClearance.sync({transaction});
     if (models.BookingRevision) await models.BookingRevision.sync({transaction});
     if (models.StayExtension) await models.StayExtension.sync({transaction});
     if (models.HotelSettings) await models.HotelSettings.sync({transaction});
