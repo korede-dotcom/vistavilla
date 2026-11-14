@@ -18,3 +18,11 @@ test('modals explain expired sessions, missing routes, large uploads and server 
  await assert.rejects(parse(response('<html>',413)),/files are too large/);
  await assert.rejects(parse(response('<html>',502)),/try again shortly/);
 });
+
+test('login can read invalid-credential and first-login JSON on HTTP 401 without treating them as expired sessions',async()=>{
+ const invalid=await parse(response('{"data":{"status":false,"message":"Incorrect email or password"}}',401),{authentication:true});
+ assert.equal(invalid.data.message,'Incorrect email or password');
+ const first=await parse(response('{"data":{"status":false,"errorCode":"01","user_id":"staff"}}',401),{authentication:true});
+ assert.equal(first.data.errorCode,'01');
+ await assert.rejects(parse(response('<!DOCTYPE html>',502),{authentication:true}),/server could not complete/);
+});

@@ -113,3 +113,16 @@ test('restored homepage keeps carousel and booking form with neutral theme contr
   const css = fs.readFileSync(path.join(__dirname, '../views/css/theme.css'),'utf8');
   for (const color of ['#76d6ff', '#66ccff', '#36454f']) assert.ok(!css.includes(color));
 });
+
+test('about section renders booking and room totals with five static stars',()=>{
+ const filename=path.join(__dirname,'../views/index.ejs');
+ for(const siteStats of [{totalBookings:1234,totalRooms:27},{totalBookings:0,totalRooms:0}]){
+  const html=ejs.render(fs.readFileSync(filename,'utf8'),{content:defaults,landingDefaults:defaults,activeMarquees:null,pkgs:[],siteStats},{filename});
+  assert.ok(html.includes(`data-count="${siteStats.totalBookings}">${siteStats.totalBookings}</span>`));
+  assert.ok(html.includes(`data-count="${siteStats.totalRooms}">${siteStats.totalRooms}</span>`));
+  assert.ok(html.includes('aria-label="5 out of 5 stars">★★★★★'));
+  assert.ok(html.includes('src="/js/site-stats.js?v=1"'));
+  assert.ok(html.includes('src="/images/most-rated.jpg"'));
+  assert.ok(!html.includes('data-suffix="+">500'));
+ }
+});

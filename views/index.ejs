@@ -1,4 +1,6 @@
+<% const heroSlides = typeof heroPhotos !== 'undefined' && heroPhotos.length ? heroPhotos : [{url:'/images/most-rated.jpg',title:'Vistavilla Apartments',href:'/rooms'}]; %>
 <% const publicGallery = typeof galleryPhotos !== 'undefined' ? galleryPhotos : []; %>
+<% const aboutStats = typeof siteStats !== 'undefined' ? siteStats : {totalBookings:null,totalRooms:null}; %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +12,7 @@
 <!-- Stylesheets -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/flatpickr.min.css" rel="stylesheet">
-<link href="css/booking-modern.css" rel="stylesheet">
+<link href="/css/booking-modern.css?v=20261114-3" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="css/slick-theme.css">
 <link rel="stylesheet" type="text/css" href="css/slick.css">
@@ -356,8 +358,8 @@ line-height: 1;
   <section class="modern-hero-carousel">
     <!-- Carousel Slides -->
     <div class="hero-carousel-slides">
-      <% publicGallery.slice(0,5).forEach((photo,index) => { %>
-        <div class="hero-slide <%= index === 0 ? 'active' : '' %>" style="background-image: url('<%= photo.url %>');"><div class="hero-slide-overlay"></div></div>
+      <% heroSlides.forEach((photo,index) => { %>
+        <div class="hero-slide <%= index === 0 ? 'active' : '' %>" data-title="<%= photo.title %>" data-href="<%= photo.href %>"><img class="hero-room-photo" src="<%= photo.url %>" alt="<%= photo.title %>" decoding="async" <%- index===0?'fetchpriority="high"':'' %>><div class="hero-slide-overlay"></div></div>
       <% }); %>
     </div>
 
@@ -379,23 +381,20 @@ line-height: 1;
       </div>
     </div>
 
+    <a class="hero-photo-caption" id="heroPhotoCaption" href="<%= heroSlides[0].href %>"><%= heroSlides[0].title %> <span aria-hidden="true">→</span></a>
     <!-- Carousel Navigation -->
-    <button class="hero-carousel-btn hero-carousel-prev" id="heroPrev">
+    <button class="hero-carousel-btn hero-carousel-prev" id="heroPrev" type="button" aria-label="Previous room photo">
       <i class="fas fa-chevron-left"></i>
     </button>
-    <button class="hero-carousel-btn hero-carousel-next" id="heroNext">
+    <button class="hero-carousel-btn hero-carousel-next" id="heroNext" type="button" aria-label="Next room photo">
       <i class="fas fa-chevron-right"></i>
     </button>
 
     <!-- Carousel Indicators -->
     <div class="hero-carousel-indicators" id="heroIndicators">
-      <% if (pkgs && pkgs.length > 0) { %>
-        <% pkgs.slice(0, 5).forEach((category, index) => { %>
-          <% if (category.picture && category.picture.length > 0) { %>
-            <button class="hero-indicator <%= index === 0 ? 'active' : '' %>" data-slide="<%= index %>"></button>
-          <% } %>
-        <% }); %>
-      <% } %>
+      <% heroSlides.forEach((photo,index)=>{ %>
+        <button type="button" class="hero-indicator <%= index===0?'active':'' %>" data-slide="<%= index %>" aria-label="Show <%= photo.title %> photo <%= index+1 %>"></button>
+      <% }); %>
     </div>
   </section>
 
@@ -499,33 +498,28 @@ line-height: 1;
         <p class="luxury-text">Discover the top-rated and safest apartment in Lagos, where comfort meets security. Experience exceptional hospitality, world-class amenities, and a commitment to guest safety that sets us apart.</p>
         <p class="luxury-text">Enjoy peace of mind during your stay, knowing you're in an apartment with a reputation for excellence and the highest standards of service in Lagos. Every detail is crafted to ensure your comfort and satisfaction.</p>
 
+
+      </div>
+
+      <div class="modern-about-images modern-about-images-single">
+        <div class="modern-about-image">
+          <img loading="lazy" decoding="async" src="/images/most-rated.jpg" width="765" height="1019" alt="Exterior of Vistavilla Apartments in Lagos">
+        </div>
+      </div>
         <div class="modern-about-stats">
           <div class="modern-stat-item">
-            <span class="modern-stat-number" data-suffix="+">500</span>
+            <span class="modern-stat-number" data-stat="totalBookings" data-count="<%= aboutStats.totalBookings %>"><%= aboutStats.totalBookings === null ? '—' : aboutStats.totalBookings %></span>
             <span class="modern-stat-label">Happy Guests</span>
           </div>
           <div class="modern-stat-item">
-            <span class="modern-stat-number">4.9</span>
+            <span class="modern-stat-stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <span class="modern-stat-label">Average Rating</span>
           </div>
           <div class="modern-stat-item">
-            <span class="modern-stat-number" data-suffix="+">15</span>
+            <span class="modern-stat-number" data-stat="totalRooms" data-count="<%= aboutStats.totalRooms %>"><%= aboutStats.totalRooms === null ? '—' : aboutStats.totalRooms %></span>
             <span class="modern-stat-label">Luxury Rooms</span>
           </div>
         </div>
-      </div>
-
-      <div class="modern-about-images">
-        <div class="modern-about-image hover-lift">
-          <img loading="lazy" decoding="async" src="<%= publicGallery[0] ? publicGallery[0].url : '/images/logo.png' %>" alt="Vistavilla Apartment">
-        </div>
-        <div class="modern-about-image hover-lift">
-          <img loading="lazy" decoding="async" src="<%= publicGallery[0] ? publicGallery[0].url : '/images/logo.png' %>" alt="Vistavilla Apartment Room">
-        </div>
-        <div class="modern-about-image hover-lift">
-          <img loading="lazy" decoding="async" src="<%= publicGallery[0] ? publicGallery[0].url : '/images/logo.png' %>" alt="Vistavilla Apartment Interior">
-        </div>
-      </div>
     </div>
   </section>
 
@@ -733,7 +727,7 @@ line-height: 1;
               <div class="contact-info">
                 <div class="icon-box"><i class="flaticon-customer-service"></i></div>
                 <span>Booking Now</span>
-                <h4 class="title">+2348085021450</h4>
+                <h4 class="title">09117777221</h4>
               </div>
             </div>
           </div>
@@ -1595,8 +1589,7 @@ line-height: 1;
             <div class="contact-info">
               <div class="icon-box"><i class="flaticon-customer-service"></i></div>
               <span>Booking Now</span>
-              <h4 class="title">+2348085021450</h4>
-              <!-- <h4 class="title">+2347070230039</h4> -->
+              <h4 class="title">09117777221</h4>
             </div>
           </div>
         </div>
@@ -2026,59 +2019,6 @@ document.querySelector('.checkout-form').addEventListener('submit', async functi
     observer.observe(el);
   });
 
-  // Hero Carousel Functionality
-  let currentSlide = 0;
-  const slides = document.querySelectorAll('.hero-slide');
-  const indicators = document.querySelectorAll('.hero-indicator');
-  const totalSlides = slides.length;
-
-  function showSlide(index) {
-    // Remove active class from all slides and indicators
-    slides.forEach(slide => slide.classList.remove('active'));
-    indicators.forEach(indicator => indicator.classList.remove('active'));
-
-    // Add active class to current slide and indicator
-    if (slides[index]) {
-      slides[index].classList.add('active');
-    }
-    if (indicators[index]) {
-      indicators[index].classList.add('active');
-    }
-  }
-
-  function nextSlide() {
-    currentSlide = (currentSlide + 1) % totalSlides;
-    showSlide(currentSlide);
-  }
-
-  function prevSlide() {
-    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-    showSlide(currentSlide);
-  }
-
-  // Navigation buttons
-  const prevBtn = document.getElementById('heroPrev');
-  const nextBtn = document.getElementById('heroNext');
-
-  if (prevBtn) {
-    prevBtn.addEventListener('click', prevSlide);
-  }
-
-  if (nextBtn) {
-    nextBtn.addEventListener('click', nextSlide);
-  }
-
-  // Indicator buttons
-  indicators.forEach((indicator, index) => {
-    indicator.addEventListener('click', () => {
-      currentSlide = index;
-      showSlide(currentSlide);
-    });
-  });
-
-  // Auto-play carousel every 5 seconds
-  setInterval(nextSlide, 5000);
-
   // Gallery Image Rotation
   const galleryItems = document.querySelectorAll('.luxury-gallery-item-clean');
 
@@ -2121,37 +2061,10 @@ document.querySelector('.checkout-form').addEventListener('submit', async functi
     <% } %>
   }
 
-  // Animate numbers in stats
-  function animateValue(element, start, end, duration) {
-    let startTimestamp = null;
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      const value = Math.floor(progress * (end - start) + start);
-      element.textContent = value + (element.dataset.suffix || '');
-      if (progress < 1) {
-        window.requestAnimationFrame(step);
-      }
-    };
-    window.requestAnimationFrame(step);
-  }
-
-  // Trigger stat animations when visible
-  const statObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
-        entry.target.classList.add('animated');
-        const finalValue = parseInt(entry.target.textContent);
-        animateValue(entry.target, 0, finalValue, 2000);
-      }
-    });
-  }, { threshold: 0.5 });
-
-  document.querySelectorAll('.modern-stat-number').forEach(stat => {
-    statObserver.observe(stat);
-  });
 </script>
 
+<script defer src="/js/site-stats.js?v=1"></script>
+<script defer src="/js/hero-carousel.js?v=1"></script>
 </body>
 
 </html>

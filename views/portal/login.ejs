@@ -352,7 +352,7 @@
 <script defer src="/js/camera-upload.js?v=1"></script>
 <link rel="stylesheet" href="/css/app-tools.css?v=2">
 <script defer src="/js/app-tools.js?v=2"></script>
-<script src="/js/portal-response.js?v=1"></script>
+<script src="/js/portal-response.js?v=2"></script>
 </head>
 
 <body>
@@ -459,34 +459,36 @@
 				},
 				body: JSON.stringify(data)
 			})
-			.then(response => window.portalResponseJSON(response))
+			.then(response => window.portalResponseJSON(response,{authentication:true}))
 			.then(data => {
 				loginBtn.innerHTML = 'Sign In';
 				loginBtn.disabled = false;
 
-				if(data.data && data.data.status === false){
+				const failure=data.data && data.data.status===false ? data.data : data;
+				if(failure.status === false){
 					Toastify({
-						text: data.data.message,
+						text: failure.message,
 						duration: 3000,
 						close: true,
 						gravity: "top",
 						position: "center",
 						stopOnFocus: true,
 						style: {
-							background: data.data.errorCode === '01'
+							background: failure.errorCode === '01'
 								? "linear-gradient(135deg, #1c2830 0%, #2a3a45 100%)"
 								: "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)",
 						}
 					}).showToast();
 
-					if (data.data.errorCode === '01') {
+					if (failure.errorCode === '01') {
 						setTimeout(() => {
-							window.location.href = "/portal/first-time?id=" + data.data.user_id;
+							window.location.href = "/portal/first-time?id=" + failure.user_id;
 						}, 1500);
 					}
 					return;
 				}
 
+				if(data.status!==true)throw Error("Unable to sign in. Please try again.");
 				Toastify({
 					text: data.message || "Login successful!",
 					close: true,
@@ -509,7 +511,7 @@
 			loginBtn.disabled = false;
 
 			Toastify({
-				text: "Network error. Please check your connection and try again.",
+				text: error.name === "TypeError" ? "Unable to connect. Please check your connection and try again." : (error.message || "Unable to sign in. Please try again."),
 				duration: 4000,
 				close: true,
 				gravity: "top",

@@ -7,6 +7,11 @@ const {bookEvent} = require("../middleware/validator")
 const roomRepo = require("../repos/Room-repo")
 const SendEmail = require("../utils/sendEmail")
 
+routes.get('/api/site-stats',require('express-async-handler')(async(req,res)=>{
+ res.set('Cache-Control','no-store');
+ res.json({status:true,data:await require('../services/siteStats')()});
+}));
+
 routes.get("/event/pkg",managerControl.active)
         .get("/gym/pkg",Gym.getactivePkgs)
         .get("/",Hotel.clientHotelRoom)

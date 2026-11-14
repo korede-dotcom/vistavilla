@@ -881,6 +881,14 @@ input, select, textarea {
   overflow: hidden;
 }
 
+.modern-hero-carousel {
+  background: #15191c url('/images/most-rated.jpg') center / cover no-repeat;
+}
+.hero-room-photo { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.hero-photo-caption { position: absolute; bottom: 74px; left: 50%; transform: translateX(-50%); z-index: 5; color: #fff !important; background: #0009; padding: 10px 20px; border-radius: 24px; text-align: center; max-width: 80%; }
+.hero-carousel-btn:disabled { display: none; }
+@media (prefers-reduced-motion: reduce) { .hero-slide { transition: none; } }
+
 /* Carousel Slides Container */
 .hero-carousel-slides {
   position: absolute;
@@ -2978,12 +2986,13 @@ input, select, textarea {
   max-width: 1300px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 100px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 72px);
   align-items: center;
 }
 
 .modern-about-content {
+  min-width: 0;
   animation: slideInLeft 0.8s ease-out;
 }
 
@@ -3016,10 +3025,31 @@ input, select, textarea {
 }
 
 .modern-about-stats {
-  display: flex;
-  gap: 48px;
-  margin-top: 40px;
-  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 0;
+  width: 100%;
+}
+
+.modern-about-stats .modern-stat-item {
+  text-align: center;
+  padding: 20px 12px;
+  min-width: 0;
+}
+
+.modern-about-stats .modern-stat-item::before {
+  display: none;
+}
+
+.modern-stat-stars {
+  display: block;
+  color: var(--primary-brand);
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 56px;
+  margin-bottom: 10px;
+  white-space: nowrap;
 }
 
 .modern-stat-item {
@@ -3069,6 +3099,18 @@ input, select, textarea {
   gap: 20px;
 }
 
+.modern-about-images-single {
+  width: 100%;
+  max-width: 520px;
+  min-width: 0;
+  justify-self: center;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.modern-about-images-single .modern-about-image img {
+  height: auto;
+}
+
 .modern-about-image {
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -3099,7 +3141,7 @@ input, select, textarea {
   }
 
   .modern-about-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -10380,3 +10422,11 @@ select:focus {
   }
 }
 
+
+@media (max-width: 480px) {
+  .modern-about-stats { gap: 8px; }
+  .modern-about-stats .modern-stat-item { padding: 12px 0; }
+  .modern-about-stats .modern-stat-number { font-size: 36px; line-height: 40px; }
+  .modern-stat-stars { font-size: 18px; line-height: 40px; }
+  .modern-about-stats .modern-stat-label { font-size: 10px; letter-spacing: 0.02em; }
+}

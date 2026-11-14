@@ -92,6 +92,7 @@ const getBookings = asynchandler( async (req,res) => {
 
 const showRoom = asynchandler(async (req,res) => { res.render('show', {images:(await publicPhotos.gallery()).map(photo=>photo.url)}); });
 const clientHotelRoom = asynchandler(async (req,res) => {
+    const siteStats = await require('../services/siteStats')();
     const pkgs = await publicPhotos.attachCategories(await hotelConfigRepository.roomCategorys())
     const currentTime = moment().format('YYYY-MM-DD HH:mm:ss'); // Ensure correct format
 
@@ -157,11 +158,14 @@ const clientHotelRoom = asynchandler(async (req,res) => {
 // console.log("🚀 ~ clientHotelRoom ~ activeMarquees:", activeMarquees);
 
 
+   const galleryPhotos = await publicPhotos.gallery();
    return res.render(require('path').join(__dirname, '../views/index.ejs'), {
         landingDefaults: require('../utils/landingContent').defaults,
         content: await require('../models/LandingSettings').get(),
         pkgs: pkgsWithPricing,
-        galleryPhotos: await publicPhotos.gallery(),
+        galleryPhotos,
+        heroPhotos: require('../utils/heroPhotos')(pkgsWithPricing,galleryPhotos),
+        siteStats,
         activeMarquees:activeMarquees
       });
 })
