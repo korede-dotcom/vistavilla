@@ -17,3 +17,10 @@ test('damage controller preserves parser upload URLs instead of uploading the sa
  const source=fs.readFileSync('controllers/Damage.js','utf8');assert.ok(!source.includes('uploadMany(req.files)'));assert.equal((source.match(/url:file.path,public_id:file.filename/g)||[]).length,2);
  const details=fs.readFileSync('views/portal/check-in.ejs','utf8');assert.ok(details.includes('bookings.id_card_url'));assert.ok(details.includes('alt="Customer ID card"'));
 });
+
+test('public room photos preserve high-resolution details while private uploads keep existing limits',()=>{
+ const parser=repo.createParser('images/rooms/1',10,{highResolution:true});
+ assert.equal(parser.storage.options.params.transformation[0].width,3840);
+ assert.equal(parser.storage.options.params.transformation[0].quality,'auto:best');
+ assert.equal(repo.idsParser.storage.options.params.transformation[0].width,1600);
+});

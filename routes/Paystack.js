@@ -379,7 +379,7 @@ console.log(bookedRooms);
     
   }));
   
-routes.post('/paystack/initialize', expressAsyncHandler( async (req, res) => {
+routes.post('/paystack/initialize', require('../middleware/onlinePaymentsPaused'), expressAsyncHandler( async (req, res) => {
     req.body = require('../utils/cautionFee').withoutBookingFee(req.body);
     const { category_id,start,end } = req.body;
     console.log(req.body)

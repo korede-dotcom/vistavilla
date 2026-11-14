@@ -473,7 +473,7 @@ let deletedImages = [];
 const categoryId = new URLSearchParams(window.location.search).get('id');
 
 // Image compression function
-async function compressImage(file, maxWidth = 1920, maxHeight = 1080, quality = 0.85) {
+async function compressImage(file, maxWidth = 3840, maxHeight = 3840, quality = 0.95) {
     return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -529,10 +529,13 @@ async function deleteImage(url, button) {
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
 
             // Delete from Cloudinary via backend
-            const response = await fetch('/images/delete', {
+            const sessionResponse=await fetch('/portal/category-editor/'+encodeURIComponent(categoryId),{cache:'no-store'});
+            const session=await window.portalResponseJSON(sessionResponse);
+            if(!sessionResponse.ok||!session.status)throw Error(session.message||'Reload the category editor.');
+            const response = await fetch('/portal/category-editor/'+encodeURIComponent(categoryId)+'/photos', {
                 method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json', 'X-CSRF-Token':session.data.csrf
                 },
                 body: JSON.stringify({ url }),
                 credentials: 'include' // Include cookies for authentication
@@ -542,13 +545,13 @@ async function deleteImage(url, button) {
 
             if (response.ok && result.status) {
                 // Mark for deletion from room category database
-                deletedImages.push(url);
+
 
                 // Remove from UI
                 button.closest('.image-item').remove();
 
                 // Update the category immediately to remove from database
-                await updateCategoryImages();
+
 
                 Toastify({
                     text: "Image deleted successfully!",

@@ -45,7 +45,7 @@ router.use('/:id/photos',handler(async(req,res,next)=>{
 }));
 router.post('/:id/photos',(req,res,next)=>{
  const policy=require('../utils/publicPhoto');
- require('../repos/cloudinary').createParser(policy.folder()+'/categories/'+req.params.id,10)(req,res,next);
+ require('../repos/cloudinary').createParser(policy.folder()+'/categories/'+req.params.id,10,{highResolution:true})(req,res,next);
 },handler(async(req,res)=>{
  if(!req.files||!req.files.length)return res.status(400).json({status:false,message:'Select category photos to upload.'});
  const picture=[...(req.editCategory.picture||[]),...req.files.map(file=>file.path)];
@@ -56,9 +56,10 @@ router.post('/:id/photos',(req,res,next)=>{
 router.delete('/:id/photos',handler(async(req,res)=>{
  const existing=req.editCategory.picture||[];
  if(typeof req.body.url!=='string'||!existing.includes(req.body.url))return res.status(404).json({status:false,message:'Category photo not found.'});
- const picture=existing.filter(url=>url!==req.body.url);
- await req.editCategory.update({picture});
- require('../services/publicPhotos').invalidate();
- res.json({status:true,data:{picture},message:'Photo removed from this category.'});
+ try{
+  const id=await require('../services/deletePublicPhoto')(req.body.url);
+  const picture=existing.filter(url=>url!==req.body.url&&require('../utils/cloudinaryImageId')(url)!==id);
+  res.json({status:true,data:{picture},message:'Photo deleted from Cloudinary and the website.'});
+ }catch(error){res.status(400).json({status:false,message:error.message});}
 }));
 module.exports=router;

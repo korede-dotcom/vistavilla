@@ -8,6 +8,7 @@ stub('../models/User',{findByPk:async()=>({roleName:role})});
 stub('../models/Room',{findOne:async()=>({_id:2,category_name:'Two bed',picture:['https://res.cloudinary.com/villa/image/upload/images/old.jpg'],update:async data=>{saved=data;}})});
 stub('../services/publicPhotos',{invalidate(){}});
 stub('../repos/cloudinary',{createParser:folder=>(req,res,next)=>{assert.equal(folder,'images/categories/2');req.files=[{path:'https://res.cloudinary.com/villa/image/upload/images/categories/2/new.jpg'}];next();}});
+stub('../services/deletePublicPhoto',async url=>{saved={picture:[]};return 'images/old';});
 const router=require('../routes/CategoryEditor');
 function request(method,body={},url='/2',headers={}){return new Promise((resolve,reject)=>{
  const req={method,url,body,headers,get(name){return headers[name];},cookies:{jwtToken:'session'}};

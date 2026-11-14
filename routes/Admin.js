@@ -294,7 +294,12 @@ routes.post("/edit-room-category",checkAuthCookie,async (req,res) => {
         // Handle deleted images
         if (updateData.deletedImages && Array.isArray(updateData.deletedImages)) {
           console.log("🗑️ Deleting images:", updateData.deletedImages);
-          currentPictures = currentPictures.filter(img => !updateData.deletedImages.includes(img));
+          for(const photo of updateData.deletedImages) {
+            if(!currentPictures.includes(photo))return res.status(400).json({status:false,message:'Category photo not found.'});
+          }
+          for(const photo of updateData.deletedImages)await require('../services/deletePublicPhoto')(photo);
+          const deletedIds=updateData.deletedImages.map(require('../utils/cloudinaryImageId'));
+          currentPictures = currentPictures.filter(img => !updateData.deletedImages.includes(img)&&!deletedIds.includes(require('../utils/cloudinaryImageId')(img)));
           delete updateData.deletedImages;
         }
 

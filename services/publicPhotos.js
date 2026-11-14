@@ -1,8 +1,9 @@
 'use strict';
 const Images=require('../models/Images'),Rooms=require('../models/RoomNumbers'),cloudinary=require('cloudinary').v2;
 const {folder,allowedId,allowedUrl}=require('../utils/publicPhoto');
-let cached=null,until=0,pending=null;
-exports.invalidate=()=>{cached=null;until=0;};
+let cached=null,until=0,pending=null,generation=0;
+const deleted=new Set();
+exports.invalidate=id=>{if(id)deleted.add(id);generation++;cached=null;until=0;};
 exports.roomPhotos=async ids=>{
  const {Op}=require('sequelize');
  const rows=await Images.findAll({where:{for:'hotelroom',status:true,...(ids?{room_id:{[Op.in]:ids}}:{})},order:[['_id','DESC']]});
@@ -10,6 +11,7 @@ exports.roomPhotos=async ids=>{
 };
 exports.gallery=async()=>{
  if(cached&&until>Date.now())return cached;if(pending)return pending;
+ const version=generation;
  pending=(async()=>{
   const registered=await exports.roomPhotos();
   let resources=[];
@@ -21,7 +23,7 @@ exports.gallery=async()=>{
    } while(cursor);
   }catch(error){console.warn('Public gallery folder unavailable:',error.message);}
   const items=[...registered.map(row=>({url:row.url,public_id:row.public_id,room_id:row.room_id,title:'Room photos',type:'Apartment',created_at:row.createdAt})),...resources.map(row=>({url:row.secure_url,public_id:row.public_id,title:'Vistavilla Apartments',type:'Gallery',created_at:row.created_at}))];
-  const seen=new Set();cached=items.filter(item=>allowedId(item.public_id)&&allowedUrl(item.url)&&!seen.has(item.public_id)&&seen.add(item.public_id));until=Date.now()+60000;return cached;
+  const seen=new Set();const filtered=items.filter(item=>!deleted.has(item.public_id)&&allowedId(item.public_id)&&allowedUrl(item.url)&&!seen.has(item.public_id)&&seen.add(item.public_id));if(version===generation){cached=filtered;until=Date.now()+60000;}return filtered;
  })();try{return await pending;}finally{pending=null;}
 };
 exports.attachCategories=async categories=>{

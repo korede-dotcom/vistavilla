@@ -479,7 +479,7 @@ async function uploadRoomImages() {
 }
 
 async function deleteRoomImage(imageId, roomId) {
-	if (!confirm('Are you sure you want to delete this image?')) {
+	if (!confirm('Delete this photo permanently from Cloudinary and the website, including any other room or category using it?')) {
 		return;
 	}
 

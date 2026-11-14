@@ -33,8 +33,8 @@ function renderCategoryPhotos(pictures) {
  pictures.forEach(url=>{
   const card=document.createElement('div');card.className='col-6 col-md-4 mb-3';
   const image=document.createElement('img');image.src=url;image.alt='Category photo';image.className='img-fluid rounded';image.style.cssText='width:100%;height:120px;object-fit:cover';
-  const remove=document.createElement('button');remove.type='button';remove.className='btn btn-sm btn-outline-danger mt-2';remove.textContent='Remove from category';
-  remove.onclick=async()=>{remove.disabled=true;await categoryPhotoAction('DELETE',JSON.stringify({url}),{'Content-Type':'application/json'});remove.disabled=false;};
+  const remove=document.createElement('button');remove.type='button';remove.className='btn btn-sm btn-outline-danger mt-2';remove.textContent='Delete photo';
+  remove.onclick=async()=>{if(!confirm('Delete this photo permanently from Cloudinary and the website, including any other room or category using it?'))return;remove.disabled=true;await categoryPhotoAction('DELETE',JSON.stringify({url}),{'Content-Type':'application/json'});remove.disabled=false;};
   card.append(image,remove);gallery.append(card);
  });
  if(!pictures.length)gallery.textContent='No category photos yet.';

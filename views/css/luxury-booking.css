@@ -492,3 +492,24 @@ html {
 
 
 
+
+/* Room choices follow the site's neutral palette in both themes. */
+.room-choice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: 1px solid #d7d7d7;
+  border-radius: 10px;
+  background: #fff;
+  color: #303030;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .2s, border-color .2s, color .2s;
+}
+.room-choice:hover { background: #f0f0f0; border-color: #666; color: #161616; text-decoration: none; }
+.room-choice.is-selected { background: linear-gradient(135deg,#1c2830,#404040); border-color: #303030; color: #fff; }
+.room-choice:focus-visible { outline: 2px solid #777; outline-offset: 3px; }
+html[data-theme="dark"] .room-choice { background: #191919; border-color: #555; color: #eee; }
+html[data-theme="dark"] .room-choice:hover { background: #303030; border-color: #999; }
+html[data-theme="dark"] .room-choice.is-selected { background: #eee; border-color: #eee; color: #161616; }

@@ -16,13 +16,13 @@ class CloudinaryRepo {
     this.damagesParser = this.createParser('damages', 5);
   }
 
-  createParser(folder, files) {
+  createParser(folder, files, options = {}) {
     const storage = new CloudinaryStorage({
       cloudinary,
       params: {
         folder,
         allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-        transformation: [{ width: 1600, height: 1600, crop: 'limit', quality: 'auto:good' }],
+        transformation: [{ width: options.highResolution ? 3840 : 1600, height: options.highResolution ? 3840 : 1600, crop: 'limit', quality: options.highResolution ? 'auto:best' : 'auto:good' }],
         timeout: 120000
       }
     });
@@ -78,7 +78,7 @@ class CloudinaryRepo {
 
   delete(publicId) {
     return new Promise((resolve, reject) => {
-      cloudinary.uploader.destroy(publicId, function(error, result) {
+      cloudinary.uploader.destroy(publicId, {invalidate:true}, function(error, result) {
         if (error) {
           console.log('Cloudinary delete error:', error);
           reject(error);

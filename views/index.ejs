@@ -12,7 +12,7 @@
 <!-- Stylesheets -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/flatpickr.min.css" rel="stylesheet">
-<link href="/css/booking-modern.css?v=20261114-3" rel="stylesheet">
+<link href="/css/booking-modern.css?v=20261114-4" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="css/slick-theme.css">
 <link rel="stylesheet" type="text/css" href="css/slick.css">
@@ -359,7 +359,7 @@ line-height: 1;
     <!-- Carousel Slides -->
     <div class="hero-carousel-slides">
       <% heroSlides.forEach((photo,index) => { %>
-        <div class="hero-slide <%= index === 0 ? 'active' : '' %>" data-title="<%= photo.title %>" data-href="<%= photo.href %>"><img class="hero-room-photo" src="<%= photo.url %>" alt="<%= photo.title %>" decoding="async" <%- index===0?'fetchpriority="high"':'' %>><div class="hero-slide-overlay"></div></div>
+        <div class="hero-slide <%= index === 0 ? 'active' : '' %>" data-title="<%= photo.title %>" data-href="<%= photo.href %>"><img class="hero-room-photo" src="<%= photo.src || photo.url %>" srcset="<%= photo.srcset || '' %>" sizes="100vw" alt="<%= photo.title %>" decoding="async" <%- index===0?'fetchpriority="high"':'' %>><div class="hero-slide-overlay"></div></div>
       <% }); %>
     </div>
 
@@ -1682,7 +1682,7 @@ line-height: 1;
     </div>
     <div class="search-modal-footer" id="modalFooter">
       <div class="search-modal-actions">
-        <button class="search-modal-btn search-modal-btn-secondary" onclick="closeSearchModal()">
+        <button class="search-modal-btn search-modal-btn-secondary" id="searchCancelBtn" onclick="closeSearchModal()">
           <i class="fas fa-times"></i>
           <span>Cancel</span>
         </button>
@@ -1717,13 +1717,27 @@ function closeSearchModal() {
   document.body.style.overflow = '';
 }
 
+function ensureSearchActions(){
+  let view=document.getElementById('viewRoomsBtn');
+  let cancel=document.getElementById('searchCancelBtn');
+  if(view && cancel)return {view,cancel};
+  const footer=document.getElementById('modalFooter');
+  const actions=document.createElement('div');actions.className='search-modal-actions';
+  cancel=document.createElement('button');cancel.type='button';cancel.id='searchCancelBtn';cancel.className='search-modal-btn search-modal-btn-secondary';cancel.textContent='Cancel';cancel.onclick=closeSearchModal;
+  view=document.createElement('button');view.type='button';view.id='viewRoomsBtn';view.className='search-modal-btn search-modal-btn-primary';view.textContent='View Available Rooms';
+  actions.append(cancel,view);footer.replaceChildren(actions);
+  return {view,cancel};
+}
+
 function showSuccessModal(data, formData) {
   const modal = document.getElementById('searchResultsModal');
   const modalIcon = document.getElementById('modalIcon');
   const modalTitle = document.getElementById('modalTitle');
   const modalSubtitle = document.getElementById('modalSubtitle');
   const modalBody = document.getElementById('modalBody');
-  const viewRoomsBtn = document.getElementById('viewRoomsBtn');
+  const {view:viewRoomsBtn,cancel}=ensureSearchActions();
+  viewRoomsBtn.hidden=false;
+  cancel.textContent='Cancel';
 
   // Set success state
   modalIcon.className = 'search-modal-icon success';
@@ -1731,35 +1745,32 @@ function showSuccessModal(data, formData) {
   modalTitle.textContent = 'Rooms Available!';
   modalSubtitle.textContent = `We found ${data.data.availableRoomDetails.length} available room(s) for your dates`;
 
-  // Build room list
-  const roomsList = data.data.availableRoomDetails.map(room => `
-    <div class="search-result-item">
-      <div class="search-result-icon">
-        ${room.roomImages && room.roomImages[0] ? `<img src="${encodeURI(room.roomImages[0]).replace(/"/g, '%22')}" alt="Room photo" style="width:72px;height:60px;object-fit:cover;border-radius:10px" loading="lazy">` : '<i class="fas fa-door-open"></i>'}
-      </div>
-      <div class="search-result-info">
-        <p class="search-result-label">Room Number</p>
-        <p class="search-result-value">${room.room_number}</p>
-      </div>
-    </div>
-  `).join('');
-
-  modalBody.innerHTML = `
-    <div class="search-results-list">
-      ${roomsList}
-    </div>
-  `;
-
-  // Set up view rooms button
-  const roomNumbers = data.data.availableRoomDetails.map(room => room.room_number);
-  viewRoomsBtn.onclick = function() {
-    window.location.href = `/available-rooms?id=${data.data.category_id}&data=${roomNumbers.toString()}&start=${formData.start}&end=${formData.end}`;
-  };
+  // Each result opens that exact room, preserving the search dates and other choices.
+  const rooms = data.data.availableRoomDetails;
+  const roomNumbers = rooms.map(room => room.room_number);
+  const urlForRoom = room => '/available-rooms?' + new URLSearchParams({id:String(data.data.category_id),data:roomNumbers.join(','),start:formData.start,end:formData.end,room_id:String(room._id)}).toString();
+  const list = document.createElement('div');
+  list.className = 'search-results-list';
+  rooms.forEach(room => {
+    const link = document.createElement('a');
+    link.className = 'search-result-item';link.href = urlForRoom(room);
+    link.setAttribute('aria-label','View Room '+room.room_number);
+    const icon = document.createElement('div');icon.className = 'search-result-icon';
+    if(room.roomImages && room.roomImages[0]){
+      const image=document.createElement('img');image.src=room.roomImages[0];image.alt='Room photo';image.loading='lazy';image.style.cssText='width:72px;height:60px;object-fit:cover;border-radius:10px';icon.append(image);
+    }else{icon.innerHTML='<i class="fas fa-door-open"></i>';}
+    const info=document.createElement('div');info.className='search-result-info';
+    const label=document.createElement('p');label.className='search-result-label';label.textContent='Room Number';
+    const value=document.createElement('p');value.className='search-result-value';value.textContent=room.room_number;
+    info.append(label,value);link.append(icon,info);list.append(link);
+  });
+  modalBody.replaceChildren(list);
+  viewRoomsBtn.onclick = function(){window.location.href = urlForRoom(rooms[0]);};
 
   openSearchModal();
 }
 
-function showErrorModal(message) {
+function showErrorModal(message, noRooms = true) {
   const modal = document.getElementById('searchResultsModal');
   const modalIcon = document.getElementById('modalIcon');
   const modalTitle = document.getElementById('modalTitle');
@@ -1770,24 +1781,17 @@ function showErrorModal(message) {
   // Set error state
   modalIcon.className = 'search-modal-icon error';
   modalIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
-  modalTitle.textContent = 'No Rooms Available';
-  modalSubtitle.textContent = 'Sorry, we couldn\'t find any available rooms';
+  modalTitle.textContent = noRooms ? 'No Rooms Available' : 'Unable to search rooms';
+  modalSubtitle.textContent = noRooms ? 'Sorry, we couldn\'t find any available rooms for these dates' : 'Please try your search again.';
 
-  modalBody.innerHTML = `
-    <div class="search-error-message">
-      <p>${message}</p>
-    </div>
-  `;
+  const errorBox=document.createElement('div');errorBox.className='search-error-message';
+  const errorText=document.createElement('p');errorText.textContent=message;
+  errorBox.append(errorText);modalBody.replaceChildren(errorBox);
 
-  // Hide footer for error state
-  modalFooter.innerHTML = `
-    <div class="search-modal-actions">
-      <button class="search-modal-btn search-modal-btn-primary" onclick="closeSearchModal()" style="width: 100%;">
-        <span>Try Different Dates</span>
-        <i class="fas fa-calendar-alt"></i>
-      </button>
-    </div>
-  `;
+  // Keep action elements mounted so later searches can reuse their handlers.
+  const {view,cancel}=ensureSearchActions();
+  view.hidden=true;
+  cancel.textContent=noRooms?'Try Different Dates':'Try Again';
 
   openSearchModal();
 }
@@ -1840,73 +1844,15 @@ document.querySelector('#bookingForm').addEventListener('submit', async function
     } else {
       loginBtn.innerHTML = originalHTML;
       loginBtn.disabled = false;
-      showErrorModal(response.statusText || 'An error occurred while searching');
+      showErrorModal('We could not check availability. Please try again shortly.', false);
     }
   } catch (error) {
     loginBtn.innerHTML = originalHTML;
     loginBtn.disabled = false;
-    showErrorModal(error.message || 'An error occurred while searching');
+    showErrorModal('We could not check availability. Please check your connection and try again.', false);
     console.error('Error:', error);
   }
 });
-// Second form handler (for hidden booking section)
-document.querySelector('.checkout-form').addEventListener('submit', async function(event) {
-  event.preventDefault();
-
-  const checkInDate = document.querySelector('.checkininput').value;
-  const checkOutDate = document.querySelector('.checkoutinput').value;
-  const roomCategory = document.querySelector('.checkout-form2').value || document.querySelector('.checkout-form select').value;
-
-  if (!checkInDate || !checkOutDate || !roomCategory) {
-    alert("Please input all fields");
-    return;
-  }
-
-  const loginBtn = document.getElementById('checkAvailability');
-  const originalHTML = loginBtn.innerHTML;
-
-  // Show loader
-  loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Searching...</span>';
-  loginBtn.disabled = true;
-
-  const formData = {
-    start: checkInDate,
-    end: checkOutDate,
-    category_id: roomCategory
-  };
-
-  try {
-    const response = await fetch(`/check-availability/?end=${formData.end}&start=${formData.start}&category_id=${formData.category_id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formData)
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      loginBtn.innerHTML = originalHTML;
-      loginBtn.disabled = false;
-
-      if (data?.data.availableRoomDetails.length > 0) {
-        showSuccessModal(data, formData);
-      } else {
-        showErrorModal(data.message || 'No rooms available for the selected dates');
-      }
-    } else {
-      loginBtn.innerHTML = originalHTML;
-      loginBtn.disabled = false;
-      showErrorModal(response.statusText || 'An error occurred while searching');
-    }
-  } catch (error) {
-    loginBtn.innerHTML = originalHTML;
-    loginBtn.disabled = false;
-    showErrorModal(error.message || 'An error occurred while searching');
-    console.error('Error:', error);
-  }
-});
-
 // Promotion Modal Popup
 <% if (activeMarquees) { %>
   // Check if user has seen the promotion modal in this session

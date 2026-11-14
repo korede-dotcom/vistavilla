@@ -7,5 +7,7 @@ module.exports=function heroPhotos(categories=[],gallery=[]){
  categories.forEach(category=>{const url=(category.picture||[]).find(allowedUrl);if(url)add({url,title:category.category_name||'Vistavilla Apartments',href:'/rooms?id='+encodeURIComponent(category._id)});});
  categories.forEach(category=>(category.picture||[]).forEach(url=>add({url,title:category.category_name||'Vistavilla Apartments',href:'/rooms?id='+encodeURIComponent(category._id)})));
  gallery.forEach(photo=>add({url:photo.url,title:photo.title||'Vistavilla Apartments',href:'/gallery'}));
- return photos.length?photos:[{url:'/images/most-rated.jpg',title:'Vistavilla Apartments',href:'/rooms'}];
+ const selected=photos.length?photos:[{url:'/images/most-rated.jpg',title:'Vistavilla Apartments',href:'/rooms'}];
+ const delivery=require('./photoDelivery');
+ return selected.map(photo=>({...photo,src:delivery(photo.url,2560),srcset:[960,1600,2560,3840].map(width=>delivery(photo.url,width)+' '+width+'w').join(', ')}));
 };

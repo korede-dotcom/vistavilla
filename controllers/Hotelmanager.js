@@ -92,6 +92,7 @@ const getBookings = asynchandler( async (req,res) => {
 
 const showRoom = asynchandler(async (req,res) => { res.render('show', {images:(await publicPhotos.gallery()).map(photo=>photo.url)}); });
 const clientHotelRoom = asynchandler(async (req,res) => {
+    res.set('Cache-Control','no-store, max-age=0');
     const siteStats = await require('../services/siteStats')();
     const pkgs = await publicPhotos.attachCategories(await hotelConfigRepository.roomCategorys())
     const currentTime = moment().format('YYYY-MM-DD HH:mm:ss'); // Ensure correct format
@@ -256,10 +257,11 @@ const clientRoomAvailable = asynchandler(async (req, res) => {
     const { id, data,start,end } = req.query;
 
     // Split the data string into an array of room numbers
-    const roomNumbers = data?.split(',');
+    const roomNumbers = typeof data==='string' ? data.split(',').filter(Boolean) : [];
+    if(!id||!roomNumbers.length)return res.status(400).send('Select an available room before continuing.');
 
     // Ensure RoomNumber knows about its relationship to Room
-    RoomNumber.belongsTo(Room, { foreignKey: 'category_id',targetKey:"_id" });
+    if(!RoomNumber.associations.roomcategory)RoomNumber.belongsTo(Room, { foreignKey: 'category_id',targetKey:"_id",as:"roomcategory" });
 
     // Query all RoomNumbers that match any of the room numbers in the array
     const totalRooms = await RoomNumber.findAll({
@@ -270,11 +272,12 @@ const clientRoomAvailable = asynchandler(async (req, res) => {
             category_id:id
         },
         include: [{
-            model: Room
+            model: Room, as: 'roomcategory'
         }]
     });
 
-    const selectedRoomNumber = totalRooms[0];
+    const selectedRoomNumber = require('../utils/selectAvailableRoom')(totalRooms,req.query.room_id,roomNumbers);
+    if(!selectedRoomNumber)return res.status(404).send('This room is no longer available. Please search again.');
     const dates = {
         start,
         end
@@ -309,41 +312,9 @@ const clientRoomAvailable = asynchandler(async (req, res) => {
       }
     });
 
-    const roomImages = selectedRoomNumber ? await publicPhotos.roomPhotos([selectedRoomNumber._id]) : [];
-    // Apply special pricing to the room if available
-    let roomWithPricing = selectedRoomNumber;
-    if (selectedRoomNumber && selectedRoomNumber.Room) {
-      const specialPricing = activePricingConfigs.find(config => {
-        const configCategoryId = config.dataValues ? config.dataValues.category_id : config.category_id;
-        return configCategoryId === parseInt(id);
-      });
-
-      const [roomData] = await publicPhotos.attachCategories([selectedRoomNumber.Room]);
-
-      if (specialPricing) {
-        const pricingData = specialPricing.dataValues || specialPricing;
-        roomWithPricing = {
-          ...selectedRoomNumber.dataValues,
-          roomcategory: {
-            ...roomData,
-            originalPrice: roomData.price,
-            price: parseFloat(pricingData.special_price),
-            hasSpecialPrice: true,
-            pricingEndDate: pricingData.end_date
-          },
-          roomImages: roomImages.map(img => img.url) // Add room-specific images
-        };
-      } else {
-        roomWithPricing = {
-          ...selectedRoomNumber.dataValues,
-          roomcategory: {
-            ...roomData,
-            hasSpecialPrice: false
-          },
-          roomImages: roomImages.map(img => img.url) // Add room-specific images
-        };
-      }
-    }
+    const specialPricing=activePricingConfigs.find(config=>Number(config.category_id)===Number(id));
+    const roomWithPricing=await require('../services/roomDetails')(selectedRoomNumber,specialPricing);
+    if(!roomWithPricing)return res.status(404).send('Room category not found. Please choose another room.');
 
     return res.render('room-details', {
       totalRooms: totalRooms,
