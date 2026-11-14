@@ -443,7 +443,8 @@ const clientRoom = asynchandler(async (req, res) => {
 const clientTerms = asynchandler(async (req, res) => {
     
 
-    return res.render('terms');
+    res.set('Cache-Control','no-store');
+    return res.render('terms',{guestPolicy:await require('../services/guestPolicy')()});
 
     // Room.belongsTo(RoomNumber,{foreignKey:'_id',targetKey:"category_id" });
 

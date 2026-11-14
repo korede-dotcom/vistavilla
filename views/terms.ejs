@@ -152,12 +152,15 @@
         </ul>
 
         <h2>Guest Policy</h2>
+        <p>Current nightly prices and maximum guest capacity for a normal stay:</p>
         <ul>
-            <li>Maximum number of guests for a <strong>normal stay: 1 Bed</strong> 3 - 4 <strong>#60,000</strong></li>
-            <li>Maximum number of guests for a <strong>normal stay: 2 Bed</strong> 5 - 6 <strong>#80,000</strong></li>
-            <li>Maximum number of guests for a <strong>Get Together: 1 Bed</strong> 5 - 8 persons #100,000</li>
-            <li>Maximum number of guests for a <strong>Get Together: 2 Bed</strong> 10 - 15 persons #120,000</li>
-        </ul> 
+            <% const policyRows=typeof guestPolicy!=='undefined'?guestPolicy:[]; policyRows.forEach(category=>{ %>
+            <li><strong><%= category.name %></strong>: maximum <strong><%= category.capacity %> guest<%= category.capacity===1?'':'s' %></strong> — <strong><%= category.price.toLocaleString('en-NG',{style:'currency',currency:'NGN',minimumFractionDigits:0,maximumFractionDigits:2}) %></strong> per night.</li>
+            <% }); %>
+            <% if(!policyRows.length){ %><li>Please contact us for current room prices and guest capacity.</li><% } %>
+        </ul>
+        <p>Prices shown include any currently active special rate. Your stay dates may affect the final quote.</p>
+        <p>Get-togethers require prior approval. For permitted guest numbers and current pricing, <a href="https://wa.me/2349117777221" target="_blank" rel="noopener noreferrer">contact us on WhatsApp: 09117777221</a>.</p>
 
         <h2>Damages</h2>
         <p>Any damages to the property will be taken seriously and evaluated for appropriate charges.</p>
