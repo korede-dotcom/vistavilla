@@ -56,45 +56,8 @@ routes.post('/paystack/initialize/reception', checkAuthCookie, cloudinaryRepo.id
   }
   Object.assign(req.body,{is_backdated:dateState.is_backdated,backdated_reason:dateState.backdated_reason});
 
-  const bookedRooms = await HotelBooking.findOne({
-    where: {
-        category_id,
-        status:"success",
-        room_number,
-        [Op.or]: [
-            {
-                start: {
-                    [Op.between]: [
-                        Sequelize.literal(`TO_TIMESTAMP('${start} 12:00:00+01', 'YYYY-MM-DD HH24:MI:SS')`),
-                        Sequelize.literal(`TO_TIMESTAMP('${end} 12:00:00+01', 'YYYY-MM-DD HH24:MI:SS')`)
-                    ]
-                }
-            },
-            {
-                end: {
-                    [Op.between]: [
-                        Sequelize.literal(`TO_TIMESTAMP('${start} 12:00:00+01', 'YYYY-MM-DD HH24:MI:SS')`),
-                        Sequelize.literal(`TO_TIMESTAMP('${end} 12:00:00+01', 'YYYY-MM-DD HH24:MI:SS')`)
-                    ]
-                }
-            },
-            {
-                [Op.and]: [
-                    {
-                        start: {
-                            [Op.lte]: Sequelize.literal(`TO_TIMESTAMP('${start} 12:00:00+01', 'YYYY-MM-DD HH24:MI:SS')`)
-                        }
-                    },
-                    {
-                        end: {
-                            [Op.gte]: Sequelize.literal(`TO_TIMESTAMP('${end} 12:00:00+01', 'YYYY-MM-DD HH24:MI:SS')`)
-                        }
-                    }
-                ]
-            }
-        ]
-    }
-});
+  const bookingWindow=require('../utils/stayWindow').windowFor(start,end);
+  const bookedRooms=await require('../services/findBookingConflict')({category_id,room_number},bookingWindow);
 
 // if (bookedRooms > 0) {
 //   return res.json({
@@ -104,7 +67,7 @@ routes.post('/paystack/initialize/reception', checkAuthCookie, cloudinaryRepo.id
 // }
 if (bookedRooms) {
   return res.json({
-    message: `this room ${bookedRooms.dataValues.room_number} has been booked ${bookedRooms.dataValues.booked_from} since ${new Date(bookedRooms.dataValues.createdAt).toDateString()} for ${new Date(bookedRooms.dataValues.start).toDateString()} till ${new Date(bookedRooms.dataValues.end).toDateString()} here is the refrence ${bookedRooms.dataValues.reference_id} how ever you can make future bookings`,
+    message: `Room ${room_number} has a booking that overlaps your selected nights (reference ${bookedRooms.reference_id}). Please choose different dates or another room.`,
     reference_id: bookedRooms.dataValues.reference_id,
     status: false
   });
@@ -196,10 +159,15 @@ console.log(bookedRooms);
         console.log("🚀 ~ ID card uploaded:", idCardUrl);
       }
 
-      const saveData =  await HotelBooking.create({
+      let saveData;
+      try{saveData=await require('../services/withRoomReservation')(category_id,room_number,bookingWindow,async(actualRoom,transaction)=>{
+      const createdBooking = await HotelBooking.create({
         ...req.body,
-        start:start,
-        end:end,
+        start:bookingWindow.start,
+        end:bookingWindow.end,
+        room_id:actualRoom._id,
+        room_number:actualRoom.room_number,
+        room_name:actualRoom.room_name,
         guest_count:findCategory.number_of_guests,
         night:daysDifference,
         amount:totalCost * 100,
@@ -215,12 +183,12 @@ console.log(bookedRooms);
         checked_in:dateState.active || dateState.ended,
         checked_out:dateState.ended,
         id_card_url: idCardUrl,
-      });
+      },{transaction});
 
       // Create part payment record if applicable
       if (isPartPayment) {
         const partPaymentRecord = await PartPayment.create({
-          booking_id: saveData.id,
+          booking_id: createdBooking.id,
           reference_id: referenceId,
           total_amount: totalCost * 100,
           amount_paid: amountPaid,
@@ -234,11 +202,11 @@ console.log(bookedRooms);
           start_date: start,
           end_date: end,
           payment_status: 'partial'
-        });
+        },{transaction});
 
         // Record initial payment in history
         await PaymentHistory.create({
-          booking_id: saveData.id,
+          booking_id: createdBooking.id,
           part_payment_id: partPaymentRecord._id,
           reference_id: referenceId,
           payment_amount: amountPaid,
@@ -251,12 +219,15 @@ console.log(bookedRooms);
           room_number: req.body.room_number,
           recorded_by: req.user ? req.user.name : req.body.guest_name,
           payment_date: new Date()
-        });
+        },{transaction});
       }
 
       if (dateState.active) {
-        await RoomNumber.update({status:true},{where:{room_number:req.body.room_number}});
+        await actualRoom.update({status:true},{transaction});
       }
+
+        return createdBooking;
+      });}catch(error){return res.status(400).json({status:false,message:error.message});}
 
       res.status(200).json({
         status: true,

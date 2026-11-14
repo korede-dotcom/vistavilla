@@ -9,6 +9,6 @@ module.exports=function staffBookingDates({start,end,allowPast,reason,now=new Da
  const backdated=start<today;
  if(backdated&&!(allowPast===true||allowPast==='true'||allowPast==='on'))throw Error('Enable Record past dates to create a backdated booking.');
  if(backdated&&(typeof reason!=='string'||!reason.trim()||reason.length>1000))throw Error('Enter a reason for recording past dates (up to 1,000 characters).');
- const ended=new Date(end+'T12:00:00+01:00')<=now;
+ const ended=require('./stayWindow').checkoutAt(end+'T12:00:00+01:00')<=now;
  return {is_backdated:backdated,backdated_reason:backdated?reason.trim():null,ended,active:start<=today&&!ended};
 };

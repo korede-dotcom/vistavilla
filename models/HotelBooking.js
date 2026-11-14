@@ -142,22 +142,10 @@ const HotelBooking = sequelize.define('hotelbooking', {
 }, {
     hooks: {
         beforeSave: (booking) => {
-            if (booking.end) {
-             let endDate = new Date(booking.end);
-
-                // Set time to 12:00 PM (noon)
-                endDate.setHours(12, 0, 0, 0);
-
-                // Calculate timezone offset in minutes (for example, +01:00 is 60 minutes)
-                const timezoneOffsetInMinutes = 60; // Adjust as needed for your timezone
-                const timezoneOffsetInMs = timezoneOffsetInMinutes * 60 * 1000; // Convert offset to milliseconds// Adjust the date for the timezone offset
-                endDate = new Date(endDate.getTime() + timezoneOffsetInMs);
-
-                // Format the date to "YYYY-MM-DD HH:MM:SS±TZD" with timezone offset
-                const formattedDate = endDate.toISOString().replace('T', ' ').slice(0, 19) + '+01:00';
-
-                // Set the formatted date back to the booking object
-                booking.end = formattedDate;
+            if (booking.end && (booking.isNewRecord || booking.changed('end'))) {
+                const date = new Date(booking.end);
+                if (!Number.isFinite(date.getTime())) throw Error('Invalid checkout date.');
+                booking.end = new Date(require('../utils/stayWindow').lagosDay(date)+'T12:00:00+01:00');
             }
         }
     }
