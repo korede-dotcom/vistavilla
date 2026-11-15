@@ -16,3 +16,11 @@ test('room downgrade credits and refunded caution fees are explicitly identified
  const html=render('success',{...booking,status:'success',balance:0,amount_paid:15000000,caution_fee_status:'refunded'});
  assert.ok(html.includes('Guest credit owed'));assert.ok(html.includes('15,000'));assert.ok(html.includes('Refunded'));
 });
+
+test('part-payment receipt prominently identifies only money received, even with an incorrect success status',()=>{
+ const html=render('success',{...booking,status:'success',is_part_payment:true});
+ assert.match(html,/Part Payment Receipt/);
+ assert.match(html,/<div class="receipt-total"><span>Part payment received<\/span><strong>[^<]*50,000/);
+ assert.match(html,/ROOM BOOKING TOTAL/);assert.match(html,/ROOM BALANCE DUE/);assert.ok(html.includes('85,000'));
+ assert.ok(!html.includes('Paid in full'));
+});

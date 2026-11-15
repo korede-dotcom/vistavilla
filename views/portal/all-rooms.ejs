@@ -36,7 +36,7 @@
 						<div class="card card-table">
 							<div class="card-body booking_card">
 								<div class="table-responsive">
-									<table class="datatable table table-stripped table table-hover table-center mb-0">
+									<table class="table table-stripped table table-hover table-center mb-0">
 										<thead>
 											<tr>
 												<th>Room ID</th>
@@ -119,6 +119,17 @@
 											<% }) %>
 										</tbody>
 									</table>
+<% if(typeof pagination!=='undefined'){ const p=pagination; const pageUrl=number=>'?'+new URLSearchParams({page:String(number),limit:String(p.pageSize)}).toString(); %>
+<nav aria-label="Room list pages" class="d-flex flex-wrap align-items-center justify-content-between p-3" style="gap:16px">
+ <span>Showing <%= p.totalItems?p.offset+1:0 %>–<%= Math.min(p.offset+p.pageSize,p.totalItems) %> of <%= p.totalItems %> rooms</span>
+ <form method="get"><label for="rooms-page-size">Rooms per page</label><select id="rooms-page-size" class="form-control" name="limit" onchange="this.form.requestSubmit()"><% [10,25,50,100].forEach(size=>{ %><option value="<%= size %>" <%= size===p.pageSize?'selected':'' %>><%= size %></option><% }); %></select></form>
+ <div class="d-flex flex-wrap" style="gap:6px">
+ <% if(p.currentPage>1){ %><a class="btn btn-outline-secondary" rel="prev" href="<%= pageUrl(p.currentPage-1) %>">Previous</a><% }else{ %><button class="btn btn-outline-secondary" disabled>Previous</button><% } %>
+ <% for(let number=Math.max(1,p.currentPage-2);number<=Math.min(p.totalPages,p.currentPage+2);number++){ %><a class="btn <%= number===p.currentPage?'btn-secondary':'btn-outline-secondary' %>" href="<%= pageUrl(number) %>" <%- number===p.currentPage?'aria-current="page"':'' %>><%= number %></a><% } %>
+ <% if(p.currentPage<p.totalPages){ %><a class="btn btn-outline-secondary" rel="next" href="<%= pageUrl(p.currentPage+1) %>">Next</a><% }else{ %><button class="btn btn-outline-secondary" disabled>Next</button><% } %>
+ </div>
+</nav><% } %>
+
 								</div>
 							</div>
 						</div>

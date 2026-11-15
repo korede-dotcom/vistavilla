@@ -371,57 +371,10 @@ routes.get("/add-room",checkAuthCookie,async (req,res) => {
 .post("/add-room",checkAuthCookie,createRoomUnderCat)
 
 routes.get("/all-rooms",checkAuthCookie,async (req,res) => {
-      const page = parseInt(req.query.page) || 1; // Current page number, default is 1
-      const limit = parseInt(req.query.limit) || 10; // Number of items per page, default is 10
-      const offset = (page - 1) * limit; // Calculate the offset
-      
-      const query = `
-        SELECT 
-    roomnumbers._id AS id, 
-    roomnumbers.*, 
-    roomcategories._id AS category_id,
-    roomcategories.*
-FROM 
-    roomnumbers
-INNER JOIN 
-    roomcategories ON roomnumbers.category_id = roomcategories._id
-LIMIT 
-    :limit 
-OFFSET 
-    :offset;
-`;
-        
-        
-      
-      const results = await RoomNumber.sequelize.query(query, {
-        type: QueryTypes.SELECT,
-        replacements: { limit, offset }
-      });
-      console.log("🚀 ~ routes.get ~ results:", results)
-      
-      // Count total items for pagination
-      const countQuery = `
-        SELECT COUNT(*) as totalItems
-        FROM roomnumbers
-        INNER JOIN roomcategories ON roomnumbers.category_id = roomcategories._id`;
-      
-      const totalItems = await RoomNumber.sequelize.query(countQuery, { type: QueryTypes.SELECT });
-      const totalPages = Math.ceil(totalItems[0].totalItems / limit);
-      
-      res.render('all-rooms', {
-            name: req.user.name ,
-            email: req.user.email ,
-            roleName:req.user.roleName,
-            success: true,
-            data: results,
-            pagination: {
-                  totalItems: totalItems[0].totalItems,
-                  totalPages,
-                  currentPage: page,
-                  pageSize: limit
-            }
-      
-      });
+      const {rows,pagination}=await require('../services/roomList')(req.query);
+      res.set('Cache-Control','no-store');
+      res.render('all-rooms',{name:req.user.name,email:req.user.email,roleName:req.user.roleName,success:true,data:rows,pagination});
+
  
       })
 

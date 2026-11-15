@@ -598,7 +598,8 @@ const formattedDate = momentDate.set({hour: 1, minute: 0, second: 0}).format('YY
   
       console.log("Booking object:", findBookings);
   
-      res.render("success", { booking: findBookings });
+      res.set('Cache-Control','no-store');
+      res.render("success", { booking: await require('../services/receiptBooking')(findBookings) });
     } catch (error) {
       console.error("Error processing request:", error);
       res.status(500).json({
