@@ -117,7 +117,13 @@
 <td><strong>Duration</strong> <span class="float-right"><%= bookings.night %> night</span></td>
 </tr>
 <tr>
-<td><strong>Amount</strong> <span class="float-right"><strong>₦<%= bookings.amount %></strong></span></td>
+<td><strong>Number of guests</strong> <span class="float-right"><%= bookings.guest_count %></span></td>
+</tr>
+<% if (Number(bookings.extra_guest_charge)) { %>
+<tr><td><strong>Extra guest charge</strong> <span class="float-right"><%= (bookings.extra_guest_charge / 100).toLocaleString('en-NG', {style:'currency',currency:'NGN'}) %></span></td></tr>
+<% } %>
+<tr>
+<td><strong>Booking total</strong> <span class="float-right"><strong><%= (bookings.amount / 100).toLocaleString('en-NG', {style:'currency',currency:'NGN'}) %></strong></span></td>
 </tr>
 </tbody>
 </table>

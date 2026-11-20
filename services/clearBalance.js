@@ -12,11 +12,15 @@ module.exports=async function clearBalance(id,reason,staff){
   const balance=Number(part.balance),paid=Number(part.amount_paid),total=Number(part.total_amount);
   if(part.payment_status!=='partial'||balance<=0)throw Error('This balance is already settled.');
   if(![balance,paid,total].every(Number.isSafeInteger)||paid<0||total-paid!==balance||Number(booking.amount)!==total||Number(booking.balance)!==balance)throw Error('Booking and payment balances differ. Review them before clearing.');
-  const discount=Number(booking.discount_total||0)+balance;
-  const subtotal=Number(booking.amount)+Number(booking.discount_total||0);
+  const guestCharge=Number(booking.extra_guest_charge||0);
+  const priorDiscount=Number(booking.discount_total||0);
+  // Apply the waiver to the room first, then reduce any unpaid guest charge.
+  const remainingGuestCharge=Math.min(guestCharge,paid);
+  const discount=priorDiscount+balance-(guestCharge-remainingGuestCharge);
+  const subtotal=total+priorDiscount-guestCharge;
   await Clearance.create({booking_id:booking.id,part_payment_id:part._id,reference_id:part.reference_id,guest_name:part.guest_name,room_number:part.room_number,amount:balance,old_total:total,new_total:paid,reason:reason.trim(),cleared_by:String(staff._id),cleared_by_name:staff.name,cleared_by_role:staff.roleName},{transaction});
   await part.update({total_amount:paid,balance:0,payment_status:'completed',updated_at:new Date()},{transaction});
-  await Booking.update({amount:paid,amount_paid:paid,balance:0,is_part_payment:false,status:'success',price_subtotal:subtotal,discount_total:discount,discount_type:'flat',discount_scope:'booking',discount_value:discount/100,discount_per_night:discount/100},{where:{id:booking.id},transaction});
+  await Booking.update({amount:paid,amount_paid:paid,balance:0,is_part_payment:false,status:'success',price_subtotal:subtotal,extra_guest_charge:remainingGuestCharge,discount_total:discount,discount_type:'flat',discount_scope:'booking',discount_value:discount/100,discount_per_night:discount/100},{where:{id:booking.id},transaction});
   await Log.create({actor_id:String(staff._id),actor_name:staff.name,actor_role:staff.roleName,action:'update',resource:'balance_clearance',record_id:part.reference_id,description:`Cleared unpaid balance of ₦${(balance/100).toLocaleString('en-NG')} for ${part.guest_name}, Room ${part.room_number} (${part.reference_id}). Reason: ${reason.trim()}. No money received.`,outcome:'success',fields:['balance','reason']},{transaction});
   return {amount:balance};
  });

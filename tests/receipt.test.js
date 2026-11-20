@@ -21,6 +21,13 @@ test('part-payment receipt prominently identifies only money received, even with
  const html=render('success',{...booking,status:'success',is_part_payment:true});
  assert.match(html,/Part Payment Receipt/);
  assert.match(html,/<div class="receipt-total"><span>Part payment received<\/span><strong>[^<]*50,000/);
- assert.match(html,/ROOM BOOKING TOTAL/);assert.match(html,/ROOM BALANCE DUE/);assert.ok(html.includes('85,000'));
+ assert.match(html,/BOOKING TOTAL/);assert.match(html,/BALANCE DUE/);assert.ok(html.includes('85,000'));
  assert.ok(!html.includes('Paid in full'));
+});
+
+test('receipt itemizes the extra guest charge and includes it in the balance',()=>{
+ const html=render('success',{...booking,guest_count:3,extra_guest_charge:150000,amount:13650000,balance:8650000});
+ assert.match(html,/3 guest\(s\)/);
+ assert.match(html,/Extra guest charge<\/td><td>[^<]*1,500.00/);
+ assert.ok(html.includes('136,500.00'));assert.ok(html.includes('86,500.00'));
 });

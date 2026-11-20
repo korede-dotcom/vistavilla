@@ -12,6 +12,7 @@ const PartPayment = require("../models/PartPayment");
 const PaymentHistory = require("../models/PaymentHistory");
 const pricingConfigRepo = require("../repos/PricingConfig-repo");
 const cloudinaryRepo = require("../repos/cloudinary");
+const bookingPricing = require("../views/js/booking-pricing");
 // const todoControl = require("../controllers/Todo")
 // const allowedUser = require("../middleware/Authorization")
 // const {todoListValidationRules} = require("../middleware/validator")
@@ -98,56 +99,32 @@ console.log(bookedRooms);
     }
 
 
-    // Convert the start and end strings to Date objects
-    const startDate = parseDate(start);
-    const endDate = parseDate(end);
-
-    // Calculate the difference in time (milliseconds)
-    const timeDifference = endDate - startDate;
-
-    // Convert the time difference from milliseconds to days
-    const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
-    console.log("🚀 ~ routes.post ~ daysDifference:", daysDifference)
-
     // Get pricing (check for special pricing first)
-    const pricingInfo = await pricingConfigRepo.getPriceForCategory(category_id, startDate);
+    const pricingInfo = await pricingConfigRepo.getPriceForCategory(category_id, parsedStartDate);
     const pricePerNight = pricingInfo.price;
 
-    let quote;
+    let quote, guestCount, extraGuestCharge, bookingTotal, amountPaid;
+    const requestedPartPayment = req.body.is_part_payment === 'true' || req.body.is_part_payment === true;
     try {
-      quote = require('../views/js/booking-pricing').quote({
+      quote = bookingPricing.quote({
         start, end, rate: pricePerNight,
         discountType: req.body.discount_type || 'flat',
         discountScope: req.body.discount_value === undefined ? 'night' : 'booking',
         discountValue: req.body.discount_value !== undefined ? req.body.discount_value : Number(req.body.discount_per_night || 0) / 100
       });
+      guestCount = bookingPricing.guestCount(req.body.guest_count ?? (Number(findCategory.number_of_guests) || 1));
+      extraGuestCharge = bookingPricing.moneyInKobo(req.body.extra_guest_charge ?? '0', 'Extra guest charge');
+      bookingTotal = bookingPricing.withExtraGuestCharge(quote.total, extraGuestCharge);
+      if (requestedPartPayment && mode !== 'Cash') throw Error('Part payment is available in Cash mode.');
+      amountPaid = requestedPartPayment ? bookingPricing.recordedPayment(bookingTotal, req.body.amount_paid) : bookingTotal;
     } catch (error) { return res.status(400).json({status:false,message:error.message}); }
-    // Normalize fields before booking creation and provider metadata serialization.
-    Object.assign(req.body, {discount_scope:quote.discountScope,discount_type:quote.discountType,discount_value:quote.discountValue,
+    Object.assign(req.body, {guest_count:guestCount,extra_guest_charge:extraGuestCharge,
+      discount_scope:quote.discountScope,discount_type:quote.discountType,discount_value:quote.discountValue,
       discount_per_night:quote.discountPerNight,price_subtotal:quote.subtotal,discount_total:quote.discountTotal});
-    const totalCost = quote.total / 100;
 
-    // Create a reference for the transaction
-
-    if (req.body.mode === "Cash") {
-      console.log("🚀 ~ routes.post ~ req.user:", req.user)
-
-      const isPartPayment = totalCost > 0 && (req.body.is_part_payment === 'true' || req.body.is_part_payment === true);
-      const amountPaid = isPartPayment ? parseFloat(req.body.amount_paid || 0) : totalCost * 100;
-      const minimumPayment = (totalCost * 100) * 0.5; // 50% minimum
-
-      if (isPartPayment && (!Number.isSafeInteger(amountPaid) || amountPaid < 0 || amountPaid > quote.total)) {
-        return res.status(400).json({status:false,message:'Enter a valid amount paid within the room total.'});
-      }
-      // Validate part payment amount
-      if (isPartPayment && amountPaid < minimumPayment) {
-        return res.status(400).json({
-          status: false,
-          message: `Part payment must be at least 50% of total amount. Minimum: ₦${(minimumPayment / 100).toFixed(2)}`,
-        });
-      }
-
-      const balance = isPartPayment ? (totalCost * 100) - amountPaid : 0;
+    if (mode === "Cash") {
+      const balance = bookingTotal - amountPaid;
+      const isPartPayment = balance > 0;
       const bookingStatus = isPartPayment ? "part-payment" : "success";
       const referenceId = generateRandomString(8);
 
@@ -168,9 +145,9 @@ console.log(bookedRooms);
         room_id:actualRoom._id,
         room_number:actualRoom.room_number,
         room_name:actualRoom.room_name,
-        guest_count:findCategory.number_of_guests,
-        night:daysDifference,
-        amount:totalCost * 100,
+        guest_count:guestCount,
+        night:quote.nights,
+        amount:bookingTotal,
         amount_paid: amountPaid,
         balance: balance,
         is_part_payment: isPartPayment,
@@ -190,7 +167,7 @@ console.log(bookedRooms);
         const partPaymentRecord = await PartPayment.create({
           booking_id: createdBooking.id,
           reference_id: referenceId,
-          total_amount: totalCost * 100,
+          total_amount: bookingTotal,
           amount_paid: amountPaid,
           balance: balance,
           guest_name: req.body.guest_name,
@@ -212,9 +189,9 @@ console.log(bookedRooms);
           payment_amount: amountPaid,
           payment_type: 'initial',
           payment_method: 'cash',
-          balance_before: totalCost * 100,
+          balance_before: bookingTotal,
           balance_after: balance,
-          total_amount: totalCost * 100,
+          total_amount: bookingTotal,
           guest_name: req.body.guest_name,
           room_number: req.body.room_number,
           recorded_by: req.user ? req.user.name : req.body.guest_name,
@@ -248,19 +225,19 @@ console.log(bookedRooms);
    return;
     }
 
-      if (quote.total === 0) return res.status(400).json({status:false,message:'Use Cash mode to record a fully discounted booking.'});
+      Object.assign(req.body, {amount_paid:0,balance:0,is_part_payment:false});
+      if (bookingTotal === 0) return res.status(400).json({status:false,message:'Use Cash mode to record a booking with a zero total.'});
       const response = await axios.post(
         `${process.env.paystackUrl}/transaction/initialize`,
         {
           email:req.body.guest_email,
-          amount: totalCost * 100 , // Convert to kobocallback_url: "http://localhost:3200/paystack/webhook",
+          amount: bookingTotal,
           metadata: {
             // products: JSON.stringify(totals),
             products: {
-              details:{...req.body,start:start,end:end,guest_count:findCategory.number_of_guests,
-              night:daysDifference,
-              // amount:totalCost,
-              amount:totalCost * 100,
+              details:{...req.body,start:start,end:end,guest_count:guestCount,
+              night:quote.nights,
+              amount:bookingTotal,
               booked_from:'reception',
               booked_by:req.body.guest_name,    
               }
@@ -299,9 +276,9 @@ console.log(bookedRooms);
 
       // Save the transaction reference to your database
     const saveData =  await HotelBooking.create({
-        ...req.body,start:start,end:end,guest_count:findCategory.number_of_guests,
-              night:daysDifference,
-              amount:totalCost * 100,
+        ...req.body,start:start,end:end,guest_count:guestCount,
+              night:quote.nights,
+              amount:bookingTotal,
               reference_id:response.data.data.reference,
               booked_from:'reception',
               booked_by:req.body.guest_name,
@@ -335,9 +312,9 @@ console.log(bookedRooms);
 
       // Save the transaction reference to your database
     const saveData =  await HotelBooking.create({
-        ...req.body,start:start,end:end,guest_count:findCategory.number_of_guests,
-              night:daysDifference,
-              amount:totalCost * 100,
+        ...req.body,start:start,end:end,guest_count:guestCount,
+              night:quote.nights,
+              amount:bookingTotal,
               reference_id:response.data.data.reference,
               booked_from:'reception',
               booked_by:req.body.guest_name,

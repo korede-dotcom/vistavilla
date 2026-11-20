@@ -352,6 +352,15 @@ button:hover {
                     <label class="form-label">Address</label>
                     <input name="guest_address" class="form-control bg-white" type="text" placeholder="Address">
                 </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="guest_count">Number of guests</label>
+                    <input name="guest_count" id="guest_count" class="form-control bg-white" type="number" min="1" max="100" step="1" value="1" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="extra_guest_charge">Extra guest charge (₦)</label>
+                    <input name="extra_guest_charge" id="extra_guest_charge" class="form-control bg-white" type="number" min="0" step="0.01" value="0" required>
+                    <small class="form-text text-muted">Enter the total agreed charge for additional guests for this stay.</small>
+                </div>
 				<div class="col-md-6 mb-3">
 					<label class="form-label">Payment Type</label>
 					<select name="paymentmode" id="paymentmode" class="form-select">
@@ -381,15 +390,15 @@ button:hover {
 					<div class="form-check">
 						<input class="form-check-input" type="checkbox" id="isPartPayment" name="is_part_payment">
 						<label class="form-check-label" for="isPartPayment">
-							<strong>Part Payment (Minimum 50% required)</strong>
+							<strong>Part payment (Cash mode)</strong>
 						</label>
 					</div>
 				</div>
 
 				<div class="col-md-6 mb-3" id="partPaymentAmountDiv" style="display: none;">
-					<label class="form-label">Amount to Pay Now <span class="text-danger">*</span></label>
-					<input name="amount_paid" id="amount_paid" class="form-control bg-white" type="text" placeholder="Enter amount">
-					<small class="form-text text-muted" id="minimumPaymentText"></small>
+					<label class="form-label" for="amount_paid">Amount received (₦)</label>
+					<input name="amount_paid" id="amount_paid" class="form-control bg-white" type="number" min="0.01" step="0.01" disabled placeholder="Enter amount">
+					<small class="form-text text-muted">Enter the amount the guest chose to pay now.</small>
 				</div>
 
 			<!-- <button id="submit_button" type="submit" class="theme-btn btn-style-one w-100" data-loading-text="Please wait..." >Submit</button> -->
@@ -425,7 +434,7 @@ button:hover {
 	<script src="/portal/assets/plugins/raphael/raphael.min.js"></script>
 	<script src="/portal/assets/js/script.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/booking-pricing.js?v=1"></script>
+    <script src="/js/booking-pricing.js?v=2"></script>
     <script>
         // Function to open the modal
         let room_id, room_name, room_number;
@@ -551,10 +560,6 @@ button:hover {
                     pricingCard.style.display = 'none';
                 }
                 renderPriceSummary();
-                // Update minimum payment if part payment is checked
-                if (isPartPaymentCheckbox.checked) {
-                    updateMinimumPayment();
-                }
             }
         } catch (error) {
             if (revision !== priceRequest) return;
@@ -568,153 +573,64 @@ button:hover {
     const isPartPaymentCheckbox = document.getElementById('isPartPayment');
     const partPaymentAmountDiv = document.getElementById('partPaymentAmountDiv');
     const amountPaidInput = document.getElementById('amount_paid');
-    const minimumPaymentText = document.getElementById('minimumPaymentText');
     const paymentModeSelect = document.getElementById('paymentmode');
+    const guestCountInput = document.getElementById('guest_count');
+    const guestChargeInput = document.getElementById('extra_guest_charge');
 
-    // Calculate total amount based on dates
     function priceQuote() {
         if (!pricingReady) throw Error('Wait for the current room rate to load.');
-        return BookingPricing.quote({start:document.getElementById('checkIn').value,end:document.getElementById('checkOut').value,
+        const room = BookingPricing.quote({start:document.getElementById('checkIn').value,end:document.getElementById('checkOut').value,
           rate:price,discountType:document.getElementById('discount_type').value,discountValue:document.getElementById('discount_per_night').value || '0'});
+        const guestCount=BookingPricing.guestCount(guestCountInput.value);
+        const extraGuestCharge=BookingPricing.moneyInKobo(guestChargeInput.value, 'Extra guest charge');
+        return {...room,guestCount,extraGuestCharge,total:BookingPricing.withExtraGuestCharge(room.total,extraGuestCharge)};
     }
-    function calculateTotalAmount() { try { return priceQuote().total/100; } catch (_) { return 0; } }
+
     function renderPriceSummary() {
       const target=document.getElementById('bookingPriceSummary');
       const money=value=>(value/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'});
       try {
         const q=priceQuote();
-        const partial=document.getElementById('isPartPayment').checked;
-        const paid=partial?Math.round(Number(document.getElementById('amount_paid').value.replace(/,/g,'')||0)*100):q.total;
-        target.textContent=`${q.nights} night(s) × ${money(q.rate)}. Room subtotal: ${money(q.subtotal)}. Discount (${q.discountType==='percentage'?q.discountValue+'%':money(q.discountTotal)+' flat'}): −${money(q.discountTotal)}. Room total: ${money(q.total)}. Room amount ${partial?'paid now':'due now'}: ${money(paid)}. Room balance: ${money(q.total-paid)}.`;
-        if(paid<0||paid>q.total)target.textContent+=' Enter a payment within the room total.';
+        const partial=isPartPaymentCheckbox.checked;
+        const paid=partial?BookingPricing.moneyInKobo(amountPaidInput.value || '0','Amount received'):q.total;
+        target.textContent=`${q.nights} night(s) × ${money(q.rate)}. Guests: ${q.guestCount}. Room subtotal: ${money(q.subtotal)}. Room discount${q.discountType==='percentage'?' ('+q.discountValue+'%)':''}: ${money(q.discountTotal)}. Extra guest charge: ${money(q.extraGuestCharge)}. Booking total: ${money(q.total)}. ${partial?'Received':'Due now'}: ${money(paid)}. Balance: ${money(Math.max(0,q.total-paid))}.`;
+        if(partial&&paid>q.total)target.textContent+=' Enter a payment within the booking total.';
       } catch(error) {target.textContent=error.message;}
     }
-    for(const id of ['checkIn','checkOut','discount_per_night','discount_type','amount_paid','isPartPayment','paymentmode']) {
+
+    for(const id of ['checkIn','checkOut','discount_per_night','discount_type','guest_count','extra_guest_charge','amount_paid','isPartPayment','paymentmode']) {
       document.getElementById(id).addEventListener('input',()=>queueMicrotask(renderPriceSummary));
       document.getElementById(id).addEventListener('change',()=>queueMicrotask(renderPriceSummary));
     }
     document.getElementById('discount_type').addEventListener('change',()=>{
       const input=document.getElementById('discount_per_night');
       if(document.getElementById('discount_type').value==='percentage')input.max='100';else input.removeAttribute('max');
-      if(isPartPaymentCheckbox.checked)updateMinimumPayment();
     });
+    document.getElementById('checkIn').addEventListener('change',function(){return fetchSpecialPricing(this.value);});
 
-    // Update minimum payment text
-    function updateMinimumPayment() {
-        const totalAmount = calculateTotalAmount();
-        const minimumPayment = totalAmount * 0.5;
-        minimumPaymentText.textContent = `Minimum payment (50%): ₦${minimumPayment.toLocaleString()}`;
-        amountPaidInput.setAttribute('min', minimumPayment);
-        amountPaidInput.setAttribute('max', totalAmount);
+    function updatePartPayment() {
+      isPartPaymentCheckbox.disabled=paymentModeSelect.value!=='Cash';
+      if(isPartPaymentCheckbox.disabled)isPartPaymentCheckbox.checked=false;
+      const partial=isPartPaymentCheckbox.checked;
+      partPaymentAmountDiv.style.display=partial?'block':'none';
+      amountPaidInput.disabled=!partial;
+      amountPaidInput.required=partial;
+      renderPriceSummary();
     }
-
-    // Show/hide part payment amount field
-    isPartPaymentCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            // Only allow part payment for Cash mode
-            if (paymentModeSelect.value !== 'Cash') {
-                showToast('Part payment is only available for Cash payment mode', 'red');
-                this.checked = false;
-                return;
-            }
-            partPaymentAmountDiv.style.display = 'block';
-            updateMinimumPayment();
-            amountPaidInput.required = true;
-        } else {
-            partPaymentAmountDiv.style.display = 'none';
-            amountPaidInput.required = false;
-        }
-    });
-
-    // Update minimum payment when dates change
-    document.getElementById('checkIn').addEventListener('change', async function() {
-        // Fetch special pricing for new check-in date
-        await fetchSpecialPricing(this.value);
-
-        if (isPartPaymentCheckbox.checked) {
-            updateMinimumPayment();
-        }
-    });
-
-    document.getElementById('checkOut').addEventListener('change', function() {
-        if (isPartPaymentCheckbox.checked) {
-            updateMinimumPayment();
-        }
-    });
-
-    // Format currency input as user types (improved version)
-    function formatCurrencyAsType(e) {
-        const input = e.target;
-
-        // Get the current value and cursor position
-        let cursorPosition = input.selectionStart;
-        let value = input.value;
-
-        // Count commas before cursor
-        const commasBeforeCursor = (value.substring(0, cursorPosition).match(/,/g) || []).length;
-
-        // Remove all non-numeric characters
-        const numericValue = value.replace(/[^0-9]/g, '');
-
-        // If empty, just return
-        if (numericValue === '') {
-            input.value = '';
-            return;
-        }
-
-        // Format with thousand separators
-        const formattedValue = parseInt(numericValue, 10).toLocaleString('en-NG');
-
-        // Set the formatted value
-        input.value = formattedValue;
-
-        // Calculate new cursor position
-        const commasAfterCursor = (formattedValue.substring(0, cursorPosition).match(/,/g) || []).length;
-        const commasDiff = commasAfterCursor - commasBeforeCursor;
-        const newCursorPosition = cursorPosition + commasDiff;
-
-        // Restore cursor position
-        input.setSelectionRange(newCursorPosition, newCursorPosition);
-    }
-
-    // Add currency formatting to discount input as user types
-    const discountInput = document.getElementById('discount_per_night');
-    discountInput.addEventListener('input', function(e) {
-        renderPriceSummary();
-
-        // Update minimum payment if part payment is checked
-        if (isPartPaymentCheckbox.checked) {
-            updateMinimumPayment();
-        }
-    });
-
-    // Add currency formatting to amount paid input as user types
-    const amountPaidInputField = document.getElementById('amount_paid');
-    amountPaidInputField.addEventListener('input', function(e) {
-        formatCurrencyAsType(e);
-    });
-
-    // Remove formatting before form submission to get raw number
-    function getNumericValue(formattedValue) {
-        return parseFloat(formattedValue.replace(/,/g, '')) || 0;
-    }
-
-    // Fetch special pricing on page load
+    isPartPaymentCheckbox.addEventListener('change',updatePartPayment);
+    paymentModeSelect.addEventListener('change',updatePartPayment);
+    updatePartPayment();
     fetchSpecialPricing(document.getElementById('checkIn').value);
-
-    // Disable part payment for non-cash modes
-    paymentModeSelect.addEventListener('change', function() {
-        if (this.value !== 'Cash' && isPartPaymentCheckbox.checked) {
-            isPartPaymentCheckbox.checked = false;
-            partPaymentAmountDiv.style.display = 'none';
-            amountPaidInput.required = false;
-        }
-    });
 
     // Handle form submission
     document.getElementById('submit_button').addEventListener('click', async (event) => {
         event.preventDefault(); // Prevent default form submission
-        try { priceQuote(); } catch(error) { showToast(error.message, 'red'); return; }
+        const isPartPayment = isPartPaymentCheckbox.checked;
+        let currentQuote, amountPaid;
+        try {
+            currentQuote=priceQuote();
+            if(isPartPayment)amountPaid=BookingPricing.recordedPayment(currentQuote.total,BookingPricing.moneyInKobo(amountPaidInput.value,'Amount received'));
+        } catch(error) { showToast(error.message, 'red'); return; }
 
         // Retrieve form values
         const checkInDate = document.getElementById('checkIn').value;
@@ -760,47 +676,9 @@ button:hover {
             return;
         }
 
-        // Validate part payment if checked
-        const isPartPayment = isPartPaymentCheckbox.checked;
-        const amountPaid = getNumericValue(amountPaidInput.value);
-
-        if (isPartPayment) {
-            const totalAmount = calculateTotalAmount();
-            const minimumPayment = totalAmount * 0.5;
-            const checkIn = new Date(document.getElementById('checkIn').value);
-            const checkOut = new Date(document.getElementById('checkOut').value);
-            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-            const discountPerNight = getNumericValue(document.getElementById('discount_per_night').value);
-
-            console.log('💰 Part Payment Validation:', {
-                pricePerNight: price,
-                nights,
-                discountPerNight,
-                totalBeforeDiscount: price * nights,
-                totalDiscount: discountPerNight * nights,
-                totalAmount,
-                minimumPayment,
-                amountPaid,
-                isValid: amountPaid >= minimumPayment && amountPaid <= totalAmount
-            });
-
-            if (amountPaid < minimumPayment) {
-                showToast(`Part payment must be at least ₦${minimumPayment.toLocaleString('en-NG', {minimumFractionDigits: 2})} (50% of total: ₦${totalAmount.toLocaleString('en-NG', {minimumFractionDigits: 2})})`, "red");
-                resetLoader(loader, submitButton);
-                return;
-            }
-
-            if (amountPaid > totalAmount) {
-                showToast(`Payment amount (₦${amountPaid.toLocaleString('en-NG', {minimumFractionDigits: 2})}) cannot exceed total amount (₦${totalAmount.toLocaleString('en-NG', {minimumFractionDigits: 2})})`, "red");
-                resetLoader(loader, submitButton);
-                return;
-            }
-        }
-
         // Prepare payload for backend
         const id = url.searchParams.get('id');
         const cateName = url.searchParams.get('cat_id');
-        const discountPerNight = getNumericValue(document.getElementById('discount_per_night').value);
 
         // Use FormData to support file upload
         const formData = new FormData();
@@ -819,8 +697,9 @@ button:hover {
         formData.append('room_number', room_number);
         formData.append('category_name', cateName);
         formData.append('is_part_payment', isPartPayment);
-        formData.append('amount_paid', isPartPayment ? (amountPaid * 100) : null);
-        const currentQuote = priceQuote();
+        if (isPartPayment) formData.append('amount_paid', amountPaid);
+        formData.append('guest_count', currentQuote.guestCount);
+        formData.append('extra_guest_charge', (currentQuote.extraGuestCharge / 100).toFixed(2));
         formData.append('discount_type', currentQuote.discountType);
         formData.append('discount_value', currentQuote.discountValue);
         formData.append('discount_per_night', currentQuote.discountPerNight);
@@ -910,4 +789,4 @@ button:hover {
 </html>
 
 
-<script defer src="/js/booking-dialog.js?v=1"></script>
+<script defer src="/js/booking-dialog.js?v=2"></script>

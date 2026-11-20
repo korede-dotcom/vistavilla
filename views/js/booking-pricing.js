@@ -12,6 +12,25 @@
   const amount=type==='percentage'?Math.round(rate*number/100):Math.round(number*100);
   if(amount>rate)throw Error('Discount cannot exceed the booking subtotal.');return amount;
  }
+ function moneyInKobo(value,label){
+  if(!['string','number'].includes(typeof value)||!/^\d+(?:\.\d{1,2})?$/.test(String(value)))throw Error(label+' must be a non-negative amount with at most two decimal places.');
+  const amount=Math.round(Number(value)*100);
+  if(!Number.isSafeInteger(amount))throw Error(label+' is too large.');
+  return amount;
+ }
+ function guestCount(value){
+  if(!['string','number'].includes(typeof value)||!/^\d+$/.test(String(value))||Number(value)<1||Number(value)>100)throw Error('Enter a guest count between 1 and 100.');
+  return Number(value);
+ }
+ function withExtraGuestCharge(roomTotal,extraGuestCharge){
+  const total=roomTotal+extraGuestCharge;
+  if(!Number.isSafeInteger(total)||total<0)throw Error('Invalid booking total.');
+  return total;
+ }
+ function recordedPayment(total,amountPaid){
+  if(!['string','number'].includes(typeof amountPaid)||!/^\d+$/.test(String(amountPaid))||!Number.isSafeInteger(Number(amountPaid))||Number(amountPaid)<=0||Number(amountPaid)>total)throw Error('Enter an amount paid greater than zero and within the booking total.');
+  return Number(amountPaid);
+ }
  function quote(input){
   const nights=(date(input.end)-date(input.start))/86400000;
   if(!Number.isInteger(nights)||nights<1||nights>365)throw Error('Select between 1 and 365 nights.');
@@ -22,5 +41,5 @@
   if(!Number.isSafeInteger(total))throw Error('Booking amount is too large.');
   return {nights,rate,subtotal,discountType:type,discountScope:scope,discountValue:Number(value),discountPerNight:perNight,discountTotal:totalDiscount,total};
  }
- return {quote,discount};
+ return {quote,discount,moneyInKobo,guestCount,withExtraGuestCharge,recordedPayment};
 });

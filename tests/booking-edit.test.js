@@ -47,3 +47,21 @@ test('stale edits, overlaps, overpayments and checked-out bookings reject before
  reset();await assert.rejects(edit('BOOK',input({discount_value:'999999'}),staff),/Discount/);
  reset();await assert.rejects(edit('BOOK',input({reason:''}),staff),/reason/);
 });
+
+test('extra guest charges can change independently of room pricing and accept a small payment',async()=>{
+ reset();
+ booking.extra_guest_charge=100000;booking.amount=6100000;booking.amount_paid=6100000;
+ assert.equal(initial(booking).rate,'30000.00');
+ const data=input({guest_count:'3',extra_guest_charge:'3000.55',amount_paid_now:'10.25'});
+ const quote=await edit('BOOK',data,staff,true);
+ assert.equal(quote.subtotal,6000000);
+ assert.equal(quote.total,6300055);
+ assert.equal(quote.balance,199030);
+ assert.equal(writes.length,0);
+ await edit('BOOK',data,staff);
+ assert.equal(booking.guest_count,3);assert.equal(booking.extra_guest_charge,300055);
+ assert.equal(booking.status,'part-payment');
+ assert.equal(writes.find(w=>w.name==='ledger').data.balance,199030);
+ assert.equal(writes.find(w=>w.name==='payment').data.payment_amount,1025);
+ assert.equal(writes.find(w=>w.name==='revision').data.after.extra_guest_charge,300055);
+});

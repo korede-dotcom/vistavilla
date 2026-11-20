@@ -80,3 +80,11 @@ test('a stay automatically checked out can be extended and its occupied room res
  assert.equal(booking.checked_out,false);
  assert.deepEqual(writes.find(w=>w.name==='room').data,{status:true});
 });
+
+test('a booking discount on extension leaves the agreed extra guest charge intact',async()=>{
+ reset();booking.discount_scope='booking';booking.discount_type='percentage';booking.discount_value=10;
+ booking.price_subtotal=6500000;booking.discount_total=650000;booking.extra_guest_charge=300000;
+ booking.amount=6150000;booking.amount_paid=6150000;
+ const quote=await extend(input,{name:'Reception'},true);
+ assert.equal(quote.total,10650000);assert.equal(quote.additional,4500000);
+});

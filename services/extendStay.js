@@ -9,6 +9,7 @@ const History=require('../models/PaymentHistory');
 const Extension=require('../models/StayExtension');
 const {Op}=require('sequelize');
 const {amountInKobo}=require('../utils/cautionFee');
+const {withExtraGuestCharge}=require('../views/js/booking-pricing');
 const {statuses,lagosDay,checkoutAt}=require('../utils/stayWindow');
 const {retained}=require('../utils/transferAvailability');
 const formatDate=new Intl.DateTimeFormat('en-NG',{dateStyle:'medium',timeZone:'Africa/Lagos'});
@@ -58,11 +59,12 @@ module.exports=async(input,staff,quoteOnly=false)=>db.transaction(async transact
  const ledger=await Part.findOne({where:{reference_id:booking.reference_id},...options});
  const priorPaid=ledger?Number(ledger.amount_paid):['success','completed'].includes(booking.status)&&!Number(booking.balance)?Math.max(Number(booking.amount),Number(booking.amount_paid||0)):Number(booking.amount_paid||0);
  let total=Number(booking.amount)+additional;
- let subtotal=Number(booking.price_subtotal||Number(booking.amount)+Number(booking.discount_per_night||0)*Number(booking.night))+addedSubtotal;
+ const extraGuestCharge=Number(booking.extra_guest_charge||0);
+ let subtotal=Number(booking.price_subtotal||Number(booking.amount)-extraGuestCharge+Number(booking.discount_per_night||0)*Number(booking.night))+addedSubtotal;
  let discountTotal=Number(booking.discount_total||Number(booking.discount_per_night||0)*Number(booking.night))+addedDiscount;
  if(booking.discount_scope==='booking') {
   discountTotal=require('../views/js/booking-pricing').discount(subtotal,booking.discount_type||'flat',booking.discount_value||0);
-  total=subtotal-discountTotal;
+  total=withExtraGuestCharge(subtotal-discountTotal,extraGuestCharge);
   additional=total-Number(booking.amount);
  }
 

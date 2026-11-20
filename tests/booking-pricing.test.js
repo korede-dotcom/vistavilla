@@ -21,7 +21,7 @@ test('invalid dates, negative and excessive discounts reject instead of producin
 
 test('booking form initializes and updates live totals using the server rate, not URL price',async()=>{
  const fs=require('fs'),vm=require('vm');const elements={};
- function element(id){return elements[id]||(elements[id]={value:['discount_per_night','amount_paid','caution_fee'].includes(id)?'0':id==='discount_type'?'flat':'',checked:false,style:{},listeners:{},addEventListener(type,fn){(this.listeners[type]||=[]).push(fn);},setAttribute(){},removeAttribute(){},textContent:'',innerText:''});}
+ function element(id){return elements[id]||(elements[id]={value:['discount_per_night','amount_paid','extra_guest_charge'].includes(id)?'0':id==='guest_count'?'1':id==='discount_type'?'flat':id==='paymentmode'?'Cash':'',checked:false,style:{},listeners:{},addEventListener(type,fn){(this.listeners[type]||=[]).push(fn);},setAttribute(){},removeAttribute(){},textContent:'',innerText:''});}
  const ready=[];const document={getElementById:element,querySelector:s=>element(s),addEventListener(name,fn){if(name==='DOMContentLoaded')ready.push(fn);}};
  const source=fs.readFileSync('views/portal/add-booking-category.ejs','utf8');
  const script=[...source.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/g)][0][1];
@@ -38,9 +38,23 @@ test('booking form initializes and updates live totals using the server rate, no
  // Changing the selected date retrieves and uses the regular rate from the API.
  fetchedRate=40000;for(const fn of element('checkIn').listeners.change)await fn.call(element('checkIn'));await new Promise(resolve=>setImmediate(resolve));
  assert.ok(element('bookingPriceSummary').textContent.includes('108,000'));
+ element('guest_count').value='4';element('extra_guest_charge').value='2000.50';
+ element('isPartPayment').checked=true;element('amount_paid').value='1500.25';
+ for(const fn of element('isPartPayment').listeners.change)fn();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.match(element('bookingPriceSummary').textContent,/Guests: 4.*2,000.50.*110,000.50.*1,500.25.*108,500.25/);
 });
 
 test('percentage rounding occurs once on the complete booking subtotal',()=>{
  const q=pricing.quote({start:'2026-11-10',end:'2026-11-13',rate:99.99,discountType:'percentage',discountValue:'33.33'});
  assert.equal(q.subtotal,29997);assert.equal(q.discountTotal,9998);assert.equal(q.total,19999);
+});
+
+test('reception can accept a small or full payment in integer kobo',()=>{
+ const total=pricing.withExtraGuestCharge(100000,pricing.moneyInKobo('250.50','Extra guest charge'));
+ assert.equal(total,125050);
+ assert.equal(pricing.recordedPayment(total,1),1);
+ assert.equal(pricing.recordedPayment(total,String(total)),total);
+ for(const invalid of ['0','-1','1.5','1guest','125051',''])assert.throws(()=>pricing.recordedPayment(total,invalid));
+ assert.throws(()=>pricing.moneyInKobo('1.001','Extra guest charge'),/decimal/);
 });

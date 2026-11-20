@@ -19,7 +19,7 @@
    const result=await request('/quote',body);if(current!==revision)return;
    const q=result.data;previewed=JSON.stringify(body);
    form.querySelectorAll('[data-edit-value]').forEach(item=>{ item.textContent=money(q[item.dataset.editValue]); });
-   summary.textContent=`${q.nights} night(s). Calculation verified. Caution fees are unchanged. You can now save these changes.`;
+   summary.textContent=`${q.nights} night(s) · ${q.guestCount} guest(s). Caution fees are unchanged. You can now save these changes.`;
    save.disabled=false;
   }catch(error){if(current===revision)summary.textContent=error.message;}
  });

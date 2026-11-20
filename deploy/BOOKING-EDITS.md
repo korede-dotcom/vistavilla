@@ -2,9 +2,9 @@
 
 Receptionist, CEO and hotel manager can open **Booking Details → Edit Booking**.
 The server verifies their current database role. Only active, not-checked-out
-bookings are editable. The editor accepts guest details/count, dates, nightly
-rate, flat/percentage discount on the whole room subtotal, a reason, and any
-additional payment received. Select **Calculate changes**, review the totals,
+bookings are editable. The editor accepts guest details, the guest count and
+total extra guest charge, dates, nightly rate, a room discount, a reason, and
+any additional payment received up to the revised balance. Select **Calculate changes**, review the totals,
 then **Save booking changes**. Changing the form invalidates the preview.
 
 Guest-only changes retain historical totals, including mixed-rate stays and

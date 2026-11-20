@@ -1,10 +1,11 @@
 'use strict';
+const {guestCount}=require('../views/js/booking-pricing');
 function date(value){return new Date(value).toISOString().slice(0,10);}
 function initial(booking){
  const nights=Number(booking.night);
  const discount=Number(booking.discount_total||Number(booking.discount_per_night||0)*nights);
- const subtotal=Number(booking.price_subtotal||Number(booking.amount)+discount);
- return {start:date(booking.start),end:date(booking.end),rate:(subtotal/100/nights).toFixed(2),
+ const subtotal=Number(booking.price_subtotal||Number(booking.amount)+discount-Number(booking.extra_guest_charge||0));
+ return {extra_guest_charge:(Number(booking.extra_guest_charge||0)/100).toFixed(2),start:date(booking.start),end:date(booking.end),rate:(subtotal/100/nights).toFixed(2),
   discount_type:booking.discount_type||'flat',discount_value:booking.discount_scope==='booking'?Number(booking.discount_value||0):booking.discount_type==='percentage'?Number(booking.discount_value||0):discount/100,
   expected_version:new Date(booking.updatedAt).toISOString()};
 }
@@ -15,14 +16,13 @@ function guest(input){
   out[key]=input[key].trim();
  }
  if(out.guest_email!=='-'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(out.guest_email))throw Error('Enter a valid guest email, or - if unavailable.');
- const count=Number(input.guest_count);
- if(!Number.isInteger(count)||count<1||count>100)throw Error('Enter a valid guest count.');
- out.guest_count=count;
+ out.guest_count=guestCount(input.guest_count);
  return out;
 }
 function financialSnapshot(booking){
  return {start:new Date(booking.start).toISOString(),end:new Date(booking.end).toISOString(),nights:Number(booking.night),
   total:Number(booking.amount),amount_paid:Number(booking.amount_paid||0),balance:Number(booking.balance||0),
+  guest_count:Number(booking.guest_count),extra_guest_charge:Number(booking.extra_guest_charge||0),
   subtotal:Number(booking.price_subtotal||0),discount_total:Number(booking.discount_total||0),
   discount_type:booking.discount_type,discount_value:Number(booking.discount_value||0),discount_scope:booking.discount_scope};
 }

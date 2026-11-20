@@ -1,8 +1,10 @@
 # Live booking pricing and discount recording
 
-The portal booking form updates its summary when dates, nights, discount type,
-discount value, caution fee or payment amount change. The summary separates the
-room subtotal, discount, room total, caution deposit and remaining room balance.
+The portal booking form updates its summary when dates, guest count, extra guest charge,
+discount or payment amount change. Cash-mode part payments accept any positive
+amount up to the booking total. For booking edits, enter only the new payment
+received. Staff enter the agreed extra guest charge for the whole stay. The
+summary shows the room subtotal, discount, guest charge and remaining balance.
 The room rate comes from the server's category pricing endpoint, including the
 special rate applicable on check-in. This preserves the existing policy of using
 the check-in rate for the initial stay; it does not vary the original stay's rate
@@ -10,7 +12,8 @@ night by night. An extension still uses its applicable rate for each added night
 
 Flat discount means one fixed naira deduction from the complete room booking
 subtotal. Percentage means a percentage of that same subtotal, rounded once to
-integer kobo. Neither discount applies to the caution fee. For example, a
+integer kobo. Discounts apply to accommodation. The extra guest charge is added afterward,
+and caution fees are recorded separately. For example, a
 ₦150,000 room subtotal with ₦5,000 flat discount becomes ₦145,000; a 10% discount
 becomes ₦135,000. Discounts cannot exceed the room subtotal or 100%.
 
