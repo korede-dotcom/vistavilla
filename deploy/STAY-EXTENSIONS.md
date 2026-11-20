@@ -11,10 +11,11 @@ Only added nights are charged for an extension. Each added night uses the room
 category's current rate or special rate applicable to that date, less the existing
 nightly discount. The previous booking total and receipts remain intact. Caution
 fees are unchanged. New checkout preserves the old checkout time and increases by
-the requested number of days. Checked-out bookings cannot be extended. An overdue
-guest still checked in can extend far enough to bring checkout into the future.
-Overlapping room reservations block the extension. A stale checkout timestamp
-blocks repeat submissions from the same form.
+the requested number of days. Staff can extend an eligible booking before or after
+automatic checkout as long as the revised checkout is in the future. When the
+room is reserved for any of the added nights, the preview and confirmation show
+the conflicting booking and suggest shortening the extension or arranging another
+room. A stale checkout timestamp blocks repeat submissions from the same form.
 
 The booking, part-payment ledger, payment receipts and extension record update in
 one transaction. CEO, hotel manager and receptionist can use this feature.

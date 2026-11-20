@@ -1,12 +1,13 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
-let booking,ledger,conflict,writes,rate,specials;
+const {Op}=require('sequelize');
+let booking,ledger,conflict,writes,rate,specials,conflictWhere;
 const tx={LOCK:{UPDATE:'UPDATE'}};
 function stub(name,exports){const filename=require.resolve(name);require.cache[filename]={id:filename,filename,loaded:true,exports};}
 function write(name,data,options){assert.equal(options.transaction,tx);writes.push({name,data});return data;}
 stub('../config/connectDB',{transaction:async fn=>fn(tx)});
-stub('../models/HotelBooking',{findOne:async options=>options.where.reference_id?booking:conflict,update:async(data,options)=>{write('booking',data,options);Object.assign(booking,data);}});
-stub('../models/RoomNumbers',{findOne:async()=>({_id:1,is_retained:false})});
+stub('../models/HotelBooking',{findOne:async ({where})=>{if(where.reference_id)return booking;conflictWhere=where;return conflict;},update:async(data,options)=>{write('booking',data,options);Object.assign(booking,data);}});
+stub('../models/RoomNumbers',{findOne:async()=>({_id:1,room_number:'101',is_retained:false,update:async(data,options)=>write('room',data,options)})});
 stub('../models/Room',{findOne:async()=>({price:rate})});
 stub('../models/PricingConfig',{findOne:async()=>specials.length?specials.shift():null});
 stub('../models/PartPayment',{findOne:async()=>ledger,create:async(data,options)=>{write('ledger',data,options);return {...data,_id:9};}});
@@ -35,7 +36,14 @@ test('full payment closes balance, overpayments and overlaps reject before write
  reset();await extend({...input,amount_paid_now:'50000',payment_option:'full'},{name:'Reception'});
  assert.equal(booking.balance,0);assert.equal(booking.status,'success');
  reset();await assert.rejects(extend({...input,amount_paid_now:'50000.01'},{name:'Reception'}),/exceeds/);assert.equal(writes.length,0);
- reset();conflict={id:10};await assert.rejects(extend(input,{name:'Reception'}),/reserved/);assert.equal(writes.length,0);
+ reset();conflict={id:10,reference_id:'NEXT',start:new Date(expected),end:new Date('2099-01-05T12:00:00Z')};
+ for(const quoteOnly of [true,false]){
+  await assert.rejects(extend(input,{name:'Reception'},quoteOnly),/Room 101 is reserved by booking NEXT.*Try fewer nights.*another available room/);
+ }
+ assert.equal(conflictWhere.start[Op.lt].toISOString(),'2099-01-03T23:00:00.000Z');
+ assert.equal(conflictWhere.end[Op.gte].toISOString(),'2099-01-03T23:00:00.000Z');
+ assert.deepEqual(conflictWhere[Op.or],[{room_id:1},{room_id:null,room_number:'101'}]);
+ assert.equal(writes.length,0);
  reset();await assert.rejects(extend({...input,extra_nights:0},{name:'Reception'}),/nights/);
  reset();await assert.rejects(extend({...input,payment_option:'full'},{name:'Reception'}),/Full payment/);
 });
@@ -57,4 +65,18 @@ test('one-time flat booking discount is not repeated for extended nights',async(
  reset();booking.discount_scope='booking';booking.discount_type='flat';booking.discount_value=5000;booking.price_subtotal=6500000;booking.discount_total=500000;
  const result=await extend({...input,amount_paid_now:'50000',payment_option:'full'},{name:'Reception'});
  assert.equal(result.additional,5000000);assert.equal(result.total,11000000);assert.equal(booking.price_subtotal,11500000);assert.equal(booking.discount_total,500000);
+});
+
+test('a stay automatically checked out can be extended and its occupied room restored',async()=>{
+ reset();
+ booking.checked_in=true;
+ booking.checked_out=true;
+ booking.end=new Date(Date.now()-2*86400000);
+ const request={...input,expected_end:booking.end.toISOString(),extra_nights:4};
+ await assert.rejects(extend({...request,extra_nights:1},{name:'Reception'}),/future/);
+ await extend(request,{name:'Reception'},true);
+ assert.equal(writes.length,0);
+ await extend(request,{name:'Reception'});
+ assert.equal(booking.checked_out,false);
+ assert.deepEqual(writes.find(w=>w.name==='room').data,{status:true});
 });

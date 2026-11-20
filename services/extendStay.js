@@ -9,22 +9,38 @@ const History=require('../models/PaymentHistory');
 const Extension=require('../models/StayExtension');
 const {Op}=require('sequelize');
 const {amountInKobo}=require('../utils/cautionFee');
+const {statuses,lagosDay,checkoutAt}=require('../utils/stayWindow');
+const {retained}=require('../utils/transferAvailability');
+const formatDate=new Intl.DateTimeFormat('en-NG',{dateStyle:'medium',timeZone:'Africa/Lagos'});
 module.exports=async(input,staff,quoteOnly=false)=>db.transaction(async transaction=>{
  const options={transaction,lock:transaction.LOCK.UPDATE};
  const booking=await Booking.findOne({where:{reference_id:input.reference_id},...options});
- if(!booking||booking.checked_out||!['success','confirmed','part-payment','completed'].includes(booking.status))throw Error('Only active bookings can be extended.');
+ if(!booking||!statuses.includes(booking.status))throw Error('Only confirmed or paid bookings can be extended.');
  const nights=Number(input.extra_nights);
  if(!Number.isInteger(nights)||nights<1||nights>365)throw Error('Enter between 1 and 365 additional nights.');
  const oldEnd=new Date(booking.end);
  if(!input.expected_end||new Date(input.expected_end).getTime()!==oldEnd.getTime())throw Error('The booking has changed. Refresh before extending.');
- if(!Number.isFinite(oldEnd.getTime())||(!booking.checked_in&&oldEnd<new Date()))throw Error('This stay has already ended. Create a new booking.');
- const room=await RoomNumber.findOne({where:{_id:booking.room_id},...options});
- if(!room||room.is_retained)throw Error('The room is unavailable for extension.');
+ const now=new Date();
+ const room=await RoomNumber.findOne({where:booking.room_id?{_id:booking.room_id}:{room_number:booking.room_number},...options});
+ if(!room)throw Error('The assigned room could not be found. Verify the room assignment before extending.');
  const newEnd=new Date(oldEnd.getTime()+nights*86400000);
- if(newEnd<=new Date())throw Error('Add enough nights to extend checkout beyond the current time.');
- const overlap=await Booking.findOne({where:{id:{[Op.ne]:booking.id},room_id:booking.room_id,checked_out:false,
-  status:{[Op.in]:['success','confirmed','part-payment','completed']},start:{[Op.lt]:newEnd},end:{[Op.gt]:oldEnd}},transaction});
- if(overlap)throw Error('This room is reserved during the requested extension.');
+ if(checkoutAt(newEnd)<=now)throw Error('Add enough nights to bring the checkout date into the future.');
+ const extensionStart=new Date(lagosDay(oldEnd)+'T00:00:00+01:00');
+ const extensionEnd=new Date(lagosDay(newEnd)+'T00:00:00+01:00');
+ const overlap=await Booking.findOne({where:{
+  id:{[Op.ne]:booking.id},
+  [Op.or]:[{room_id:room._id},{room_id:null,room_number:room.room_number}],
+  checked_out:false,
+  status:{[Op.in]:statuses},
+  start:{[Op.lt]:extensionEnd},
+  end:{[Op.gte]:new Date(extensionStart.getTime()+86400000)}
+ },order:[['start','ASC'],['id','ASC']],transaction});
+ if(overlap){
+  const from=new Date(Math.max(extensionStart.getTime(),new Date(overlap.start).getTime()));
+  const until=new Date(overlap.end);
+  throw Error(`Room ${room.room_number || booking.room_number} is reserved by booking ${overlap.reference_id} from ${formatDate.format(from)} until checkout on ${formatDate.format(until)}. Try fewer nights if they end by ${formatDate.format(from)}, or arrange another available room for the extra nights.`);
+ }
+ if(retained(room,{start:checkoutAt(oldEnd),end:checkoutAt(newEnd)}))throw Error('The room is retained during the requested dates. Check the room retention dates or arrange another available room.');
  const category=await Room.findOne({where:{_id:booking.category_id},...options});
  if(!category)throw Error('Room category not found.');
  let additional=0, addedSubtotal=0, addedDiscount=0;
@@ -74,6 +90,7 @@ module.exports=async(input,staff,quoteOnly=false)=>db.transaction(async transact
   total_amount:total,guest_name:booking.guest_name,room_number:booking.room_number,recorded_by:staff.name,payment_date:new Date(),notes:`Stay extended by ${nights} night(s)`},{transaction});
  await Extension.create({booking_id:booking.id,reference_id:booking.reference_id,old_end:oldEnd,new_end:newEnd,added_nights:nights,
   additional_amount:additional,amount_paid_now:paid,balance_after:balance,credit_after:credit,extended_by:staff.name},{transaction});
- await Booking.update({end:newEnd,night:totalNights,amount:total,price_subtotal:subtotal,discount_total:discountTotal,amount_paid:amountPaid,balance,is_part_payment:balance>0,status:balance?'part-payment':'success'},{where:{id:booking.id},transaction});
+ if(booking.checked_out&&booking.checked_in)await room.update({status:true},{transaction});
+ await Booking.update({checked_out:false,end:newEnd,night:totalNights,amount:total,price_subtotal:subtotal,discount_total:discountTotal,amount_paid:amountPaid,balance,is_part_payment:balance>0,status:balance?'part-payment':'success'},{where:{id:booking.id},transaction});
  return result;
 });
