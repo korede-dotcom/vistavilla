@@ -137,6 +137,24 @@
         </div>
     </div>
 </div>
+<style>
+#sidebar{background:#fff;border-right:1px solid #e8edf2;box-shadow:8px 0 30px rgba(28,40,48,.05);z-index:1041}
+#sidebar .sidebar-inner{height:100%;overflow-y:auto!important;padding:18px 12px 24px;scrollbar-width:thin;scrollbar-color:#cbd3dc transparent}
+#sidebar .sidebar-menu>ul{padding:0;margin:0}
+#sidebar .sidebar-menu>ul>li{margin:3px 0}
+#sidebar .sidebar-menu>ul>li>a{display:flex;align-items:center;gap:12px;min-height:46px;margin:0!important;padding:11px 14px!important;border-radius:10px!important;color:#334155!important;font-size:14px;font-weight:500;line-height:1.35;white-space:normal}
+#sidebar .sidebar-menu>ul>li>a>i{width:20px;min-width:20px;text-align:center;color:#718096;font-size:16px}
+#sidebar .sidebar-menu>ul>li>a:hover{background:#f1f5f8!important;color:#172b4d!important;transform:none!important}
+#sidebar .sidebar-menu>ul>li.active>a{background:#1c2830!important;color:#fff!important;box-shadow:0 5px 14px rgba(28,40,48,.16)!important}
+#sidebar .sidebar-menu>ul>li.active>a>i{color:#fff}
+#sidebar .sidebar-menu .list-divider{height:1px;margin:12px 8px;background:#e9eef3}
+#sidebar .sidebar-menu .submenu_class{padding:4px 0 6px 20px!important}
+#sidebar .sidebar-menu .submenu_class a{display:flex;align-items:center;gap:8px;padding:9px 12px!important;margin:2px 0!important;border-radius:8px!important;color:#596779!important;font-size:13px;white-space:normal}
+#sidebar .sidebar-menu .submenu_class a:hover{background:#f1f5f8!important;transform:none!important}
+.sidebar-overlay{background:rgba(15,23,42,.48)!important;backdrop-filter:blur(2px)}
+@media(max-width:991.98px){#sidebar{width:min(300px,86vw);margin-left:calc(-1 * min(300px,86vw));box-shadow:16px 0 40px rgba(15,23,42,.18)}.slide-nav #sidebar{margin-left:0}#sidebar .sidebar-inner{padding:14px 12px 24px}#sidebar .sidebar-menu>ul>li>a{min-height:44px;font-size:14px}.sidebar-overlay.opened{z-index:1040}}
+@media(min-width:992px){#sidebar{width:240px}body.mini-sidebar #sidebar{width:78px}body.mini-sidebar #sidebar .sidebar-menu>ul>li>a{justify-content:center;padding:12px 8px!important}body.mini-sidebar #sidebar .sidebar-menu>ul>li>a>i{margin:0}}
+</style>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const currentUrl = window.location.pathname; // Get current path
