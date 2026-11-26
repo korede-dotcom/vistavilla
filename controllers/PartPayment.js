@@ -68,7 +68,7 @@ const renderPaymentReceipt = asynchandler(async (req, res) => {
   const booking = await HotelBooking.findByPk(payment.booking_id);
   if (!booking) return res.status(404).send('Booking not found.');
   res.set('Cache-Control', 'no-store');
-  res.render('success', { booking: { ...(booking.get({plain:true})), receiptPayment: payment.get({plain:true}) }, verificationPending: false });
+  res.render(require('path').join(__dirname, '../views/success'), { booking: { ...(booking.get({plain:true})), receiptPayment: payment.get({plain:true}) }, verificationPending: false });
 });
 
 const renderPartPaymentsPage = asynchandler(async (req, res) => {
