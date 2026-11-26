@@ -110,8 +110,11 @@ const renderPartPaymentsPage = asynchandler(async (req, res) => {
 
   const histories=await Promise.all(partPayments.map(payment=>PaymentHistory.findAll({where:{part_payment_id:payment._id},order:[['payment_date','DESC'],['_id','DESC']]})));
   const paymentLogs=Object.fromEntries(partPayments.map((payment,index)=>[payment._id,histories[index]]));
-  const extensions=await StayExtension.findAll({where:{reference_id:partPayments.map(payment=>payment.reference_id)},order:[['id','DESC']]});
+  const extensions=await StayExtension.findAll({order:[['id','DESC']]});
   const extensionLogs=Object.fromEntries(partPayments.map(payment=>[payment._id,extensions.filter(extension=>extension.reference_id===payment.reference_id)]));
+  const extensionBookings=await HotelBooking.findAll({where:{id:[...new Set(extensions.map(extension=>extension.booking_id))]}});
+  const bookingById=Object.fromEntries(extensionBookings.map(booking=>[booking.id,booking]));
+  const allExtensions=extensions.map(extension=>({ ...extension.get({plain:true}), guest_name:bookingById[extension.booking_id]?.guest_name||extension.guest_name||'Guest', room_number:bookingById[extension.booking_id]?.room_number||'' }));
   res.render('part-payments', {
     name: req.user.name,
     email: req.user.email,
@@ -119,6 +122,7 @@ const renderPartPaymentsPage = asynchandler(async (req, res) => {
     partPayments: partPayments,
     paymentLogs,
     extensionLogs,
+    allExtensions,
     clearances: ['ceo','hotelmanager'].includes(req.user.roleName) ? await require('../models/BalanceClearance').findAll({order:[['createdAt','DESC']],limit:100}) : []
   });
 });
