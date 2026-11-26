@@ -1364,6 +1364,7 @@ routes.get("/part-payments/api", checkAuthCookie, PartPaymentController.getAllPa
 routes.get("/complete-payment", checkAuthCookie, PartPaymentController.renderCompletePaymentPage);
 routes.post("/complete-payment/:id", checkAuthCookie, PartPaymentController.completePartPayment);
 routes.get("/api/payment-history/:id", checkAuthCookie, PartPaymentController.getPaymentHistory);
+routes.get('/payment-receipt/:paymentId', checkAuthCookie, PartPaymentController.renderPaymentReceipt);
 
 // Part Payments CSV Export
 routes.get('/part-payments-csv', checkAuthCookie, async (req, res) => {

@@ -597,8 +597,8 @@ eight only.)</p> -->
 <label for="extraNights">Additional nights</label><input class="form-control" id="extraNights" type="number" min="1" max="365" step="1" value="1" required>
 <button class="btn btn-secondary mt-2" type="button" id="previewExtension">Calculate extension</button>
 <p class="mt-3" id="extensionQuote" role="status">Calculate to preview the new checkout, charges and balance.</p>
-<label for="extensionOption">Payment option</label><select class="form-control" id="extensionOption"><option value="full">Full payment of revised balance</option><option value="partial">Part payment (stays longer than one night)</option></select>
-<label for="extensionPaid">Amount paid now (₦, optional)</label><input class="form-control" id="extensionPaid" type="number" min="0" step="0.01" value="0" required>
+<label for="extensionOption">Payment option</label><select class="form-control" id="extensionOption"><option value="full">Pay the extension balance in full</option><option value="partial">Part payment (stays longer than one night)</option></select>
+<label for="extensionPaid">Payment received now (₦)</label><input class="form-control" id="extensionPaid" type="number" min="0" step="0.01" value="0" required>
 <label for="extensionMethod">Payment method</label><select class="form-control" id="extensionMethod"><option value="cash">Cash</option><option value="transfer">Bank transfer</option><option value="card">Card</option></select>
 <small>Added nights use current rates. Percentage discounts apply to the revised booking subtotal; a flat booking discount is applied once. Legacy nightly discounts retain their original basis. Earlier payments and any guest credit are retained. Caution fees stay unchanged.</small>
 <button class="btn btn-primary mt-3" type="submit" id="confirmExtension" disabled>Confirm extension</button>

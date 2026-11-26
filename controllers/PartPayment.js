@@ -3,6 +3,7 @@ const partPaymentRepo = require("../repos/PartPayment-repo");
 const paymentHistoryRepo = require("../repos/PaymentHistory-repo");
 const HotelBooking = require("../models/HotelBooking");
 const RoomNumber = require("../models/RoomNumbers");
+const PaymentHistory = require('../models/PaymentHistory');
 
 const getAllPartPayments = asynchandler(async (req, res) => {
   const partPayments = await partPaymentRepo.findAll();
@@ -61,6 +62,15 @@ const getPaymentHistory = asynchandler(async (req, res) => {
   });
 });
 
+const renderPaymentReceipt = asynchandler(async (req, res) => {
+  const payment = await PaymentHistory.findByPk(req.params.paymentId);
+  if (!payment) return res.status(404).send('Payment record not found.');
+  const booking = await HotelBooking.findByPk(payment.booking_id);
+  if (!booking) return res.status(404).send('Booking not found.');
+  res.set('Cache-Control', 'no-store');
+  res.render('success', { booking: { ...(booking.get({plain:true})), receiptPayment: payment.get({plain:true}) }, verificationPending: false });
+});
+
 const renderPartPaymentsPage = asynchandler(async (req, res) => {
   let partPayments;
 
@@ -88,11 +98,14 @@ const renderPartPaymentsPage = asynchandler(async (req, res) => {
     partPayments = await partPaymentRepo.findAll();
   }
 
+  const histories=await Promise.all(partPayments.map(payment=>PaymentHistory.findAll({where:{part_payment_id:payment._id},order:[['payment_date','DESC'],['_id','DESC']]})));
+  const paymentLogs=Object.fromEntries(partPayments.map((payment,index)=>[payment._id,histories[index]]));
   res.render('part-payments', {
     name: req.user.name,
     email: req.user.email,
     roleName: req.user.roleName,
     partPayments: partPayments,
+    paymentLogs,
     clearances: ['ceo','hotelmanager'].includes(req.user.roleName) ? await require('../models/BalanceClearance').findAll({order:[['createdAt','DESC']],limit:100}) : []
   });
 });
@@ -115,6 +128,7 @@ module.exports = {
   getPartPaymentById,
   completePartPayment,
   getPaymentHistory,
+  renderPaymentReceipt,
   renderPartPaymentsPage,
   renderCompletePaymentPage
 };
