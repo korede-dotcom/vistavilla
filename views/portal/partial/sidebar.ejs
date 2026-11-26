@@ -9,7 +9,7 @@
                     </a>
                 </li>
                 <li class="list-divider"></li>
-<li><a href="/portal/part-payments"><i class="fas fa-money-bill-wave"></i><span>Part Payments / Guests Owing</span></a></li>
+<li><a href="/portal/part-payments"><i class="fas fa-money-bill-wave"></i><span>Part Payments</span></a></li>
                 <% if (['ceo','hotelmanager'].includes(roleName)) { %>
                 <li><a href="/portal/activity-logs"><i class="fas fa-history"></i><span>Activity Logs</span></a></li>
                 <% } %>
@@ -17,7 +17,7 @@
                 <li><a href="/portal/caution-fees"><i class="fas fa-shield-alt"></i><span>Caution Fees</span></a></li>
                 <% } %>
                 <% if (roleName === 'ceo') { %>
-                <li><a href="/portal/landing-settings"><i class="fas fa-globe"></i><span>Website & Landing Page</span></a></li>
+                <li><a href="/portal/landing-settings"><i class="fas fa-globe"></i><span>Website</span></a></li>
                 <% } %>
 
                 <% if (roleName === 'hotel receptionist' || roleName === 'ceo' || roleName === "hotelmanager") { %>
