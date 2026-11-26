@@ -9,9 +9,7 @@
                     </a>
                 </li>
                 <li class="list-divider"></li>
-<% if (['ceo','hotelmanager','hotel receptionist'].includes(roleName)) { %>
 <li><a href="/portal/part-payments"><i class="fas fa-money-bill-wave"></i><span>Part Payments / Guests Owing</span></a></li>
-<% } %>
                 <% if (['ceo','hotelmanager'].includes(roleName)) { %>
                 <li><a href="/portal/activity-logs"><i class="fas fa-history"></i><span>Activity Logs</span></a></li>
                 <% } %>
