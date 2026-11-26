@@ -90,9 +90,9 @@ module.exports=async(input,staff,quoteOnly=false)=>db.transaction(async transact
  if(paid>0)await History.create({booking_id:booking.id,part_payment_id:saved._id,reference_id:booking.reference_id,
   payment_amount:paid,payment_type:balance?'partial':'final',payment_method:input.payment_method,balance_before:due,balance_after:balance,
   total_amount:total,guest_name:booking.guest_name,room_number:booking.room_number,recorded_by:staff.name,payment_date:new Date(),notes:`Stay extended by ${nights} night(s)`},{transaction});
- await Extension.create({booking_id:booking.id,reference_id:booking.reference_id,old_end:oldEnd,new_end:newEnd,added_nights:nights,
+ const savedExtension=await Extension.create({booking_id:booking.id,reference_id:booking.reference_id,old_end:oldEnd,new_end:newEnd,added_nights:nights,
   additional_amount:additional,amount_paid_now:paid,balance_after:balance,credit_after:credit,extended_by:staff.name},{transaction});
  if(booking.checked_out&&booking.checked_in)await room.update({status:true},{transaction});
  await Booking.update({checked_out:false,end:newEnd,night:totalNights,amount:total,price_subtotal:subtotal,discount_total:discountTotal,amount_paid:amountPaid,balance,is_part_payment:balance>0,status:balance?'part-payment':'success'},{where:{id:booking.id},transaction});
- return result;
+ return {...result,extensionId:savedExtension.id};
 });

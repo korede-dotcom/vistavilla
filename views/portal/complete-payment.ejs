@@ -354,22 +354,12 @@
                 }).showToast();
 
                 if (response.ok) {
-                    // Reload payment history
-                    await loadPaymentHistory();
-
-                    // Clear the input
-                    document.getElementById('remaining_amount').value = '';
-
-                    // If payment is completed, redirect after delay
-                    if (data.data && data.data.paymentCompleted) {
-                        setTimeout(() => {
-                            window.location.href = '/portal/part-payments';
-                        }, 2000);
-                    } else {
-                        // Reload page to update balance
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 2000);
+                    const paymentHistoryId=data.data&&data.data.paymentHistoryId;
+                    if(paymentHistoryId){
+                        setTimeout(()=>{window.location.href='/portal/payment-receipt/'+encodeURIComponent(paymentHistoryId);},600);
+                    }else{
+                        await loadPaymentHistory();
+                        setTimeout(()=>window.location.reload(),1000);
                     }
                 }
             }

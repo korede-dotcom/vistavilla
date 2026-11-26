@@ -75,7 +75,7 @@ class PartPaymentRepository {
     }
 
     // Record payment in history
-    await PaymentHistory.create({
+    const paymentHistory = await PaymentHistory.create({
       booking_id: partPayment.booking_id,
       part_payment_id: partPayment._id,
       reference_id: partPayment.reference_id,
@@ -119,7 +119,7 @@ class PartPaymentRepository {
       );
     }
 
-    return { partPayment, paymentCompleted: isCompleted };
+    return { partPayment, paymentCompleted: isCompleted, paymentHistoryId: paymentHistory._id };
     });
   }
 

@@ -27,7 +27,8 @@
   event.preventDefault();if(!quote||!form.reportValidity())return;confirm.disabled=true;
   try{
    const response=await fetch('/portal/extend-stay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reference_id:form.dataset.reference,expected_end:form.dataset.end,extra_nights:nights.value,amount_paid_now:paid.value,payment_option:option.value,payment_method:document.getElementById('extensionMethod').value,csrf})});
-   const result=await window.portalResponseJSON(response);if(!response.ok||!result.status)throw Error(result.message||'Extension failed.');window.location.reload();
+   const result=await window.portalResponseJSON(response);if(!response.ok||!result.status)throw Error(result.message||'Extension failed.');
+   if(result.data&&result.data.extensionId)window.location.href='/portal/extension-receipt/'+encodeURIComponent(result.data.extensionId);else window.location.reload();
   }catch(error){quote=null;output.textContent=error.message;confirm.disabled=true;}
  });
 })();
