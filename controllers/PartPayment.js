@@ -4,6 +4,7 @@ const paymentHistoryRepo = require("../repos/PaymentHistory-repo");
 const HotelBooking = require("../models/HotelBooking");
 const RoomNumber = require("../models/RoomNumbers");
 const PaymentHistory = require('../models/PaymentHistory');
+const StayExtension = require('../models/StayExtension');
 
 const getAllPartPayments = asynchandler(async (req, res) => {
   const partPayments = await partPaymentRepo.findAll();
@@ -71,6 +72,15 @@ const renderPaymentReceipt = asynchandler(async (req, res) => {
   res.render(require('path').join(__dirname, '../views/success'), { booking: { ...(booking.get({plain:true})), receiptPayment: payment.get({plain:true}) }, verificationPending: false });
 });
 
+const renderExtensionReceipt = asynchandler(async (req, res) => {
+  const extension=await StayExtension.findByPk(req.params.extensionId);
+  if(!extension)return res.status(404).send('Stay extension not found.');
+  const booking=await HotelBooking.findByPk(extension.booking_id);
+  if(!booking)return res.status(404).send('Booking not found.');
+  res.set('Cache-Control','no-store');
+  res.render(require('path').join(__dirname,'../views/extension-receipt'),{booking:booking.get({plain:true}),extension:extension.get({plain:true})});
+});
+
 const renderPartPaymentsPage = asynchandler(async (req, res) => {
   let partPayments;
 
@@ -100,12 +110,15 @@ const renderPartPaymentsPage = asynchandler(async (req, res) => {
 
   const histories=await Promise.all(partPayments.map(payment=>PaymentHistory.findAll({where:{part_payment_id:payment._id},order:[['payment_date','DESC'],['_id','DESC']]})));
   const paymentLogs=Object.fromEntries(partPayments.map((payment,index)=>[payment._id,histories[index]]));
+  const extensions=await StayExtension.findAll({where:{reference_id:partPayments.map(payment=>payment.reference_id)},order:[['id','DESC']]});
+  const extensionLogs=Object.fromEntries(partPayments.map(payment=>[payment._id,extensions.filter(extension=>extension.reference_id===payment.reference_id)]));
   res.render('part-payments', {
     name: req.user.name,
     email: req.user.email,
     roleName: req.user.roleName,
     partPayments: partPayments,
     paymentLogs,
+    extensionLogs,
     clearances: ['ceo','hotelmanager'].includes(req.user.roleName) ? await require('../models/BalanceClearance').findAll({order:[['createdAt','DESC']],limit:100}) : []
   });
 });
@@ -129,6 +142,7 @@ module.exports = {
   completePartPayment,
   getPaymentHistory,
   renderPaymentReceipt,
+  renderExtensionReceipt,
   renderPartPaymentsPage,
   renderCompletePaymentPage
 };

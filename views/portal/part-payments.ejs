@@ -236,6 +236,10 @@
                                                         <div class="mb-2"><small><%= new Date(log.payment_date).toLocaleString('en-GB') %> · ₦<%= (Number(log.payment_amount)/100).toLocaleString() %></small><br>
                                                         <a class="btn btn-sm btn-outline-primary" target="_blank" rel="noopener" href="/portal/payment-receipt/<%= log._id %>"><i class="fas fa-receipt"></i> Generate Receipt</a></div>
                                                     <% }); } else { %><small class="text-muted">No payment history recorded</small><% } %>
+                                                    <% const stays=extensionLogs[payment._id]||[]; stays.forEach(stay=>{ %>
+                                                        <div class="mt-2"><small>Stay extension · <%= stay.added_nights %> night(s) · ₦<%= (Number(stay.additional_amount)/100).toLocaleString() %></small><br>
+                                                        <a class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener" href="/portal/extension-receipt/<%= stay.id %>"><i class="fas fa-receipt"></i> Extension Receipt</a></div>
+                                                    <% }); %>
                                                 </td>
                                                 <td class="text-right">
                                                     <% if (payment.payment_status === 'partial') { %>
